@@ -1,271 +1,271 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://docs.humem.ai/arcadedb/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/api-access-methods/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/api-access-methods/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/java-api-coverage/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/java-api-coverage/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/api/async_executor/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/api/async_executor/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/api/batch/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/api/batch/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/api/database/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/api/database/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/api/exceptions/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/api/exceptions/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/api/exporter/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/api/exporter/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/api/importer/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/api/importer/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/api/record-wrappers/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/api/record-wrappers/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/api/results/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/api/results/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/api/schema/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/api/schema/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/api/server/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/api/server/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/api/transactions/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/api/transactions/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/api/type_conversion/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/api/type_conversion/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/api/vector/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/api/vector/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/architecture/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/architecture/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/build-architecture/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/build-architecture/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/ci-setup/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/ci-setup/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/contributing/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/contributing/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/documentation/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/documentation/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/release/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/release/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/troubleshooting/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/troubleshooting/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/best-practices/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/best-practices/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/overview/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/overview/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-async-executor/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-async-executor/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-batch-context/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-batch-context/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-concurrency/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-concurrency/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-core/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-core/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-database-utils/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-database-utils/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-exporter/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-exporter/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-graph-api/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-graph-api/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-importer/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-importer/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-numpy-support/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-numpy-support/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-opencypher/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-opencypher/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-resultset/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-resultset/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-schema/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-schema/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-server-patterns/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-server-patterns/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-server/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-server/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-transaction-config/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-transaction-config/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-type-conversion/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-type-conversion/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-vector-sql/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-vector-sql/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/development/testing/test-vector/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/development/testing/test-vector/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/examples/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/examples/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/examples/01_simple_document_store/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/examples/01_simple_document_store/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/examples/02_social_network_graph/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/examples/02_social_network_graph/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/examples/03_vector_search/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/examples/03_vector_search/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/examples/04_csv_import_documents/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/examples/04_csv_import_documents/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/examples/05_csv_import_graph/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/examples/05_csv_import_graph/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/examples/06_vector_search_recommendations/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/examples/06_vector_search_recommendations/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/examples/07_stackoverflow_multimodel/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/examples/07_stackoverflow_multimodel/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/examples/08_server_mode_rest_api/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/examples/08_server_mode_rest_api/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/examples/basic/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/examples/basic/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/examples/import/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/examples/import/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/examples/vectors/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/examples/vectors/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/getting-started/distributions/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/getting-started/distributions/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/getting-started/installation/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/getting-started/installation/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/getting-started/quickstart/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/getting-started/quickstart/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/guide/graphs/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/guide/graphs/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/guide/import/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/guide/import/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/guide/operations/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/guide/operations/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/guide/server/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/guide/server/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/guide/vectors/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/guide/vectors/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/guide/core/database/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/guide/core/database/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/guide/core/queries/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/guide/core/queries/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
     <url>
-         <loc>https://docs.humem.ai/arcadedb/guide/core/transactions/</loc>
+         <loc>https://docs.humem.ai/arcadedb/26.1.1.dev0/guide/core/transactions/</loc>
          <lastmod>2026-01-23</lastmod>
     </url>
 </urlset>
