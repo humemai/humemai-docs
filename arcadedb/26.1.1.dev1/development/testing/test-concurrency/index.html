@@ -2032,8 +2032,8 @@
 
 
 <h1 id="concurrency-tests">Concurrency Tests<a class="headerlink" href="#concurrency-tests" title="Permanent link">&para;</a></h1>
-<p><a class="md-button" href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_concurrency.py">View source code</a></p>
-<p>These notes mirror the Python tests in <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_concurrency.py">test_concurrency.py</a>. There are 4 tests demonstrating file locking, thread safety, sequential access, and concurrent limitation.</p>
+<p><a class="md-button" href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_concurrency.py">View source code</a></p>
+<p>These notes mirror the Python tests in <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_concurrency.py">test_concurrency.py</a>. There are 4 tests demonstrating file locking, thread safety, sequential access, and concurrent limitation.</p>
 <h2 id="key-insight">Key Insight<a class="headerlink" href="#key-insight" title="Permanent link">&para;</a></h2>
 <ul>
 <li>❌ Multiple <strong>processes</strong> cannot access same database (file lock prevents)</li>
@@ -2042,13 +2042,13 @@
 </ul>
 <h2 id="test-cases">Test Cases<a class="headerlink" href="#test-cases" title="Permanent link">&para;</a></h2>
 <h3 id="1-file-lock-mechanism">1) file lock mechanism<a class="headerlink" href="#1-file-lock-mechanism" title="Permanent link">&para;</a></h3>
-<p>Opens database, checks for <code>database.lck</code> file, closes, verifies lock is released. See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_concurrency.py#L23-L47">test_concurrency.py#L23-L47</a>.</p>
+<p>Opens database, checks for <code>database.lck</code> file, closes, verifies lock is released. See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_concurrency.py#L23-L47">test_concurrency.py#L23-L47</a>.</p>
 <h3 id="2-thread-safety">2) thread safety<a class="headerlink" href="#2-thread-safety" title="Permanent link">&para;</a></h3>
-<p>Creates database with 20 Person records, spawns 4 threads querying disjoint id ranges (0–4, 5–9, 10–14, 15–19) concurrently, asserts all threads complete and find correct counts. See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_concurrency.py#L50-L93">test_concurrency.py#L50-L93</a>.</p>
+<p>Creates database with 20 Person records, spawns 4 threads querying disjoint id ranges (0–4, 5–9, 10–14, 15–19) concurrently, asserts all threads complete and find correct counts. See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_concurrency.py#L50-L93">test_concurrency.py#L50-L93</a>.</p>
 <h3 id="3-sequential-access">3) sequential access<a class="headerlink" href="#3-sequential-access" title="Permanent link">&para;</a></h3>
-<p>Sequence: create+insert → close → reopen+query (1 record) → close → reopen+insert+query (2 records). Verifies data persists and each step works. See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_concurrency.py#L96-L143">test_concurrency.py#L96-L143</a>.</p>
+<p>Sequence: create+insert → close → reopen+query (1 record) → close → reopen+insert+query (2 records). Verifies data persists and each step works. See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_concurrency.py#L96-L143">test_concurrency.py#L96-L143</a>.</p>
 <h3 id="4-concurrent-access-limitation">4) concurrent access limitation<a class="headerlink" href="#4-concurrent-access-limitation" title="Permanent link">&para;</a></h3>
-<p>Attempts concurrent access from same process; documents that a second handle to locked DB raises <code>ArcadeDBError</code>. See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_concurrency.py#L146-L165">test_concurrency.py#L146-L165</a>.</p>
+<p>Attempts concurrent access from same process; documents that a second handle to locked DB raises <code>ArcadeDBError</code>. See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_concurrency.py#L146-L165">test_concurrency.py#L146-L165</a>.</p>
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Single-process (embedded)</strong>: Thread-safe; file lock prevents other processes</li>

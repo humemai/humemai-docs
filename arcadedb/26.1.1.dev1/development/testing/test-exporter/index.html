@@ -2018,62 +2018,62 @@
 
 
 <h1 id="exporter-tests">Exporter Tests<a class="headerlink" href="#exporter-tests" title="Permanent link">&para;</a></h1>
-<p><a class="md-button" href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py">View source code</a></p>
-<p>These notes mirror the Python tests in <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py">test_exporter.py</a>. There are 5 test classes with 12+ tests covering JSONL (with type/edge filters), GraphML/GraphSON (skipped if GraphSON support is unavailable), CSV, round-trip (export→import), bulk insert (chunked transactions), and all data types.</p>
+<p><a class="md-button" href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py">View source code</a></p>
+<p>These notes mirror the Python tests in <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py">test_exporter.py</a>. There are 5 test classes with 12+ tests covering JSONL (with type/edge filters), GraphML/GraphSON (skipped if GraphSON support is unavailable), CSV, round-trip (export→import), bulk insert (chunked transactions), and all data types.</p>
 <h2 id="test-classes-cases">Test Classes &amp; Cases<a class="headerlink" href="#test-classes-cases" title="Permanent link">&para;</a></h2>
 <h3 id="testdatabaseexport">TestDatabaseExport<a class="headerlink" href="#testdatabaseexport" title="Permanent link">&para;</a></h3>
 <p>Fixture <code>sample_db</code> creates 20 users, 15 movies, 10 actors, 50 Rated edges, 30 ActedIn edges, 15 Follows edges, 10 LogEntry docs, 5 Config docs (155 total records).</p>
 <ul>
 <li>
-<p><strong>export_jsonl_basic</strong>: Exports entire database; asserts <code>totalRecords == 155</code>, <code>vertices == 45</code> (20+15+10), <code>edges == 95</code> (50+30+15), <code>documents == 15</code> (10+5). File in <code>exports/</code> dir. See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L226-L247">test_exporter.py#L226-L247</a>.</p>
+<p><strong>export_jsonl_basic</strong>: Exports entire database; asserts <code>totalRecords == 155</code>, <code>vertices == 45</code> (20+15+10), <code>edges == 95</code> (50+30+15), <code>documents == 15</code> (10+5). File in <code>exports/</code> dir. See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L226-L247">test_exporter.py#L226-L247</a>.</p>
 </li>
 <li>
-<p><strong>export_jsonl_with_include_types</strong>: Exports only <code>User</code> type; asserts <code>vertices == 20</code>, edges/docs zero. See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L249-L265">test_exporter.py#L249-L265</a>.</p>
+<p><strong>export_jsonl_with_include_types</strong>: Exports only <code>User</code> type; asserts <code>vertices == 20</code>, edges/docs zero. See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L249-L265">test_exporter.py#L249-L265</a>.</p>
 </li>
 <li>
-<p><strong>export_jsonl_with_exclude_types</strong>: Excludes <code>LogEntry</code>; asserts <code>documents == 5</code> (only Config, logs excluded). See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L267-L282">test_exporter.py#L267-L282</a>.</p>
+<p><strong>export_jsonl_with_exclude_types</strong>: Excludes <code>LogEntry</code>; asserts <code>documents == 5</code> (only Config, logs excluded). See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L267-L282">test_exporter.py#L267-L282</a>.</p>
 </li>
 <li>
-<p><strong>export_overwrite_protection</strong>: First export succeeds; second with <code>overwrite=False</code> raises <code>ArcadeDBError</code> mentioning "already exists" or "overwrite". See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L284-L304">test_exporter.py#L284-L304</a>.</p>
+<p><strong>export_overwrite_protection</strong>: First export succeeds; second with <code>overwrite=False</code> raises <code>ArcadeDBError</code> mentioning "already exists" or "overwrite". See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L284-L304">test_exporter.py#L284-L304</a>.</p>
 </li>
 <li>
-<p><strong>export_invalid_format</strong>: Passes <code>format="invalid_format"</code>; asserts raises <code>ArcadeDBError</code> with "invalid" or "format". See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L306-L312">test_exporter.py#L306-L312</a>.</p>
+<p><strong>export_invalid_format</strong>: Passes <code>format="invalid_format"</code>; asserts raises <code>ArcadeDBError</code> with "invalid" or "format". See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L306-L312">test_exporter.py#L306-L312</a>.</p>
 </li>
 <li>
-<p><strong>export_graphml/export_graphson</strong>: Both attempt export; if GraphSON support is missing, skip with <code>pytest.skip(...)</code>. See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L314-L357">test_exporter.py#L314-L357</a>.</p>
+<p><strong>export_graphml/export_graphson</strong>: Both attempt export; if GraphSON support is missing, skip with <code>pytest.skip(...)</code>. See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L314-L357">test_exporter.py#L314-L357</a>.</p>
 </li>
 <li>
-<p><strong>export_verbose_levels</strong>: Tests <code>verbose</code> parameter (0, 1, 2); asserts <code>"totalRecords"</code> in stats for each. See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L359-L373">test_exporter.py#L359-L373</a>.</p>
+<p><strong>export_verbose_levels</strong>: Tests <code>verbose</code> parameter (0, 1, 2); asserts <code>"totalRecords"</code> in stats for each. See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L359-L373">test_exporter.py#L359-L373</a>.</p>
 </li>
 <li>
-<p><strong>export_empty_database</strong>: Empty database exports with <code>totalRecords == 0</code>, <code>vertices/edges/documents == 0</code>. File still created. See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L375-L396">test_exporter.py#L375-L396</a>.</p>
+<p><strong>export_empty_database</strong>: Empty database exports with <code>totalRecords == 0</code>, <code>vertices/edges/documents == 0</code>. File still created. See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L375-L396">test_exporter.py#L375-L396</a>.</p>
 </li>
 </ul>
 <h3 id="testcsvexport">TestCSVExport<a class="headerlink" href="#testcsvexport" title="Permanent link">&para;</a></h3>
 <ul>
 <li>
-<p><strong>export_to_csv_basic</strong>: Queries 20 User records; asserts CSV has 20 rows with columns <code>userId, name, age, email, premium</code>. See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L400-L426">test_exporter.py#L400-L426</a>.</p>
+<p><strong>export_to_csv_basic</strong>: Queries 20 User records; asserts CSV has 20 rows with columns <code>userId, name, age, email, premium</code>. See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L400-L426">test_exporter.py#L400-L426</a>.</p>
 </li>
 <li>
-<p><strong>export_to_csv_with_fieldnames</strong>: Exports Movie query with custom fieldnames <code>["movieId", "title"]</code>; asserts header and column count. See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L428-L451">test_exporter.py#L428-L451</a>.</p>
+<p><strong>export_to_csv_with_fieldnames</strong>: Exports Movie query with custom fieldnames <code>["movieId", "title"]</code>; asserts header and column count. See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L428-L451">test_exporter.py#L428-L451</a>.</p>
 </li>
 <li>
-<p><strong>export_to_csv_empty_results</strong>: Query with no hits; asserts CSV exists and is mostly empty (headers only or zero rows). See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L453-L464">test_exporter.py#L453-L464</a>.</p>
+<p><strong>export_to_csv_empty_results</strong>: Query with no hits; asserts CSV exists and is mostly empty (headers only or zero rows). See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L453-L464">test_exporter.py#L453-L464</a>.</p>
 </li>
 <li>
-<p><strong>export_to_csv_with_resultset</strong>: Uses <code>export_to_csv(results, path)</code> on <code>SELECT rating FROM Rated WHERE rating &gt; 0</code>; asserts 50 rows (all Rated edges). See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L466-L481">test_exporter.py#L466-L481</a>.</p>
+<p><strong>export_to_csv_with_resultset</strong>: Uses <code>export_to_csv(results, path)</code> on <code>SELECT rating FROM Rated WHERE rating &gt; 0</code>; asserts 50 rows (all Rated edges). See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L466-L481">test_exporter.py#L466-L481</a>.</p>
 </li>
 <li>
-<p><strong>export_to_csv_with_list_of_dicts</strong>: Passes list of 3 dicts to <code>export_to_csv()</code>, verifies CSV written and matches. See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L483-L506">test_exporter.py#L483-L506</a>.</p>
+<p><strong>export_to_csv_with_list_of_dicts</strong>: Passes list of 3 dicts to <code>export_to_csv()</code>, verifies CSV written and matches. See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L483-L506">test_exporter.py#L483-L506</a>.</p>
 </li>
 </ul>
 <h3 id="testroundtripexport">TestRoundTripExport<a class="headerlink" href="#testroundtripexport" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>jsonl_export_import_roundtrip</strong>: Exports sample_db to JSONL, closes original, creates new DB, imports via <code>IMPORT DATABASE file://...</code>, then verifies counts (User 20, Movie 15, Actor 10, LogEntry 10, Config 5) and data integrity (first user name is "User0"). See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L508-L567">test_exporter.py#L508-L567</a>.</li>
+<li><strong>jsonl_export_import_roundtrip</strong>: Exports sample_db to JSONL, closes original, creates new DB, imports via <code>IMPORT DATABASE file://...</code>, then verifies counts (User 20, Movie 15, Actor 10, LogEntry 10, Config 5) and data integrity (first user name is "User0"). See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L508-L567">test_exporter.py#L508-L567</a>.</li>
 </ul>
 <h3 id="testexportwithbulkinsert">TestExportWithBulkInsert<a class="headerlink" href="#testexportwithbulkinsert" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>export_after_chunked_insert</strong>: Uses chunked transactions (no <code>batch_context</code>) to create 500 Product vertices, exports to JSONL, asserts <code>vertices == 500</code>. See <a href="{{ config.repo_url }}/blob/{{ config.extra.version_tag }}/bindings/python/tests/test_exporter.py#L567-L605">test_exporter.py#L567-L605</a>.</li>
+<li><strong>export_after_chunked_insert</strong>: Uses chunked transactions (no <code>batch_context</code>) to create 500 Product vertices, exports to JSONL, asserts <code>vertices == 500</code>. See <a href="https://github.com/humemai/arcadedb-embedded-python/blob/26.1.1.dev1/bindings/python/tests/test_exporter.py#L567-L605">test_exporter.py#L567-L605</a>.</li>
 </ul>
 <h3 id="testalldatatypes">TestAllDataTypes<a class="headerlink" href="#testalldatatypes" title="Permanent link">&para;</a></h3>
 <p>Test class exists (last line ~876) but content not shown in excerpt. Likely tests STRING, INTEGER, BOOLEAN, LIST, MAP, DATETIME, BINARY preservation.</p>
