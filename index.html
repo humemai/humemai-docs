@@ -7,12 +7,23 @@
     <meta name="description" content="Documentation hub for Humemai products." />
     <style>
       :root {
-        color-scheme: light dark;
-        --bg: #0b1220;
-        --card: #121a2b;
-        --text: #e6edf3;
-        --muted: #9fb0c0;
-        --accent: #5aa9ff;
+        --bg: #f6f7fb;
+        --card: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --accent: #2563eb;
+        --border: #e2e8f0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b1220;
+          --card: #121a2b;
+          --text: #e6edf3;
+          --muted: #9fb0c0;
+          --accent: #5aa9ff;
+          --border: #1f2a40;
+        }
       }
       body {
         margin: 0;
@@ -21,50 +32,70 @@
         color: var(--text);
       }
       .wrap {
-        max-width: 960px;
+        max-width: 980px;
         margin: 0 auto;
-        padding: 64px 24px;
+        padding: 72px 24px 96px;
       }
-      h1 { font-size: 2.2rem; margin: 0 0 8px; }
-      p { color: var(--muted); margin: 0 0 24px; }
+      header {
+        margin-bottom: 40px;
+      }
+      h1 {
+        font-size: clamp(2rem, 3vw, 2.75rem);
+        margin: 0 0 10px;
+        letter-spacing: -0.02em;
+      }
+      p {
+        color: var(--muted);
+        margin: 0;
+        font-size: 1.05rem;
+      }
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
       }
       .card {
         background: var(--card);
-        border: 1px solid #1f2a40;
+        border: 1px solid var(--border);
         border-radius: 12px;
-        padding: 20px;
+        padding: 22px;
         text-decoration: none;
         color: inherit;
-        transition: transform 0.15s ease, border-color 0.15s ease;
+        transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
       }
       .card:hover {
         transform: translateY(-2px);
         border-color: var(--accent);
+        box-shadow: 0 8px 24px rgba(2, 6, 23, 0.08);
       }
-      .card h2 { margin: 0 0 8px; font-size: 1.2rem; }
+      .card h2 { margin: 0 0 8px; font-size: 1.15rem; }
+      .card p { margin: 0 0 16px; font-size: 0.95rem; }
       .card span { color: var(--accent); font-weight: 600; }
-      footer { margin-top: 48px; color: var(--muted); font-size: 0.9rem; }
+      footer {
+        margin-top: 56px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
       a { color: inherit; }
     </style>
   </head>
   <body>
     <div class="wrap">
-      <h1>Humemai Documentation</h1>
-      <p>Central hub for product docs and guides.</p>
+      <header>
+        <h1>Humemai Documentation</h1>
+        <p>Product docs, guides, and references in one place.</p>
+      </header>
 
       <div class="grid">
         <a class="card" href="/arcadedb/">
           <h2>ArcadeDB Embedded (Python)</h2>
+          <p>Installation, examples, API reference, and guides.</p>
           <span>Open docs →</span>
         </a>
       </div>
 
       <footer>
-        Need another doc set added? Update this page in the humemai-docs repo.
+        Add more doc sets here as new products launch.
       </footer>
     </div>
   </body>
