@@ -1,10 +1,15 @@
 [
   {
-    "version": "26.1.1.post2",
-    "title": "26.1.1.post2",
+    "version": "26.1.1.post3",
+    "title": "26.1.1.post3",
     "aliases": [
       "latest"
     ]
+  },
+  {
+    "version": "26.1.1.post2",
+    "title": "26.1.1.post2",
+    "aliases": []
   },
   {
     "version": "26.1.1.post1",
