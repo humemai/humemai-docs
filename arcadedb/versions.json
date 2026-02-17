@@ -5,55 +5,5 @@
     "aliases": [
       "latest"
     ]
-  },
-  {
-    "version": "26.2.1.dev8",
-    "title": "26.2.1.dev8",
-    "aliases": []
-  },
-  {
-    "version": "26.2.1.dev7",
-    "title": "26.2.1.dev7",
-    "aliases": []
-  },
-  {
-    "version": "26.2.1.dev6",
-    "title": "26.2.1.dev6",
-    "aliases": []
-  },
-  {
-    "version": "26.2.1.dev5",
-    "title": "26.2.1.dev5",
-    "aliases": []
-  },
-  {
-    "version": "26.2.1.dev4",
-    "title": "26.2.1.dev4",
-    "aliases": []
-  },
-  {
-    "version": "26.2.1.dev3",
-    "title": "26.2.1.dev3",
-    "aliases": []
-  },
-  {
-    "version": "26.2.1.dev2",
-    "title": "26.2.1.dev2",
-    "aliases": []
-  },
-  {
-    "version": "26.2.1.dev1",
-    "title": "26.2.1.dev1",
-    "aliases": []
-  },
-  {
-    "version": "26.2.1.dev0",
-    "title": "26.2.1.dev0",
-    "aliases": []
-  },
-  {
-    "version": "26.1.1.post3",
-    "title": "26.1.1.post3",
-    "aliases": []
   }
 ]
