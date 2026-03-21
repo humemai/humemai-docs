@@ -10,11 +10,16 @@
     "aliases": []
   },
   {
-    "version": "26.3.2.dev0",
-    "title": "26.3.2.dev0",
+    "version": "26.3.2.dev1",
+    "title": "26.3.2.dev1",
     "aliases": [
       "latest"
     ]
+  },
+  {
+    "version": "26.3.2.dev0",
+    "title": "26.3.2.dev0",
+    "aliases": []
   },
   {
     "version": "26.3.1",
