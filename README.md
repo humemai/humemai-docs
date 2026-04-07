@@ -1,2 +1,9 @@
 # humemai-docs
-Documentations
+
+Shared documentation hub for published HumemAI project docs.
+
+Current doc sets:
+
+- `arcadedb/`
+- `humemdb/`
+- `cypherglot/`
