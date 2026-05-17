@@ -1,0 +1,1881 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="CypherGlot documentation for the Cypher-to-SQLGlot frontend compiler">
+      
+      
+        <meta name="author" content="HumemAI">
+      
+      
+        <link rel="canonical" href="https://docs.humem.ai/cypherglot/0.1.0/guide/admitted-subset/">
+      
+      
+        <link rel="prev" href="../../getting-started/quickstart/">
+      
+      
+        <link rel="next" href="../benchmarks/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Admitted Subset - CypherGlot</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="cyan" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#admitted-subset" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CypherGlot" class="md-header__button md-logo" aria-label="CypherGlot" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CypherGlot
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Admitted Subset
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="cyan" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/humemai/cypherglot" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    humemai/cypherglot
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/installation/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/documentation/" class="md-tabs__link">
+          
+  
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CypherGlot" class="md-nav__button md-logo" aria-label="CypherGlot" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CypherGlot
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/humemai/cypherglot" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    humemai/cypherglot
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Admitted Subset
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Admitted Subset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#practical-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Coverage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#read-subset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read subset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mixed-read-write-subset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixed read-write subset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bounded-variable-length-read-subset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bounded variable-length read subset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#traversal-backed-write-subset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traversal-backed write subset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#write-subset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Write subset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deferred-clause-families" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deferred clause families
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#narrow-vector-aware-subset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Narrow vector-aware subset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-the-boundary-is-strict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the boundary is strict
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../compiler-contract/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compiler Contract
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../public-entrypoints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Public Entrypoints
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schema-contract/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schema Contract
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/documentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/release-candidate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Candidate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#practical-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Coverage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#read-subset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read subset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mixed-read-write-subset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mixed read-write subset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bounded-variable-length-read-subset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bounded variable-length read subset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#traversal-backed-write-subset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traversal-backed write subset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#write-subset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Write subset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deferred-clause-families" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deferred clause families
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#narrow-vector-aware-subset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Narrow vector-aware subset
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-the-boundary-is-strict" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the boundary is strict
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Guide
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="admitted-subset">Admitted Subset<a class="headerlink" href="#admitted-subset" title="Permanent link">&para;</a></h1>
+<p>CypherGlot is intentionally narrow. It accepts a small Cypher surface and rejects
+broader grammar families clearly at validation time.</p>
+<h2 id="practical-coverage">Practical Coverage<a class="headerlink" href="#practical-coverage" title="Permanent link">&para;</a></h2>
+<p>CypherGlot's current practical coverage should be understood from the admitted,
+documented, and regression-tested subset in this guide rather than from parser
+breadth alone.</p>
+<p>For mainstream onboarding, the current surface is best described as a strong
+single-hop, read-heavy Neo4j-style subset rather than full Cypher parity.
+Neo4j is the practical reference engine for this admitted surface: queries in
+the subset should ideally be valid there unchanged, while other Cypher runtimes
+may require small compatibility rewrites around the same core shapes.
+That includes:</p>
+<ul>
+<li>ordinary <code>MATCH ... RETURN</code> reads over one connected pattern</li>
+<li>narrow standalone <code>OPTIONAL MATCH ... RETURN</code></li>
+<li>narrow <code>MATCH ... WITH ... RETURN</code> rebinding flows</li>
+<li>narrow standalone <code>UNWIND ... RETURN</code></li>
+<li>grouped <code>count(...)</code>, <code>count(*)</code>, <code>sum(...)</code>, <code>avg(...)</code>, <code>min(...)</code>, and
+  <code>max(...)</code> aggregation slices</li>
+<li>common projection families over admitted field, scalar-binding, or literal
+  inputs: <code>size(...)</code>, <code>id(...)</code>, <code>type(...)</code>, searched <code>CASE</code>,
+  <code>properties(...)</code>, <code>labels(...)</code>, <code>keys(...)</code>, <code>startNode(...)</code>,
+  <code>endNode(...)</code>, string rewrite functions, numeric functions, conversion
+  functions, and predicate outputs</li>
+<li>one-hop relationship-property reads across those same admitted projection and
+  predicate families</li>
+<li>bounded read-side variable-length relationship reads, including syntactic
+  relationship aliases that are not referenced downstream, for
+  ordinary <code>MATCH ... RETURN</code> and narrow
+  <code>MATCH ... WITH ... RETURN</code></li>
+<li>optional final-<code>RETURN</code> aliases for common admitted introspection,
+  aggregate, unary computed, and narrow multi-argument computed outputs</li>
+</ul>
+<p>That is the current strong onboarding/read-heavy target: a practical mainstream
+subset for paste-in read queries that stay within simple connected patterns and
+narrow projection flows, plus the narrow write and bounded traversal families
+documented below. It is not a claim of broad Neo4j parity or of coverage for
+most Neo4j users overall. It is also not a claim that every runtime in the
+benchmark matrix accepts the exact same raw query text unchanged; Neo4j anchors
+the subset, and some other engines may need light adaptation at execution time.</p>
+<h2 id="read-subset">Read subset<a class="headerlink" href="#read-subset" title="Permanent link">&para;</a></h2>
+<p>CypherGlot currently admits:</p>
+<ul>
+<li><code>MATCH ... RETURN</code></li>
+<li>narrow standalone <code>OPTIONAL MATCH ... RETURN</code></li>
+<li>narrow <code>MATCH ... WITH ... RETURN</code></li>
+<li>narrow standalone <code>UNWIND ... RETURN</code></li>
+<li>a single connected <code>MATCH</code> pattern</li>
+<li>at most one relationship hop in the matched pattern</li>
+<li>bounded non-negative-length variable-length relationship reads in ordinary
+  <code>MATCH ... RETURN</code> and narrow <code>MATCH ... WITH ... RETURN</code>, including
+  syntactic relationship aliases that are not referenced in downstream
+  <code>RETURN</code>, <code>WITH</code>, or predicate surfaces</li>
+<li>traversal-backed <code>MATCH ... CREATE</code> and <code>MATCH ... MERGE</code> with exactly one
+  reused matched node alias plus at most one fresh endpoint node, whether that
+  fresh endpoint is labeled or unlabeled</li>
+<li>narrow <code>WHERE</code> predicates over admitted entity fields, plus admitted
+  <code>id(alias) OP literal_or_parameter</code>; for relationship bindings, admitted
+  <code>type(rel_alias) = literal_or_parameter</code></li>
+<li>that same ordinary-read and narrow-optional <code>WHERE</code> slice also admits
+  field string predicates <code>STARTS WITH</code>, <code>ENDS WITH</code>, and <code>CONTAINS</code>, plus
+  field null predicates <code>IS NULL</code> and <code>IS NOT NULL</code>; in admitted one-hop
+  relationship reads, those same field string/null predicates also apply to
+  relationship property fields such as <code>r.note</code></li>
+<li>that same ordinary-read and narrow-optional <code>WHERE</code> slice also admits narrow
+  nested <code>size(...)</code> field predicates over compile-safe property inputs:
+  <code>size(alias.field) OP literal_or_parameter</code>, <code>size(alias.field) IS NULL</code>, and
+  <code>size(alias.field) IS NOT NULL</code>; in admitted one-hop relationship reads,
+  those same nested <code>size(...)</code> filters also apply to relationship property
+  fields such as <code>size(r.note)</code></li>
+<li><code>ORDER BY</code>, <code>SKIP</code>, and <code>LIMIT</code> on admitted <code>RETURN</code> queries</li>
+<li>optional <code>AS output_alias</code> on ordinary <code>MATCH</code> and narrow <code>OPTIONAL MATCH</code>
+  field projections such as <code>RETURN u.name AS name</code></li>
+<li>whole-entity pass-through returns on ordinary <code>MATCH</code> and narrow <code>OPTIONAL MATCH</code>,
+  such as <code>RETURN u</code>, <code>RETURN u AS user</code>, or in one-hop <code>MATCH</code> queries
+  <code>RETURN r AS rel</code></li>
+<li>a narrow standalone aggregation slice on ordinary <code>MATCH</code>: <code>count(bound_alias)</code>
+  or <code>count(*)</code>, each with optional <code>AS output_alias</code>,
+  optionally alongside grouped field or whole-entity projections</li>
+<li>a first narrow scalar-expression slice on ordinary <code>MATCH</code>: scalar literals or
+  named parameters with explicit aliases such as <code>RETURN 'tag' AS tag</code> or
+  <code>RETURN $value AS value</code></li>
+<li>a first narrow computed-expression slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>size(...)</code> over admitted field projections, with optional
+  <code>AS output_alias</code>; scalar literal/parameter inputs still require explicit
+  aliases. This same slice also admits nested <code>id(alias)</code> and <code>type(rel_alias)</code>
+  outputs under <code>size(...)</code></li>
+<li>a narrow unary string-function slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>lower(alias.field)</code>, <code>upper(alias.field)</code>,
+  <code>trim(alias.field)</code>, <code>ltrim(alias.field)</code>, <code>rtrim(alias.field)</code>, and
+  <code>reverse(alias.field)</code>, each with optional <code>AS output_alias</code>,
+  plus scalar literal/parameter inputs such as <code>lower('tag') AS lower_tag</code>,
+  <code>upper($value) AS upper_value</code>, <code>trim(' tag ') AS trimmed</code>,
+  <code>ltrim(' tag') AS left_trimmed</code>, <code>rtrim('tag ') AS right_trimmed</code>, or
+  <code>reverse('tag') AS reversed_tag</code></li>
+<li>in admitted one-hop relationship reads, those same field-projection families
+  also apply to relationship property fields such as <code>r.note</code></li>
+<li>a narrow null-fallback slice on ordinary <code>MATCH</code> and narrow <code>OPTIONAL MATCH</code>:
+  <code>coalesce(alias.field, literal_or_parameter)</code> with optional
+  <code>AS output_alias</code></li>
+<li>a narrow replace slice on ordinary <code>MATCH</code> and narrow <code>OPTIONAL MATCH</code>:
+  <code>replace(admitted_input, literal_or_parameter, literal_or_parameter)</code> with
+  optional <code>AS output_alias</code>
+  over admitted field projections plus scalar literal/parameter inputs</li>
+<li>a narrow left/right slice on ordinary <code>MATCH</code> and narrow <code>OPTIONAL MATCH</code>:
+  <code>left(admitted_input, literal_or_parameter)</code> and
+  <code>right(admitted_input, literal_or_parameter)</code> with optional
+  <code>AS output_alias</code>
+  over admitted field projections plus scalar literal/parameter inputs</li>
+<li>a narrow split slice on ordinary <code>MATCH</code> and narrow <code>OPTIONAL MATCH</code>:
+  <code>split(admitted_input, literal_or_parameter)</code> with optional
+  <code>AS output_alias</code>
+  over admitted field projections plus scalar literal/parameter inputs</li>
+<li>a narrow substring slice on ordinary <code>MATCH</code> and narrow <code>OPTIONAL MATCH</code>:
+  <code>substring(admitted_input, literal_or_parameter)</code> and
+  <code>substring(admitted_input, literal_or_parameter, literal_or_parameter)</code> with
+  optional <code>AS output_alias</code>
+  over admitted field projections plus scalar literal/parameter inputs</li>
+<li>a narrow numeric-function slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>abs(alias.field)</code> with optional <code>AS output_alias</code>, plus
+  scalar literal/parameter inputs such as <code>abs(-3) AS magnitude</code></li>
+<li>a narrow sign-function slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>sign(alias.field)</code> with optional <code>AS output_alias</code>, plus
+  scalar literal/parameter inputs such as <code>sign(-3.2) AS age_sign</code></li>
+<li>a narrow rounding-function slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>round(alias.field) AS output_alias</code>, plus scalar
+  literal/parameter inputs such as <code>round(-3.2) AS value</code></li>
+<li>a narrow ceiling-function slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>ceil(alias.field) AS output_alias</code>, plus scalar
+  literal/parameter inputs such as <code>ceil(-3.2) AS value</code></li>
+<li>a narrow floor-function slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>floor(alias.field) AS output_alias</code>, plus scalar
+  literal/parameter inputs such as <code>floor(-3.2) AS value</code></li>
+<li>a narrow square-root-function slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>sqrt(alias.field) AS output_alias</code>, plus scalar
+  literal/parameter inputs such as <code>sqrt(-3.2) AS value</code></li>
+<li>a narrow exponential-function slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>exp(alias.field) AS output_alias</code>, plus scalar
+  literal/parameter inputs such as <code>exp(-3.2) AS value</code></li>
+<li>a narrow sine-function slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>sin(alias.field) AS output_alias</code>, plus scalar
+  literal/parameter inputs such as <code>sin(-3.2) AS value</code></li>
+<li>a narrow cosine-function slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>cos(alias.field) AS output_alias</code>, plus scalar
+  literal/parameter inputs such as <code>cos(-3.2) AS value</code></li>
+<li>a narrow tangent-function slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>tan(alias.field) AS output_alias</code>, plus scalar
+  literal/parameter inputs such as <code>tan(-3.2) AS value</code></li>
+<li>a narrow string-conversion slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>toString(alias.field)</code> with optional <code>AS output_alias</code>,
+  plus scalar literal/parameter inputs such as <code>toString(-3) AS text</code></li>
+<li>a narrow integer-conversion slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>toInteger(alias.field)</code> with optional <code>AS output_alias</code>,
+  plus scalar literal/parameter inputs such as <code>toInteger(-3.2) AS age_int</code></li>
+<li>a narrow float-conversion slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>toFloat(alias.field)</code> with optional <code>AS output_alias</code>,
+  plus scalar literal/parameter inputs such as <code>toFloat(-3) AS age_float</code></li>
+<li>a narrow boolean-conversion slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>toBoolean(alias.field)</code> with optional <code>AS output_alias</code>,
+  plus scalar literal/parameter inputs such as <code>toBoolean(true) AS is_active</code></li>
+<li>in admitted one-hop relationship reads, those same numeric and conversion
+  families also apply to relationship property fields such as <code>r.weight</code>,
+  <code>r.score</code>, and <code>r.active</code>, including forms such as
+  <code>sqrt(r.score) AS sqrt_score</code>, <code>exp(r.score) AS exp_score</code>, and
+  <code>sin(r.score) AS sin_score</code></li>
+<li>a first narrow predicate-return slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>alias.field OP literal_or_parameter AS output_alias</code>, plus
+  admitted string predicates <code>alias.field STARTS WITH literal_or_parameter</code>,
+  <code>alias.field ENDS WITH literal_or_parameter</code>, and
+  <code>alias.field CONTAINS literal_or_parameter</code>, plus
+  admitted <code>id(alias) OP literal_or_parameter AS output_alias</code> and
+  <code>type(rel_alias) OP literal_or_parameter AS output_alias</code>, plus admitted
+  <code>size(alias.field) OP literal_or_parameter AS output_alias</code>,
+  <code>size(id(alias)) OP literal_or_parameter AS output_alias</code>, and
+  <code>size(type(rel_alias)) OP literal_or_parameter AS output_alias</code></li>
+<li>a narrow null-predicate slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>alias.field IS NULL AS output_alias</code>,
+  <code>alias.field IS NOT NULL AS output_alias</code>,
+  <code>size(alias.field) IS NULL AS output_alias</code>, and
+  <code>size(alias.field) IS NOT NULL AS output_alias</code></li>
+<li>in admitted one-hop relationship reads, those same predicate families also
+  apply to relationship property fields such as <code>r.weight</code> and <code>r.note</code>,
+  including nested <code>size(r.note) OP literal_or_parameter</code></li>
+<li>a first narrow built-in function alias slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>id(alias)</code> and <code>type(rel_alias)</code>, each with optional
+  <code>AS output_alias</code></li>
+<li>a narrow graph-introspection projection slice on ordinary <code>MATCH</code> and narrow
+  <code>OPTIONAL MATCH</code>: <code>properties(entity_alias)</code>, <code>labels(node_alias)</code>,
+  <code>keys(entity_alias)</code>, <code>startNode(rel_alias)</code>, <code>endNode(rel_alias)</code>, and the
+  admitted <code>startNode(rel_alias).field</code> / <code>endNode(rel_alias).field</code> forms,
+  each with optional <code>AS output_alias</code></li>
+<li><code>ORDER BY projected_alias</code> for admitted ordinary field, whole-entity,
+  aggregate, scalar, <code>size(...)</code>, predicate, <code>id(...)</code>, and <code>type(...)</code> outputs</li>
+</ul>
+<p>The admitted <code>WITH</code> slice is currently narrow:</p>
+<ul>
+<li>one <code>MATCH</code> clause before <code>WITH</code></li>
+<li>one <code>WITH</code> clause with passthrough variable items such as <code>WITH u</code> or
+  <code>WITH u AS person</code>, plus simple scalar rebinding such as <code>WITH u.name AS name</code></li>
+<li>an optional narrow <code>WHERE</code> after <code>WITH</code>, using <code>scalar_alias OP value</code> or
+  <code>entity_alias.field OP value</code>, plus admitted <code>id(entity_alias) OP value</code> and
+  <code>type(rel_alias) OP value</code></li>
+<li>that same narrow <code>WITH WHERE</code> slice also admits
+  <code>scalar_alias IS NULL</code>, <code>scalar_alias IS NOT NULL</code>,
+  <code>entity_alias.field IS NULL</code>, and <code>entity_alias.field IS NOT NULL</code></li>
+<li><code>WITH WHERE</code> also admits narrow string predicates over compile-safe scalar and
+  entity-field inputs: <code>scalar_alias STARTS WITH value</code>,
+  <code>scalar_alias ENDS WITH value</code>, <code>scalar_alias CONTAINS value</code>,
+  <code>entity_alias.field STARTS WITH value</code>, <code>entity_alias.field ENDS WITH value</code>,
+  and <code>entity_alias.field CONTAINS value</code>; in admitted one-hop relationship
+  reads, those same <code>WITH WHERE</code> string/null field predicates also apply to
+  relationship bindings such as <code>rel.note</code></li>
+<li><code>WITH WHERE</code> also admits narrow nested <code>size(...)</code> predicates over
+  compile-safe scalar and entity-field inputs: <code>size(scalar_alias) OP value</code>,
+  <code>size(scalar_alias) IS NULL</code>, <code>size(scalar_alias) IS NOT NULL</code>,
+  <code>size(entity_alias.field) OP value</code>, <code>size(entity_alias.field) IS NULL</code>, and
+  <code>size(entity_alias.field) IS NOT NULL</code>; in admitted one-hop relationship
+  reads, those same nested <code>size(...)</code> filters also apply to relationship
+  bindings such as <code>size(rel.note)</code></li>
+<li>one final <code>RETURN</code> clause after <code>WITH</code></li>
+<li>final projections shaped as <code>RETURN alias.field</code> for entity bindings,
+  <code>RETURN entity_alias</code> for pass-through entity bindings, or <code>RETURN scalar_alias</code>
+  for scalar bindings</li>
+<li>optional <code>AS output_alias</code> on admitted final <code>RETURN</code> projection items</li>
+<li>a first aggregation slice: <code>count(binding_alias)</code> or <code>count(*)</code>, each with
+  optional <code>AS output_alias</code>, optionally
+  alongside grouped scalar or entity pass-through return items</li>
+<li>a narrow built-in function alias slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>id(entity_alias)</code> and <code>type(rel_alias)</code>, each
+  with optional <code>AS output_alias</code></li>
+<li>a narrow graph-introspection projection slice in the final <code>RETURN</code> of
+  admitted <code>MATCH ... WITH ... RETURN</code>: <code>properties(entity_alias)</code>,
+  <code>labels(node_alias)</code>, <code>keys(entity_alias)</code>, <code>startNode(rel_alias)</code>,
+  <code>endNode(rel_alias)</code>, and the admitted <code>startNode(rel_alias).field</code> /
+  <code>endNode(rel_alias).field</code> forms, each with optional <code>AS output_alias</code></li>
+<li>a narrow computed-expression slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>size(entity_alias.field)</code>,
+  <code>size(scalar_alias)</code>, <code>size(id(entity_alias))</code>, and <code>size(type(rel_alias))</code>,
+  each with optional <code>AS output_alias</code>; scalar literal/parameter inputs such as
+  <code>size('tag') AS tag_len</code> or <code>size($value) AS value_len</code> still require aliases</li>
+<li>a narrow unary string-function slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>lower(entity_alias.field)</code>,
+  <code>upper(entity_alias.field)</code>, <code>lower(scalar_alias)</code>, <code>upper(scalar_alias)</code>,
+  <code>trim(entity_alias.field)</code>, <code>trim(scalar_alias)</code>,
+  <code>ltrim(entity_alias.field)</code>, <code>ltrim(scalar_alias)</code>,
+  <code>rtrim(entity_alias.field)</code>, <code>rtrim(scalar_alias)</code>,
+  <code>reverse(entity_alias.field)</code>, and <code>reverse(scalar_alias)</code>, each with
+  optional <code>AS output_alias</code>, plus scalar literal/parameter inputs
+  such as <code>lower('tag') AS lower_tag</code>, <code>upper($value) AS upper_value</code>,
+  <code>trim(' tag ') AS trimmed</code>, <code>ltrim(' tag') AS left_trimmed</code>,
+  <code>rtrim('tag ') AS right_trimmed</code>, or <code>reverse('tag') AS reversed_tag</code></li>
+<li>in admitted <code>MATCH ... WITH ... RETURN</code> flows, those same entity-field
+  families also apply to relationship bindings such as <code>rel.note</code></li>
+<li>a narrow null-fallback slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>coalesce(entity_alias.field, literal_or_parameter)</code>
+  and <code>coalesce(scalar_alias, literal_or_parameter)</code> with optional
+  <code>AS output_alias</code></li>
+<li>a narrow replace slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>:
+  <code>replace(admitted_input, literal_or_parameter, literal_or_parameter)</code> with
+  optional <code>AS output_alias</code>
+  over admitted entity-field projections, scalar bindings, and scalar
+  literal/parameter primary inputs</li>
+<li>a narrow left/right slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>:
+  <code>left(admitted_input, literal_or_parameter)</code> and
+  <code>right(admitted_input, literal_or_parameter)</code> with optional
+  <code>AS output_alias</code>
+  over admitted entity-field projections, scalar bindings, and scalar
+  literal/parameter primary inputs</li>
+<li>a narrow split slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>:
+  <code>split(admitted_input, literal_or_parameter)</code> with optional
+  <code>AS output_alias</code>
+  over admitted entity-field projections, scalar bindings, and scalar
+  literal/parameter primary inputs</li>
+<li>a narrow substring slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>:
+  <code>substring(admitted_input, literal_or_parameter)</code> and
+  <code>substring(admitted_input, literal_or_parameter, literal_or_parameter)</code> with
+  optional <code>AS output_alias</code>
+  over admitted entity-field projections, scalar bindings, and scalar
+  literal/parameter primary inputs</li>
+<li>a narrow numeric-function slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>abs(entity_alias.field) AS output_alias</code>
+  and <code>abs(scalar_alias) AS output_alias</code>, plus scalar literal/parameter
+  inputs such as <code>abs(-3) AS magnitude</code></li>
+<li>a narrow sign-function slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>sign(entity_alias.field) AS output_alias</code>
+  and <code>sign(scalar_alias) AS output_alias</code>, plus scalar literal/parameter
+  inputs such as <code>sign(-3.2) AS age_sign</code></li>
+<li>a narrow rounding-function slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>round(entity_alias.field) AS output_alias</code>
+  and <code>round(scalar_alias) AS output_alias</code>, plus scalar literal/parameter
+  inputs such as <code>round(-3.2) AS value</code></li>
+<li>a narrow ceiling-function slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>ceil(entity_alias.field) AS output_alias</code>
+  and <code>ceil(scalar_alias) AS output_alias</code>, plus scalar literal/parameter
+  inputs such as <code>ceil(-3.2) AS value</code></li>
+<li>a narrow floor-function slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>floor(entity_alias.field) AS output_alias</code>
+  and <code>floor(scalar_alias) AS output_alias</code>, plus scalar literal/parameter
+  inputs such as <code>floor(-3.2) AS value</code></li>
+<li>a narrow square-root-function slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>sqrt(entity_alias.field) AS output_alias</code>
+  and <code>sqrt(scalar_alias) AS output_alias</code>, plus scalar literal/parameter
+  inputs such as <code>sqrt(-3.2) AS value</code></li>
+<li>a narrow exponential-function slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>exp(entity_alias.field) AS output_alias</code>
+  and <code>exp(scalar_alias) AS output_alias</code>, plus scalar literal/parameter
+  inputs such as <code>exp(-3.2) AS value</code></li>
+<li>a narrow sine-function slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>sin(entity_alias.field) AS output_alias</code>
+  and <code>sin(scalar_alias) AS output_alias</code>, plus scalar literal/parameter
+  inputs such as <code>sin(-3.2) AS value</code></li>
+<li>a narrow cosine-function slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>cos(entity_alias.field) AS output_alias</code>
+  and <code>cos(scalar_alias) AS output_alias</code>, plus scalar literal/parameter
+  inputs such as <code>cos(-3.2) AS value</code></li>
+<li>a narrow tangent-function slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>tan(entity_alias.field) AS output_alias</code>
+  and <code>tan(scalar_alias) AS output_alias</code>, plus scalar literal/parameter
+  inputs such as <code>tan(-3.2) AS value</code></li>
+<li>a narrow string-conversion slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>toString(entity_alias.field)</code> and
+  <code>toString(scalar_alias)</code>, each with optional <code>AS output_alias</code>, plus scalar
+  literal/parameter inputs such as <code>toString(-3) AS text</code></li>
+<li>a narrow integer-conversion slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>toInteger(entity_alias.field) AS output_alias</code>
+  and <code>toInteger(scalar_alias) AS output_alias</code>, plus scalar literal/parameter
+  inputs such as <code>toInteger(-3.2) AS age_int</code></li>
+<li>a narrow float-conversion slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>toFloat(entity_alias.field) AS output_alias</code>
+  and <code>toFloat(scalar_alias) AS output_alias</code>, plus scalar literal/parameter
+  inputs such as <code>toFloat(-3) AS age_float</code></li>
+<li>a narrow boolean-conversion slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>toBoolean(entity_alias.field) AS output_alias</code>
+  and <code>toBoolean(scalar_alias) AS output_alias</code>, plus scalar literal/parameter
+  inputs such as <code>toBoolean(true) AS is_active</code></li>
+<li>in admitted <code>MATCH ... WITH ... RETURN</code> flows, those same numeric and
+  conversion families also apply to relationship bindings such as
+  <code>rel.weight</code>, <code>rel.score</code>, and rebound scalar aliases like <code>active</code>,
+  including forms such as <code>sqrt(rel.score) AS sqrt_score</code> and
+  <code>exp(score) AS exp_score</code>, and <code>sin(rel.score) AS sin_score</code></li>
+<li>a narrow scalar-expression slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: scalar literals or named parameters with explicit
+  aliases such as <code>RETURN 'tag' AS tag</code> or <code>RETURN $value AS value</code></li>
+<li>a narrow predicate-return slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>scalar_alias OP literal_or_parameter AS output_alias</code>
+  or <code>entity_alias.field OP literal_or_parameter AS output_alias</code>, including
+  admitted string predicates <code>entity_alias.field STARTS WITH literal_or_parameter</code>,
+  <code>entity_alias.field ENDS WITH literal_or_parameter</code>,
+  <code>entity_alias.field CONTAINS literal_or_parameter</code>,
+  <code>scalar_alias CONTAINS literal_or_parameter</code>,
+  <code>scalar_alias ENDS WITH literal_or_parameter</code>, and
+  plus admitted
+  <code>id(entity_alias) OP literal_or_parameter AS output_alias</code> and
+  <code>type(rel_alias) OP literal_or_parameter AS output_alias</code>, plus admitted
+  <code>size(scalar_alias) OP literal_or_parameter AS output_alias</code>,
+  <code>size(entity_alias.field) OP literal_or_parameter AS output_alias</code>,
+  <code>size(id(entity_alias)) OP literal_or_parameter AS output_alias</code>, and
+  <code>size(type(rel_alias)) OP literal_or_parameter AS output_alias</code></li>
+<li>a narrow null-predicate slice in the final <code>RETURN</code> of admitted
+  <code>MATCH ... WITH ... RETURN</code>: <code>scalar_alias IS NULL AS output_alias</code>,
+  <code>scalar_alias IS NOT NULL AS output_alias</code>,
+  <code>entity_alias.field IS NULL AS output_alias</code>,
+  <code>entity_alias.field IS NOT NULL AS output_alias</code>,
+  <code>size(scalar_alias) IS NULL AS output_alias</code>, and
+  <code>size(entity_alias.field) IS NOT NULL AS output_alias</code></li>
+<li>in admitted <code>MATCH ... WITH ... RETURN</code> flows, those same predicate families
+  also apply to relationship bindings such as <code>rel.weight</code>, <code>rel.note</code>, and
+  rebound scalar aliases like <code>note</code>, including nested
+  <code>size(rel.note) OP literal_or_parameter</code> and
+  <code>size(note) OP literal_or_parameter</code></li>
+<li>matching <code>ORDER BY alias.field</code>, <code>ORDER BY scalar_alias</code>,
+  <code>ORDER BY entity_alias</code>, and <code>ORDER BY aggregate_alias</code></li>
+<li><code>ORDER BY projected_alias</code> for admitted scalar, field, aggregate, <code>id(...)</code>,
+  <code>type(...)</code>, whole-entity, <code>size(...)</code>, scalar literal/parameter outputs, and predicate outputs
+  produced by the final <code>RETURN</code></li>
+</ul>
+<p>Whole-entity pass-through returns on the strict relational product path do not
+compile to packed object values anymore. Where whole-entity slices remain
+admitted, they are expected to expand into stable typed dotted columns such as
+<code>user.id</code>, <code>user.name</code>, <code>rel.id</code>, or endpoint-field projections; list- or
+object-shaped packaging is not part of the emitted-SQL contract.</p>
+<p>The admitted <code>UNWIND</code> slice is currently narrow:</p>
+<ul>
+<li>standalone <code>UNWIND list_literal AS x RETURN x</code></li>
+<li>optional <code>AS output_alias</code> on admitted scalar unwind projections</li>
+<li><code>ORDER BY</code> on the unwind alias or projected scalar alias</li>
+<li><code>SKIP</code> or <code>OFFSET</code>, and <code>LIMIT</code></li>
+</ul>
+<p>The admitted <code>OPTIONAL MATCH</code> slice is currently narrow:</p>
+<ul>
+<li>standalone single-node <code>OPTIONAL MATCH (n[:Label]) RETURN ...</code></li>
+<li>the same shape with admitted node-property and <code>id(alias)</code> <code>WHERE</code> predicates</li>
+<li>ordinary node-field projection, optional <code>AS output_alias</code>, <code>ORDER BY</code>, <code>SKIP</code>
+  or <code>OFFSET</code>, and <code>LIMIT</code></li>
+<li>narrow scalar literal or parameter outputs with explicit aliases such as
+  <code>RETURN 'tag' AS tag</code> or <code>RETURN $value AS value</code></li>
+<li>the same narrow <code>size(...)</code>, predicate-return, and <code>id(...)</code> slices admitted
+  in ordinary single-node reads, plus the same narrow <code>lower(...)</code>,
+  <code>upper(...)</code>, <code>trim(...)</code>, <code>ltrim(...)</code>, <code>rtrim(...)</code>, <code>reverse(...)</code>, <code>coalesce(...)</code>, <code>replace(...)</code>, <code>left(...)</code>, <code>right(...)</code>, <code>split(...)</code>, <code>substring(...)</code>, <code>abs(...)</code>, <code>sign(...)</code>, <code>round(...)</code>,
+  <code>ceil(...)</code>, <code>floor(...)</code>, <code>sqrt(...)</code>, <code>exp(...)</code>, <code>sin(...)</code>, <code>cos(...)</code>, <code>tan(...)</code>, <code>toInteger(...)</code>, <code>toFloat(...)</code>, and <code>toBoolean(...)</code> output slice</li>
+<li>whole-node pass-through returns such as <code>RETURN n</code> or <code>RETURN n AS item</code></li>
+<li>the same narrow <code>count(bound_alias)</code> or <code>count(*)</code> aggregation slice, each
+  with optional <code>AS output_alias</code>, as ordinary
+  <code>MATCH</code>, including grouped field or whole-entity projections</li>
+<li>null-preserving lowering through a left-join-style compiled shape for unmatched rows</li>
+</ul>
+<p>CypherGlot does not yet admit broader <code>WITH</code> semantics such as <code>WITH DISTINCT</code>,
+broader aggregation forms beyond narrow admitted <code>count(binding_alias)</code> and <code>count(*)</code>, broader expression projections beyond narrow admitted <code>id(...)</code>, <code>type(...)</code>, <code>lower(...)</code>, <code>upper(...)</code>, <code>trim(...)</code>, <code>ltrim(...)</code>, <code>rtrim(...)</code>, <code>reverse(...)</code>, <code>coalesce(...)</code>, <code>replace(...)</code>, <code>left(...)</code>, <code>right(...)</code>, <code>split(...)</code>, <code>abs(...)</code>, <code>sign(...)</code>, <code>round(...)</code>, <code>ceil(...)</code>, <code>floor(...)</code>, <code>sqrt(...)</code>, <code>exp(...)</code>, <code>sin(...)</code>, <code>cos(...)</code>, <code>tan(...)</code>, <code>toString(...)</code>, <code>toInteger(...)</code>, <code>toFloat(...)</code>, and <code>toBoolean(...)</code> outputs in the
+final <code>RETURN</code>, broader ordinary-read expression projections beyond narrow admitted literal, parameter, <code>size(...)</code>, <code>lower(...)</code>, <code>upper(...)</code>, <code>trim(...)</code>, <code>ltrim(...)</code>, <code>rtrim(...)</code>, <code>reverse(...)</code>, <code>coalesce(...)</code>, <code>replace(...)</code>, <code>left(...)</code>, <code>right(...)</code>, <code>split(...)</code>, two-arg or three-arg <code>substring(...)</code>, <code>abs(...)</code>, <code>sign(...)</code>, <code>round(...)</code>, <code>ceil(...)</code>, <code>floor(...)</code>, <code>sqrt(...)</code>, <code>exp(...)</code>, <code>sin(...)</code>, <code>cos(...)</code>, <code>tan(...)</code>, <code>toString(...)</code>, <code>toInteger(...)</code>, <code>toFloat(...)</code>, <code>toBoolean(...)</code>, simple predicate, <code>id(...)</code>, and <code>type(...)</code> outputs, broader <code>WITH</code> final-RETURN expression projections beyond narrow admitted scalar literal/parameter, predicate, <code>size(...)</code>, <code>lower(...)</code>, <code>upper(...)</code>, <code>trim(...)</code>, <code>ltrim(...)</code>, <code>rtrim(...)</code>, <code>reverse(...)</code>, <code>coalesce(...)</code>, <code>replace(...)</code>, <code>left(...)</code>, <code>right(...)</code>, <code>split(...)</code>, two-arg or three-arg <code>substring(...)</code>, <code>abs(...)</code>, <code>sign(...)</code>, <code>round(...)</code>, <code>ceil(...)</code>, <code>floor(...)</code>, <code>sqrt(...)</code>, <code>exp(...)</code>, <code>sin(...)</code>, <code>cos(...)</code>, <code>tan(...)</code>, <code>toString(...)</code>, <code>toInteger(...)</code>, <code>toFloat(...)</code>, <code>toBoolean(...)</code>, <code>id(...)</code>, and <code>type(...)</code> outputs, or
+multi-stage <code>WITH ... WITH ...</code> flows.</p>
+<h2 id="mixed-read-write-subset">Mixed read-write subset<a class="headerlink" href="#mixed-read-write-subset" title="Permanent link">&para;</a></h2>
+<p>CypherGlot currently admits:</p>
+<ul>
+<li><code>MATCH ... SET</code></li>
+<li><code>MATCH ... DELETE</code></li>
+<li>narrow <code>MATCH ... CREATE</code></li>
+<li>narrow <code>MATCH ... MERGE</code></li>
+</ul>
+<p>The admitted <code>MATCH ... CREATE</code> shapes are:</p>
+<ul>
+<li>one matched node pattern before <code>CREATE</code></li>
+<li>or two disconnected matched node patterns before <code>CREATE</code></li>
+<li>or one matched directed relationship pattern / fixed-length directed chain
+  before <code>CREATE</code>, when the <code>CREATE</code> relationship endpoints reuse already
+  matched node aliases exactly, or reuse one matched node alias plus one fresh
+  labeled endpoint node</li>
+<li>no named paths, no broader variable-length relationships beyond the bounded
+  read-side subset, and no multi-hop traversals in the matched portion</li>
+</ul>
+<p>The admitted <code>MATCH ... MERGE</code> shape is:</p>
+<ul>
+<li>exactly two disconnected matched node patterns before <code>MERGE</code></li>
+<li>or one matched directed relationship pattern / fixed-length directed chain
+  before <code>MERGE</code>, when the <code>MERGE</code> relationship endpoints reuse already matched
+  node aliases exactly, or reuse one matched node alias plus one fresh labeled
+  endpoint node</li>
+<li>one directed relationship pattern in the <code>MERGE</code> clause that reuses those two
+  matched aliases exactly</li>
+<li>no <code>ON CREATE</code> / <code>ON MATCH</code> actions, no fresh endpoint nodes outside the
+  narrow one-fresh-endpoint traversal-backed subset, no named paths,
+  no broader variable-length relationships, and no multi-hop traversals in the
+  matched portion</li>
+</ul>
+<h2 id="bounded-variable-length-read-subset">Bounded variable-length read subset<a class="headerlink" href="#bounded-variable-length-read-subset" title="Permanent link">&para;</a></h2>
+<p>CypherGlot now admits a narrow bounded variable-length read form for ordinary
+<code>MATCH ... RETURN</code> and <code>MATCH ... WITH ... RETURN</code>:</p>
+<ul>
+<li>one directed relationship pattern such as <code>-[:KNOWS*1..2]-&gt;</code> or
+  <code>-[:KNOWS*..2]-&gt;</code></li>
+<li>non-negative numeric bounds with a finite upper bound</li>
+<li>endpoint node aliases and endpoint node predicates/projections over the
+  matched endpoints</li>
+<li>lowering to a finite union of fixed-hop plans under the hood</li>
+</ul>
+<p>This bounded subset still excludes:</p>
+<ul>
+<li>open-ended ranges such as <code>[:KNOWS*]</code> or <code>[:KNOWS*2..]</code></li>
+<li>relationship aliases on variable-length patterns</li>
+<li>relationship properties on variable-length patterns</li>
+<li>broader aggregate forms beyond direct bounded variable-length returns built
+  from endpoint field projections plus <code>count(*)</code>, <code>count(endpoint_alias)</code>,
+  and <code>aggregate(endpoint.field)</code></li>
+<li>grouped or non-count aggregate <code>MATCH ... RETURN</code> directly over a
+  variable-length pattern; use <code>MATCH ... WITH ... RETURN</code> instead when
+  broader aggregation is needed</li>
+<li>broader write-side traversal semantics</li>
+</ul>
+<h2 id="traversal-backed-write-subset">Traversal-backed write subset<a class="headerlink" href="#traversal-backed-write-subset" title="Permanent link">&para;</a></h2>
+<p>CypherGlot now admits a narrow traversal-backed write form for <code>MATCH ... CREATE</code>
+and <code>MATCH ... MERGE</code>:</p>
+<ul>
+<li>the matched side may be one directed relationship pattern or one fixed-length
+  directed relationship chain</li>
+<li>the write-side relationship must either reuse already matched node aliases
+  exactly or, for narrow <code>MATCH ... CREATE</code> / <code>MATCH ... MERGE</code>, reuse one
+  matched node alias plus one fresh labeled endpoint node</li>
+<li>no <code>ON CREATE</code> / <code>ON MATCH</code> actions</li>
+</ul>
+<h2 id="write-subset">Write subset<a class="headerlink" href="#write-subset" title="Permanent link">&para;</a></h2>
+<p>CypherGlot currently admits narrow <code>CREATE</code> and <code>MERGE</code> statements used by the
+compiler and rendering contract.</p>
+<p>Some admitted <code>CREATE</code> forms lower to a single SQLGlot expression. Others, plus
+the admitted standalone <code>MERGE</code> forms, lower to a small compiled program with
+multiple SQLGlot-backed statements.</p>
+<p>The admitted standalone <code>MERGE</code> shapes are:</p>
+<ul>
+<li>one labeled node pattern, matched-or-created idempotently</li>
+<li>or one directed relationship pattern whose endpoint node patterns are both
+  labeled, matched-or-created idempotently as one guarded pattern</li>
+<li>no <code>ON CREATE</code> / <code>ON MATCH</code> actions and no broader full-pattern <code>MERGE</code>
+  semantics beyond that narrow subset</li>
+</ul>
+<h2 id="deferred-clause-families">Deferred clause families<a class="headerlink" href="#deferred-clause-families" title="Permanent link">&para;</a></h2>
+<p>CypherGlot currently rejects these families explicitly:</p>
+<ul>
+<li>broader <code>OPTIONAL MATCH</code> semantics beyond the narrow admitted subset</li>
+<li>named path patterns such as <code>MATCH p = (...)</code></li>
+<li>broader variable-length relationships such as <code>[:KNOWS*]</code>, <code>[:KNOWS*2..]</code>,
+  aliased variable-length relationships, and variable-length relationships with
+  relationship property constraints</li>
+<li>multi-hop pattern chains outside the admitted fixed-length directed read and
+  <code>MATCH ... WITH ... RETURN</code> subset</li>
+<li>broader traversal-backed write shapes beyond reusing already matched node
+  aliases in narrow <code>MATCH ... CREATE</code> and <code>MATCH ... MERGE</code>, plus the narrow
+  one-fresh-endpoint <code>MATCH ... CREATE</code> subset</li>
+<li>disconnected multi-pattern <code>MATCH</code> clauses outside the narrow <code>MATCH ... CREATE</code> subset</li>
+<li>broader <code>WITH</code> semantics beyond the narrow admitted subset</li>
+<li>broader <code>UNWIND</code> semantics beyond the narrow admitted subset</li>
+<li>broader <code>MERGE</code> semantics beyond the narrow admitted subset</li>
+<li>broader multi-part queries</li>
+</ul>
+<h2 id="narrow-vector-aware-subset">Narrow vector-aware subset<a class="headerlink" href="#narrow-vector-aware-subset" title="Permanent link">&para;</a></h2>
+<p>CypherGlot now admits one narrow vector-aware read shape:</p>
+<ul>
+<li><code>CALL db.index.vector.queryNodes('index_name', integer_top_k, $query) YIELD node, score RETURN node.id, score</code></li>
+<li>the same procedure call followed by one admitted <code>MATCH ...</code> candidate-filter clause
+  before <code>RETURN</code></li>
+<li>or the same procedure call with admitted <code>YIELD node, score WHERE ...</code> filtering
+  before <code>RETURN</code></li>
+</ul>
+<p>That vector-aware shape is normalized into structured metadata plus an admitted
+Cypher candidate query. The normalized handoff carries the vector index name,
+query-parameter name, normalized <code>top_k</code>, one admitted normalized candidate
+query, explicit <code>return_items</code>, and <code>order_by</code> items. CypherGlot does
+not compile that procedure call into ordinary SQLGlot output yet. Host runtimes
+such as HumemDB are still responsible for vector planning and execution.</p>
+<h2 id="why-the-boundary-is-strict">Why the boundary is strict<a class="headerlink" href="#why-the-boundary-is-strict" title="Permanent link">&para;</a></h2>
+<p>CypherGlot uses SQLGlot as the structural SQL backend, but it still owns the
+Cypher-side language boundary. Keeping the unsupported families rejected in
+validation makes the contract explicit and keeps later normalization and
+compilation stages honest.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../getting-started/quickstart/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Quick Start">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Quick Start
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../benchmarks/" class="md-footer__link md-footer__link--next" aria-label="Next: Benchmarks">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Benchmarks
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 HumemAI
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/humemai/cypherglot" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/cypherglot/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
