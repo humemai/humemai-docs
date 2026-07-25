@@ -1,10 +1,15 @@
 [
   {
-    "version": "26.8.1.dev9",
-    "title": "26.8.1.dev9",
+    "version": "26.8.1.dev10",
+    "title": "26.8.1.dev10",
     "aliases": [
       "latest"
     ]
+  },
+  {
+    "version": "26.8.1.dev9",
+    "title": "26.8.1.dev9",
+    "aliases": []
   },
   {
     "version": "26.8.1.dev8",
