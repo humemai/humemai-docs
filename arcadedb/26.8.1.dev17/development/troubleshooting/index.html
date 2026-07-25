@@ -1567,6 +1567,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#script-hangs-at-exit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Script Hangs at Exit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#database-locked" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2105,6 +2116,18 @@
 </span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1"># Create fresh database</span>
 </span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="n">db</span> <span class="o">=</span> <span class="n">arcadedb</span><span class="o">.</span><span class="n">create_database</span><span class="p">(</span><span class="s2">&quot;./mydb&quot;</span><span class="p">)</span>
 </span></code></pre></div>
+<hr />
+<h3 id="script-hangs-at-exit">Script Hangs at Exit<a class="headerlink" href="#script-hangs-at-exit" title="Permanent link">&para;</a></h3>
+<p><strong>Symptom:</strong> The Python process finishes its work but never exits (or, on
+older versions, printed <code>Windows fatal exception: access violation</code> during
+shutdown).</p>
+<p><strong>Cause:</strong> A <code>Database</code> was left open. The engine runs non-daemon
+background threads (asynchronous WAL flushing, index maintenance) until
+<code>close()</code> is called, and the JVM cannot terminate while they are alive.</p>
+<p><strong>Solution:</strong> Since 26.8.1.dev17 the bindings close any database still
+open when the interpreter exits, so this resolves itself. Explicit
+<code>db.close()</code> (or a <code>with</code> block) is still the recommended pattern: it
+flushes deterministically and releases the lock for other processes.</p>
 <hr />
 <h3 id="database-locked">Database Locked<a class="headerlink" href="#database-locked" title="Permanent link">&para;</a></h3>
 <p><strong>Symptom:</strong> <code>ArcadeDBError: Database is locked by another process</code></p>
@@ -2926,7 +2949,7 @@ Vector search returns irrelevant results.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="July 5, 2026 10:26:52 UTC"><span class="timeago" datetime="2026-07-05T10:26:52+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="July 5, 2026 10:26:52 UTC">2026-07-05</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="July 25, 2026 22:58:43 UTC"><span class="timeago" datetime="2026-07-25T22:58:43+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="July 25, 2026 22:58:43 UTC">2026-07-25</span>
   </span>
 
     
