@@ -1,0 +1,1865 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Native Python bindings for ArcadeDB - the multi-model database">
+      
+      
+        <meta name="author" content="humemai">
+      
+      
+        <link rel="canonical" href="https://docs.humem.ai/arcadedb/26.10.1/benchmarks/protocol/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../equivalence/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../brand/export/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Protocol - ArcadeDB Python Bindings</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Schibsted+Grotesk:300,300i,400,400i,700,700i%7CDM+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Schibsted Grotesk";--md-code-font:"DM Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/timeago.css">
+    
+      <link rel="stylesheet" href="../../brand/css/mkdocs.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#protocol-how-a-number-is-produced" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="ArcadeDB Python Bindings" class="md-header__button md-logo" aria-label="ArcadeDB Python Bindings" data-md-component="logo">
+      
+  <img src="../../brand/logo/mark-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ArcadeDB Python Bindings
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Protocol
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/humemai/arcadedb-embedded-python" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    humemai/arcadedb-embedded-python
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/installation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Benchmarks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-access-methods/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/database/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../java-api-coverage/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Java API Coverage
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="ArcadeDB Python Bindings" class="md-nav__button md-logo" aria-label="ArcadeDB Python Bindings" data-md-component="logo">
+      
+  <img src="../../brand/logo/mark-white.svg" alt="logo">
+
+    </a>
+    ArcadeDB Python Bindings
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/humemai/arcadedb-embedded-python" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    humemai/arcadedb-embedded-python
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../getting-started/installation/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../examples/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Benchmarks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#one-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One Machine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#one-job-at-a-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One Job at a Time
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-envelope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Envelope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#repetitions-and-what-a-cell-prints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repetitions, and What a Cell Prints
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#matched-operating-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Matched Operating Points
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#durability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Durability
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-fairness-invariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Fairness Invariants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#engine-identity-and-pins" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engine Identity and Pins
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-happens-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Happens Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../equivalence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Answer Checking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../running/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Running a Lane
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reading the Output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../api-access-methods/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../api/database/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../development/architecture/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java-api-coverage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java API Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Benchmarks
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="protocol-how-a-number-is-produced">Protocol: How a Number Is Produced<a class="headerlink" href="#protocol-how-a-number-is-produced" title="Permanent link">&para;</a></h1>
+<p>Every published number is one cell: one engine, one workload, one corpus size, repeated
+five times on one machine with nothing else running. This page says what a cell is given,
+what it must record, and what a comparison has to satisfy before two cells may be printed
+beside each other.</p>
+<p>The rules themselves live in
+<a href="https://github.com/humemai/arcadedb-embedded-python/blob/main/benchmarks/experiments/PROTOCOL.md"><code>PROTOCOL.md</code></a>
+and <a href="https://github.com/humemai/arcadedb-embedded-python/blob/main/benchmarks/experiments/FAIRNESS.md"><code>FAIRNESS.md</code></a>,
+where each rule carries a tag saying what enforces it: a gate that refuses, a check that
+runs only when someone runs it, or nothing at all. A rule the page depends on is not left
+as a reminder to a human where it can be made a gate instead.</p>
+<h2 id="one-machine">One Machine<a class="headerlink" href="#one-machine" title="Permanent link">&para;</a></h2>
+<p>Every published number is measured on one host. Development machines compile, run probes,
+and smoke new adapters, and nothing they produce reaches the page.</p>
+<p>The bench host is a mobile-class Intel Core i9-12900HK with six performance cores and eight
+efficiency cores, 64 GiB of memory, an NVMe system disk, Ubuntu, and Docker. The full
+environment table is published in the
+<a href="https://humem.ai/projects/arcadedb#setup">setup section</a> of the project page.</p>
+<p>Four properties of that machine are load-bearing enough to state rather than record:</p>
+<ul>
+<li><strong><code>cpuset 0-11</code> is twelve hardware threads on six physical cores</strong>, not twelve cores. SMT
+  is on. Anyone who reads it as twelve cores will over-estimate what a parallel build had.</li>
+<li><strong>The same <code>cpuset</code> string means something different on another machine.</strong> On a host whose
+  kernel reports performance and efficiency cores in a different order, <code>0-11</code> selects a
+  mix. This is one of the reasons a number measured elsewhere is not comparable with a
+  number on the page.</li>
+<li><strong>Frequency is not pinned.</strong> The governor is <code>powersave</code> and turbo is enabled, so a long
+  build and a short query do not see the same clock, and sustained all-core work on a
+  mobile part in a small chassis throttles in a way a server part would not. The power mode
+  is left as the machine ships, because pinning the clock would lower every absolute number
+  on the page. Instead, every row records the package temperature and the kernel's throttle
+  counters at the start and end of the cell, so a hot cell is a number rather than a
+  suspicion.</li>
+<li><strong>The bench disk is the NVMe.</strong> The same machine holds a rotational disk, which is used
+  for backups and holds nothing that is measured.</li>
+</ul>
+<h2 id="one-job-at-a-time">One Job at a Time<a class="headerlink" href="#one-job-at-a-time" title="Permanent link">&para;</a></h2>
+<p>Concurrency is free exactly where nothing is being measured, and nowhere else.</p>
+<table>
+<thead>
+<tr>
+<th>Runs in parallel, freely</th>
+<th>Must run serial on the full <code>cpuset</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dataset download, decompression, and ground-truth generation</td>
+<td>Every latency cell that reaches a table</td>
+</tr>
+<tr>
+<td>Docker image builds and wheel builds</td>
+<td>Every throughput cell</td>
+</tr>
+<tr>
+<td>Exploration sweeps and parameter scans</td>
+<td>Anything reporting a percentile</td>
+</tr>
+<tr>
+<td>A/B probes whose answer is a ratio measured in one run</td>
+<td>Memory working-set cells</td>
+</tr>
+</tbody>
+</table>
+<p>Permuting run order is worth doing and the harness does it, but it buys one thing: it stops
+co-run noise from landing preferentially on one configuration, so an A-against-B <strong>ratio</strong>
+stays honest. It cannot restore an absolute level or a tail that never happened, and the
+published claims are single-node absolutes and percentiles.</p>
+<p>Four things make the serial rule concrete on this host rather than merely principled. Peak
+memory at the larger tiers means two cells leave nothing for page cache. Page-cache
+residency is worth a great deal to a lazily loading engine and almost nothing to engines
+that are resident from load, so a neighbour cell touching a different corpus moves one
+column of the table and not the other. The package has one shared L3. And at the load one
+cell puts on the machine, a second cell lowers the clock for both.</p>
+<p>A cell measured two-at-once is exploration forever. Wanting the number afterwards does not
+make it eligible, and the runner refuses more than one worker at the publishing tier so
+that this is enforced rather than remembered.</p>
+<h2 id="the-envelope">The Envelope<a class="headerlink" href="#the-envelope" title="Permanent link">&para;</a></h2>
+<p><strong>One CPU set, shared.</strong> Every container in a published cell gets the full <code>cpuset</code>. A
+client and server pair shares that one set rather than each getting its own cores, so CPU
+competition stays inside the deployment under test instead of being hidden by giving the
+server cores of its own.</p>
+<p><strong>One memory cap per lane and size, identical for every engine.</strong> A cap is a ceiling rather
+than a reservation, so an engine that needs less is not affected by a generous tier. A
+served engine gets the full tier cap and its client gets a separate budget on top, so a
+served engine sees exactly the cap an embedded engine of the same tier sees. Comparing a
+served topology by adding client and server together reads as a much larger envelope than
+the engine had.</p>
+<p><strong>One JVM heap per tier, identical for every JVM engine.</strong> The heap is half the cap, with
+the largest dense tier the single stated exception at two thirds, and the runner prints the
+policy at startup and marks any deviation. The heap a row records is the heap the engine
+<strong>ran</strong>, read back out of the container, not the heap the cell asked for: a hardcoded server
+heap is otherwise invisible in the artifact, and that has happened.</p>
+<p><strong>Raising a resource for one engine obliges a re-measure of every engine at that tier.</strong>
+This is the sharpest rule here and the one that has been broken, when a dense envelope grew
+for a legitimate reason and only ArcadeDB was re-measured, which turned a fix into a memory
+advantage.</p>
+<div class="admonition note">
+<p class="admonition-title">The memory contract cuts against ArcadeDB, and is kept anyway</p>
+<p>The JVM heap lives inside the container cap, so ArcadeDB's heap leaves the rest of the
+cap for JVM overhead and page cache while a non-JVM comparator has the whole cap for
+its own use. Equal caps are what can be enforced, so equal caps are what is enforced,
+and the consequence is stated rather than quietly enjoyed.</p>
+</div>
+<h2 id="repetitions-and-what-a-cell-prints">Repetitions, and What a Cell Prints<a class="headerlink" href="#repetitions-and-what-a-cell-prints" title="Permanent link">&para;</a></h2>
+<p><strong>Five repetitions per cell, reported as the median with the minimum and maximum.</strong> Not the
+mean: a mean over five repetitions hides which one was slow, and the spread is the part
+that says whether the median is worth anything. A table whose cell falls short of five
+repetitions states its shortfall in a condition a reader sees, and the disclosure is deleted
+when the shortfall is fixed.</p>
+<p>Per repetition:</p>
+<table>
+<thead>
+<tr>
+<th>Operation class</th>
+<th>Count per repetition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Transactional operations</td>
+<td>1,000</td>
+</tr>
+<tr>
+<td>Each analytical query</td>
+<td>100</td>
+</tr>
+<tr>
+<td>Vector queries per pass</td>
+<td>1,000</td>
+</tr>
+</tbody>
+</table>
+<p>Those counts are properties of the lane, fixed before a driver is written, and they are
+printed on the page as generated conditions rather than typed into prose.</p>
+<p><strong>Cold and warm are the same run.</strong> The first iteration after the database is opened is the
+cold number and the remaining iterations are the warm one, which costs nothing because
+those iterations already run, and it answers the question a reader actually has: what does
+the first query of a session cost against the hundredth. Where the split genuinely does not
+apply, the table says so in a clause instead of leaving a blank. A transactional cell runs
+against a warm database by construction, and the session-cost table is itself the cold
+measurement.</p>
+<p><strong>Three things stop work, and they stop different things.</strong> A budget stops one query, a cap
+stops a whole cell, and abandonment stops a query early when its budget cannot buy a usable
+measurement. Every one of them is a property of the work rather than of the engine, so no
+engine is ever given more room than the engine beside it.</p>
+<p><strong>A query has a budget, and the cell does not die with it.</strong> On the graph analytics,
+time-series, and document analytics tables each query gets the same time budget on every
+engine, and derived rather than chosen: it comes from the bench host's own measured rows,
+three times what the median engine took for that query at that corpus size. The median
+rather than the slowest, because the slowest is what a budget exists to bound. It varies by
+table, by corpus size, and by query, because a whole-graph aggregation grows with the data
+while an indexed lookup does not, and never by engine, because the engine is what the table
+compares. Where a corpus size has not been measured yet the budget falls back to the lane's
+older flat value and the row records which of the two applied, so a projection cannot be
+read as a measurement. A budget is also withheld where the rows it would come from are the
+SURVIVORS of a looser bound: if fewer than half the engines that answer a query anywhere
+left a row for it at that size, the median describes the engines fast enough to finish
+rather than the work, and deriving from it would hand the larger corpus a smaller budget
+than the smaller one and then censor everything outside the set it came from. That is not
+hypothetical. At TPC-H SF10 three engines of ten left a row, and their median was a quarter
+of the ten-engine median one size down. A query that
+exceeds it stops at the iteration it reached, its numbers are over those iterations, the
+table says so in a sentence naming the budget and the count, and the cell's other queries
+keep theirs. Without this a slow scan on one engine took the whole cell past the timeout
+and left nothing, which is the worse outcome: a censored cell is a measurement, an absent
+one is a story.</p>
+<p><strong>A whole cell has a time cap, and exceeding it is a published outcome.</strong> The cap belongs to
+the corpus size and is identical for every engine at that size. Its value comes from the
+fastest engine's measured cell and the median engine's projected one at that size, never
+from the slowest, by the same reasoning as the per-query budget, since the slowest engine is
+exactly what the cap exists to bound. An engine that cannot finish
+inside it is censored with the cap named, which is a true statement about that engine at
+that size rather than a gap, and the remaining repetitions are skipped, because repeating a
+timeout measures nothing and the table should show one censored cell instead of five.</p>
+<p><strong>A query whose budget cannot buy a median is abandoned after its first pass.</strong> The first
+touch of a query is already paid for and is kept, and if the budget would not buy at least
+five iterations at that rate the query stops there with the reason recorded on the row,
+because a median over fewer than five is not a median and the cell would otherwise spend
+hours confirming what the first pass showed. The other queries in the cell are unaffected.</p>
+<p><strong>Every table reports the same measurement set</strong>: a warm median per query, a ninety-ninth
+percentile for the table's headline query, one cold column per table (the first query the
+cell ran after the database opened), throughput where the operation has a natural rate,
+recall where the index is approximate, peak memory, on-disk size after the workload, and,
+on the vector tables, ingest and index build as separate timers wherever the engine has that
+boundary. The rows keep a cold time and a warm median and ninety-ninth percentile for every
+query, so a row carries more than the page prints. A table that omits one of these carries a
+stated reason, which a gate enforces the way it enforces every other page invariant.</p>
+<p>There is deliberately <strong>no per-table aggregate</strong>. An arithmetic mean across queries whose
+times span orders of magnitude is the slowest query in disguise, a median across them moves
+when a query is added, and the only defensible summary is one people would quote without
+its caveats. One column per query instead, with the cross-table ratio view left to the
+<a href="https://humem.ai/projects/arcadedb#summary">summary figure</a>.</p>
+<h2 id="matched-operating-points">Matched Operating Points<a class="headerlink" href="#matched-operating-points" title="Permanent link">&para;</a></h2>
+<p>Every engine runs as shipped, and a default is overridden only where leaving it would make
+the comparison meaningless. Four categories are sanctioned, and nothing else is:</p>
+<ol>
+<li><strong>Resource fitting.</strong> Heap, thread pools, and memory settings fitted to the cell's CPU
+   set and memory envelope. Envelope equality, not tuning.</li>
+<li><strong>Vendor settle step.</strong> Each engine's own documented bulk-load-then-query preparation,
+   timed inside the build so the build is timed to a queryable index. Every engine gets its
+   own, and none is skipped.</li>
+<li><strong>Operating-point matching.</strong> Where defaults put engines at different points of a
+   quality against latency tradeoff, they are moved onto one point, because a latency
+   comparison at unequal recall compares nothing.</li>
+<li><strong>Documented escape hatch.</strong> A default that is demonstrably pathological, tuned to the
+   vendor's own recommendation, with the same care applied to every backend in the lane.</li>
+</ol>
+<p>What never happens: per-system expert tuning beyond vendor guidance, or tuning ArcadeDB
+with insider knowledge that is not applied to the comparators.</p>
+<p>Two examples of category three, because they are the ones that decide a vector table. Graph
+degree is spelled differently by different engines, and the same integer therefore builds
+graphs of different degree, so the lane matches <strong>effective base-layer degree</strong> and records
+the number in each engine's own unit. An index that has no degree at all, such as an
+inverted-list index over trained centroids, cannot be matched that way, so its operating
+point is calibrated inside the cell to land on the same recall, against a target read from
+our own frozen rows rather than chosen by hand.</p>
+<div class="admonition warning">
+<p class="admonition-title">An override nobody can find is a defect, whichever way it moves the number</p>
+<p>Every override is stamped on the row where a field exists and named in reader-facing
+text, and the full inventory, with a column saying which way each one moves the number,
+is published in the methodology section of the project page. Several of them run
+against us, including an index the comparators do not get and a SQLite setting that
+makes SQLite faster on exactly the rows we would rather win.</p>
+</div>
+<h2 id="durability">Durability<a class="headerlink" href="#durability" title="Permanent link">&para;</a></h2>
+<p>A commit that waits for the disk and one that does not are different operations, so a write
+latency is a comparison only if every engine in the table committed the same way.</p>
+<p>The matched class is <strong>relaxed</strong>: a commit returns without waiting for the disk, and the log
+is flushed by the engine's own background policy, which loses the last committed
+transactions on a power cut but does not corrupt the store. That is ArcadeDB's own default,
+so the comparators are matched to us rather than the other way round, and each engine's
+setting is a documented production mode: write-ahead logging with a relaxed synchronous
+level for the SQLite family, asynchronous commit for the PostgreSQL family, an unjournaled
+acknowledged write for MongoDB, and their own defaults for the engines already in this
+class. Every one of those settings is <strong>read back out of the engine</strong> rather than assumed,
+and the row records what it ran.</p>
+<p><strong>Every timed write runs twice, once at each setting</strong>, and the page prints both with the
+ratio between them. The main tables keep the relaxed number as the headline, because it is
+the matched class and the common deployment, and a small table beside them settles the size
+of the effect. Engines with no setting to relax, which are named on their own tables, print
+one number in the strict column and say so, which also puts them on an equal footing rather
+than comparing their strict numbers against everyone else's relaxed ones.</p>
+<p>Bulk ingest runs at a single setting on every lane. A bulk load commits in batches, so the
+flush is amortised and a second build buys nothing; whether the loaders really do commit per
+batch rather than per row is settled once by a check off the campaign rather than by a
+column on every table.</p>
+<div class="admonition note">
+<p class="admonition-title">The framing cuts both ways</p>
+<p>The strict setting is a fixed per-commit tax set by the device, so engines converge when
+they all wait, and the ratio between the two settings is inversely proportional to how
+fast an engine's relaxed path is. It follows that a published relaxed write measures how
+well an engine avoids the disk as much as how fast it writes. ArcadeDB embedded's fast
+relaxed document insert is what makes its own multiple one of the largest on that table.</p>
+</div>
+<h2 id="the-fairness-invariants">The Fairness Invariants<a class="headerlink" href="#the-fairness-invariants" title="Permanent link">&para;</a></h2>
+<p><code>fairness_check.py</code> is one of the gates that runs before a publish. It exists to close one
+failure mode the other checks cannot see: <strong>a correct number measured under conditions the
+row beside it did not get</strong>. Such a number is correct about its own run, so verifying it
+against its own artifact proves nothing.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Invariant</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F1</strong></td>
+<td>Same CPU set. Every container in a published cell gets the full set, and a client and server pair shares it.</td>
+</tr>
+<tr>
+<td><strong>F2</strong></td>
+<td>Serial only. Published cells run one at a time; a parallel shard is detectable afterwards as a partial CPU set and is dropped.</td>
+</tr>
+<tr>
+<td><strong>F3</strong></td>
+<td>Same memory envelope per lane and size, and the same heap for every JVM engine, verified as the heap that ran.</td>
+</tr>
+<tr>
+<td><strong>F4</strong></td>
+<td>Same protocol. Repetitions per build, warmup count, settle step, and query set are properties of the lane, not of whoever wrote the driver.</td>
+</tr>
+<tr>
+<td><strong>F5</strong></td>
+<td>Same engine line within a table. A row measured on a different release than the row beside it compares versions while appearing to compare configurations.</td>
+</tr>
+<tr>
+<td><strong>F6</strong></td>
+<td>Thread pools fitted to the CPU set, not to the host. Several runtimes size their pools from the host core count regardless of the mask, and an engine running twenty threads on twelve CPUs pays context switching its neighbour does not.</td>
+</tr>
+<tr>
+<td><strong>F7</strong></td>
+<td>Same effective base-layer degree across dense backends, read in each engine's own unit; an index with no degree is matched by effect instead.</td>
+</tr>
+<tr>
+<td><strong>F8</strong></td>
+<td>The CPU set must equalise <strong>use</strong>, not only the resource. Measured: no embedded engine parallelises a single nearest-neighbour query, so the comparison is of engines and not of thread counts.</td>
+</tr>
+<tr>
+<td><strong>F9</strong></td>
+<td>A kept row needs a control. When a campaign re-measures one engine and carries the others forward, one untouched comparator is re-run and its old-against-new delta is recorded beside the table it licenses.</td>
+</tr>
+<tr>
+<td><strong>F10</strong></td>
+<td>Same durability class per table, and one instrument. Rows measured under two instruments never share a table.</td>
+</tr>
+<tr>
+<td><strong>F10b</strong></td>
+<td>Both durability classes on every timed write. Each timed write operation runs once at each setting (see <a href="#durability">Durability</a>); bulk ingest and every read path run at one setting.</td>
+</tr>
+<tr>
+<td><strong>F11</strong></td>
+<td>Equivalent queries must return equivalent answers. This one has its own page: <a href="../equivalence/">Answer Checking</a>.</td>
+</tr>
+<tr>
+<td><strong>F12</strong></td>
+<td>Every table reports the same measurement set, or says why not, and no table carries an aggregate across its queries (see <a href="#repetitions-and-what-a-cell-prints">Repetitions, and What a Cell Prints</a>).</td>
+</tr>
+<tr>
+<td><strong>F13</strong></td>
+<td>Close cost is an invariant, not a column: close should be proportional to what was written and not to what is stored, and a clean close that exceeds the stated budget fails the gate.</td>
+</tr>
+<tr>
+<td><strong>F14</strong></td>
+<td>Equivalent queries get equivalent index support, chosen by measurement rather than by reasoning: each engine's index decision on a selective-filter lane is declared and names its evidence. The declaration is checked against the rows (F14b), and where one engine on a lane times ingest and index build separately, every engine does (F14c).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="engine-identity-and-pins">Engine Identity and Pins<a class="headerlink" href="#engine-identity-and-pins" title="Permanent link">&para;</a></h2>
+<p>ArcadeDB is pinned by <strong>upstream commit</strong>, not by a release number, because the build line
+reads the same development version for every commit and a version string therefore cannot
+identify what ran. Every row carries the short commit of the upstream build that both the
+wheel and the server image were made from, and the page prints it as the engine identity,
+linked to the commit.</p>
+<p>Embedded and server arms in one table are built from the <strong>same commit and run the same
+JVM</strong>, verified by a script rather than asserted, so the axis between them is transport and
+not JVM major version, collector, or object layout.</p>
+<p>Comparators are pinned by immutable image digest, and the version a row publishes is what
+the engine reported at connect time, never the image tag. Client libraries are pinned by
+exact version, because an unpinned dependency is a comparator that changes when nobody is
+looking, and that has happened.</p>
+<p><strong>A campaign freezes one pin and holds it start to finish.</strong> Upstream landing a fix
+mid-campaign does not restart it; the fix becomes a dated changelog entry and a candidate
+for the next re-pin. No table falls back to an older pin, anywhere.</p>
+<h2 id="what-happens-next">What Happens Next<a class="headerlink" href="#what-happens-next" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../equivalence/">Answer Checking</a> covers the invariant that a latency is only worth
+  printing if the engines agreed on the answer.</li>
+<li><a href="../running/">Running a Lane</a> walks one lane end to end.</li>
+<li><a href="../results/">Reading the Output</a> covers the frozen rows and the gates that stand between
+  them and the page.</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="September 29, 2026 00:49:21 UTC"><span class="timeago" datetime="2026-09-29T00:49:21+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="September 29, 2026 00:49:21 UTC">2026-09-29</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="September 15, 2026 03:17:46 UTC"><span class="timeago" datetime="2026-09-15T03:17:46+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="September 15, 2026 03:17:46 UTC">2026-09-15</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Overview
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../equivalence/" class="md-footer__link md-footer__link--next" aria-label="Next: Answer Checking">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Answer Checking
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 humemai
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/humemai/arcadedb-embedded-python" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/arcadedb-embedded/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "navigation.prune", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../js/timeago.min.js"></script>
+      
+        <script src="../../js/timeago_mkdocs_material.js"></script>
+      
+    
+  </body>
+</html>
