@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://docs.humem.ai/dbbench/2026-10/</loc>
+         <lastmod>2026-10-10</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.humem.ai/dbbench/2026-10/changelog/</loc>
+         <lastmod>2026-10-10</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.humem.ai/dbbench/2026-10/contribute/</loc>
+         <lastmod>2026-10-10</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.humem.ai/dbbench/2026-10/engines/</loc>
+         <lastmod>2026-10-10</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.humem.ai/dbbench/2026-10/methodology/</loc>
+         <lastmod>2026-10-10</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.humem.ai/dbbench/2026-10/reproduce/</loc>
+         <lastmod>2026-10-10</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.humem.ai/dbbench/2026-10/results-schema/</loc>
+         <lastmod>2026-10-10</lastmod>
+    </url>
+</urlset>
