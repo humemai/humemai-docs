@@ -6,6 +6,7 @@ Current doc sets:
 
 - `arcadedb/`
 - `humemdb/`
+- `dbbench/`
 - `cypherglot/`
 - `audit-ready-memory/`
 
