@@ -8,5 +8,4 @@ This repository is the published branch of https://docs.humem.ai. Read `README.m
 - Never hand-edit a project folder the deploy workflows write.
 - Update `README.md` in the same pull request as any change it describes, and remove the old text in that change.
 - Stage files by explicit path. Delete the branch on merge. Issue, PR and comment bodies have no hard wraps and no em dashes. Always pass `-R` to `gh`.
-- Work on a PR branch in a separate worktree (`git worktree add --detach <dir> origin/main`, then `git switch -c <branch>`), not by switching the main checkout: other agents and long runs use it.
 - This repository is public: no secrets, token locations or private notes.
