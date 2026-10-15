@@ -1,0 +1,2251 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Native Python bindings for ArcadeDB - the multi-model database">
+      
+      
+        <meta name="author" content="humemai">
+      
+      
+        <link rel="canonical" href="https://docs.humem.ai/arcadedb/26.10.2/development/testing/">
+      
+      
+        <link rel="prev" href="../upstream-issues/">
+      
+      
+        <link rel="next" href="../release/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../brand/export/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Testing - ArcadeDB Python Bindings</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Schibsted+Grotesk:300,300i,400,400i,700,700i%7CDM+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Schibsted Grotesk";--md-code-font:"DM Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/timeago.css">
+    
+      <link rel="stylesheet" href="../../brand/css/mkdocs.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#testing" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="ArcadeDB Python Bindings" class="md-header__button md-logo" aria-label="ArcadeDB Python Bindings" data-md-component="logo">
+      
+  <img src="../../brand/logo/mark-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ArcadeDB Python Bindings
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Testing
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/humemai/arcadedb-embedded-python" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    humemai/arcadedb-embedded-python
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/installation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../examples/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../benchmarks/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Benchmarks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-access-methods/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/database/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../java-api-coverage/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Java API Coverage
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="ArcadeDB Python Bindings" class="md-nav__button md-logo" aria-label="ArcadeDB Python Bindings" data-md-component="logo">
+      
+  <img src="../../brand/logo/mark-white.svg" alt="logo">
+
+    </a>
+    ArcadeDB Python Bindings
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/humemai/arcadedb-embedded-python" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    humemai/arcadedb-embedded-python
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../getting-started/installation/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../examples/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../benchmarks/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../api-access-methods/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+      
+        
+        
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+  
+    <a href="../../api/database/" class="md-nav__link">
+      
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+      
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bridge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../documentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sync-upstream/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Syncing Upstream
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../upstream-bindings-pr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sending the Bindings Upstream
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../upstream-issues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Upstream Issues and Fixes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-each-test-file-covers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What each test file covers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What each test file covers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#database-queries-and-data-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database, queries, and data types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#results-bulk-ingest-import-and-export" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Results, bulk ingest, import, and export
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graphs-vectors-and-sql-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graphs, vectors, and SQL features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jvm-packaging-and-the-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JVM, packaging, and the gates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docs-and-open-engine-findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docs and open engine findings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#markers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Markers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#skips-and-expected-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skips and expected failures
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-example-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation example tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writing-a-test-for-this-suite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Writing a test for this suite
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java-api-coverage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java API Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../architecture/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Development
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h1>
+<p>The tests live in <code>bindings/python/tests</code> and run against the built wheel with its bundled JRE.
+One JVM serves a whole pytest session. CI runs the suite on Linux (x86_64 and ARM64), macOS
+(ARM64), and Windows (x86_64), on every Python from 3.10 to 3.14; see
+<a href="../ci-setup/#ci-gates">CI Gates</a>.</p>
+<h2 id="running-the-tests">Running the tests<a class="headerlink" href="#running-the-tests" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Build the wheel: <code>cd bindings/python &amp;&amp; ./scripts/build.sh</code> (Docker on Linux, Python 3.12 by
+   default). It writes the wheel to <code>bindings/python/dist/</code> and, outside CI, refreshes the
+   repo-root uv environment.</li>
+<li>From the repository root (or <code>bindings/python</code>), run <code>uv run pytest</code>. The repo-root
+   <code>pyproject.toml</code> is the test environment, pinned to Python 3.12, so it needs a cp312 wheel. To
+   leave out the heavy example packages (torch, sentence-transformers), pass <code>--no-group
+   examples</code> to <code>uv sync</code> and <code>uv run</code>.</li>
+</ol>
+<p>CI does not use the uv environment: it installs the built wheel and a hand-maintained list of
+test dependencies, then runs <code>pytest tests/</code> from <code>bindings/python</code>.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Everything (from the repository root or bindings/python; from any other directory a bare</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># run collects only that directory)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># One file, one test, or a keyword (paths are relative to the repository root)</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>bindings/python/tests/test_core.py
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>bindings/python/tests/test_core.py::test_database_creation
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>-k<span class="w"> </span><span class="s2">"transaction"</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># Stop at the first failure, rerun only the last failures, show printed output</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>-x
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>--lf
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>-v<span class="w"> </span>-s
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1"># Coverage</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>--cov<span class="o">=</span>arcadedb_embedded<span class="w"> </span>--cov-report<span class="o">=</span>html
+</span></code></pre></div>
+<p>On Windows, run with <code>--capture=sys</code>: pytest's default fd capture can leave the JVM writing its
+log lines to a handle that no longer belongs to it, and the test then hangs in that write
+(<a href="https://github.com/humemai/arcadedb-embedded-python/issues/10">#10</a>).</p>
+<h2 id="what-each-test-file-covers">What each test file covers<a class="headerlink" href="#what-each-test-file-covers" title="Permanent link">&para;</a></h2>
+<p>Each file is named for what it tests, and each test has a name or docstring that says what it
+asserts, so the list below stops at the file.</p>
+<h3 id="database-queries-and-data-types">Database, queries, and data types<a class="headerlink" href="#database-queries-and-data-types" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What it checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_core.py</code></td>
+<td>Create, read, update, and delete, transactions and <code>run_in_transaction()</code>, SQL statements, full-text search, graph basics through SQL, <code>lookup_by_rid()</code>, result materialization</td>
+</tr>
+<tr>
+<td><code>test_cypher.py</code></td>
+<td>OpenCypher queries, path modes, and planner regressions</td>
+</tr>
+<tr>
+<td><code>test_parameter_binding.py</code></td>
+<td>Positional and named parameters reach the statement on every entry point, including a lone <code>None</code> and the async executor, and scalars skip the conversion walk</td>
+</tr>
+<tr>
+<td><code>test_percall_calls.py</code></td>
+<td>The per-call paths of <code>query</code>, <code>command</code>, <code>first</code>, and <code>get</code> give the same bound values, overload choice, errors, and result-set state as the plain path (#280)</td>
+</tr>
+<tr>
+<td><code>test_typed_rows.py</code></td>
+<td><code>to_list()</code> and <code>iter_dicts()</code> read rows through the typed-row transport and return the same Python type and value for every property type as the row-by-row path (#285)</td>
+</tr>
+<tr>
+<td><code>test_database_utils.py</code></td>
+<td><code>count_type</code>, <code>is_transaction_active</code>, <code>drop</code>, and the errors on a closed database</td>
+</tr>
+<tr>
+<td><code>test_transaction_config.py</code></td>
+<td>WAL flush, read-your-writes, and auto-transaction settings</td>
+</tr>
+<tr>
+<td><code>test_results_after_close.py</code></td>
+<td>What a result or record does after its <code>Database</code> is closed or dropped</td>
+</tr>
+<tr>
+<td><code>test_concurrency.py</code></td>
+<td>The file lock, thread safety, sequential reopen, a second process refused, and a mixed multi-thread workload</td>
+</tr>
+<tr>
+<td><code>test_async_executor.py</code></td>
+<td>Async commands, queries, callbacks, state flags, and <code>wait_completion</code> timeouts, with exact command-path counts at parallel levels 1 and 4</td>
+</tr>
+<tr>
+<td><code>test_schema.py</code></td>
+<td>Types, properties, and indexes: create, discover, and drop</td>
+</tr>
+<tr>
+<td><code>test_schema_batching.py</code></td>
+<td>Schema statements apply at once, a rollback does not undo them, and many batch in one transaction</td>
+</tr>
+<tr>
+<td><code>test_type_conversion.py</code></td>
+<td>Python and Java type conversion in both directions</td>
+</tr>
+<tr>
+<td><code>test_conversion_fixes.py</code></td>
+<td>numpy booleans, <code>int</code> arrays beyond 32 bits, <code>lookup_by_key</code> with dates, <code>append_samples</code> with tag and boolean columns, and Java instants keeping microseconds</td>
+</tr>
+<tr>
+<td><code>test_numpy_support.py</code></td>
+<td>numpy arrays as command and query parameters and in a transaction</td>
+</tr>
+<tr>
+<td><code>test_logging_helper.py</code></td>
+<td>The internal <code>_logging</code> helper</td>
+</tr>
+</tbody>
+</table>
+<h3 id="results-bulk-ingest-import-and-export">Results, bulk ingest, import, and export<a class="headerlink" href="#results-bulk-ingest-import-and-export" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What it checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_resultset.py</code></td>
+<td><code>Result</code> and <code>ResultSet</code> iteration, accessors, paging, and release of the engine cursor</td>
+</tr>
+<tr>
+<td><code>test_resultset_arrow.py</code></td>
+<td><code>ResultSet.to_arrow()</code></td>
+</tr>
+<tr>
+<td><code>test_columnar_readers.py</code></td>
+<td><code>to_columns</code>, <code>to_dataframe</code>, and <code>to_arrow</code> on schemaless and DECIMAL data, at several batch sizes</td>
+</tr>
+<tr>
+<td><code>test_resultset_read_errors.py</code></td>
+<td>An engine error raised while a result set is read arrives as <code>ArcadeDBError</code> on every way of reading</td>
+</tr>
+<tr>
+<td><code>test_bulk_insert.py</code></td>
+<td><code>Database.insert_many</code>, <code>AsyncExecutor.create_record</code>, vector columns, numpy <code>append_samples</code>, and what a failed call leaves behind</td>
+</tr>
+<tr>
+<td><code>test_insert_columns.py</code></td>
+<td><code>Database.insert_columns</code>: typed values, nulls, the parallel mode, the rollback contract, and bad input refused before anything is written</td>
+</tr>
+<tr>
+<td><code>test_bulk_json_paths.py</code></td>
+<td>Values the JSON text of a bulk call cannot carry unchanged keep the call off the bulk path, so every entry point stores the same value or raises</td>
+</tr>
+<tr>
+<td><code>test_graph_batch.py</code></td>
+<td><code>GraphBatch</code> buffering, flushing, failure handling, and the caller's transaction</td>
+</tr>
+<tr>
+<td><code>test_graph.py</code></td>
+<td><code>GraphBatch.new_edges</code> and <code>create_vertices</code> bulk paths</td>
+</tr>
+<tr>
+<td><code>test_import_database.py</code></td>
+<td>SQL <code>IMPORT DATABASE</code> across CSV (documents, graphs, and time series), XML, Neo4j, Word2Vec, and RDF</td>
+</tr>
+<tr>
+<td><code>test_importer_api.py</code></td>
+<td>The <code>db.import_documents(...)</code> wrapper and <code>on_row_error</code></td>
+</tr>
+<tr>
+<td><code>test_exporter.py</code></td>
+<td>JSONL database export, CSV result export, the error <code>graphml</code> and <code>graphson</code> raise, and round trips</td>
+</tr>
+</tbody>
+</table>
+<h3 id="graphs-vectors-and-sql-features">Graphs, vectors, and SQL features<a class="headerlink" href="#graphs-vectors-and-sql-features" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What it checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_graph_api.py</code></td>
+<td>Vertex, edge, and document wrappers and traversal helpers</td>
+</tr>
+<tr>
+<td><code>test_graph_algorithms_sql.py</code></td>
+<td><code>shortestPath</code>, <code>dijkstra</code>, and <code>astar</code></td>
+</tr>
+<tr>
+<td><code>test_geo_predicate_sql.py</code></td>
+<td><code>geo.within</code> and <code>geo.intersects</code> (a boundary point returns a boolean; which one is not asserted)</td>
+</tr>
+<tr>
+<td><code>test_timeseries_sql.py</code></td>
+<td><code>CREATE TIMESERIES TYPE</code>, range queries, bucketing, tag filters, and <code>COMPACT</code></td>
+</tr>
+<tr>
+<td><code>test_materialized_view_sql.py</code></td>
+<td>Materialized view create, refresh, alter, and drop</td>
+</tr>
+<tr>
+<td><code>test_restore_sql.py</code></td>
+<td><code>RESTORE DOCUMENT</code> and <code>RESTORE VERTEX</code>: the record count agrees with a full scan, and the record comes back intact</td>
+</tr>
+<tr>
+<td><code>test_hash_index_schema.py</code></td>
+<td>HASH index create, discover, idempotent <code>get_or_create_index</code>, force drop, the <code>UNIQUE_HASH</code> id path, and a named-list <code>IN</code> parameter on an <code>LSM_TREE</code> index</td>
+</tr>
+<tr>
+<td><code>test_vector.py</code></td>
+<td><code>LSM_VECTOR</code> indexes: creation, search, filters, approximate search, quantization, persistence, and distance functions</td>
+</tr>
+<tr>
+<td><code>test_vector_sql.py</code></td>
+<td>The SQL vector functions, index creation, and search flows</td>
+</tr>
+<tr>
+<td><code>test_vector_params_verification.py</code></td>
+<td>Vector index parameter validation</td>
+</tr>
+<tr>
+<td><code>test_vector_delta_visibility.py</code></td>
+<td>Vectors written after a build are searchable, and deleted ones filtered, before any rebuild</td>
+</tr>
+<tr>
+<td><code>test_vector_second_pass.py</code></td>
+<td>A repeated query set returns the same neighbours as its first pass</td>
+</tr>
+<tr>
+<td><code>test_sparse_quantization_compact.py</code></td>
+<td><code>LSM_SPARSE_VECTOR</code> weight precision, the settle step (<code>COMPACT INDEX</code>), the dense search beam argument, and INT8 rescoring</td>
+</tr>
+<tr>
+<td><code>test_cross_model_atomicity.py</code></td>
+<td>Search, hop, and update in one transaction survive an interruption with nothing torn; with one transaction per write they are torn every time</td>
+</tr>
+<tr>
+<td><code>test_example11_degree_matching.py</code></td>
+<td><code>hnsw_m_from_max_connections()</code> in <code>examples/11_vector_index_build.py</code> halves <code>maxConnections</code>, never below 1, and accepts a string</td>
+</tr>
+</tbody>
+</table>
+<h3 id="server">Server<a class="headerlink" href="#server" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What it checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_server.py</code></td>
+<td>Server lifecycle, configuration, the Studio URL, databases through the Java API, and a failed start that must not hang process exit</td>
+</tr>
+<tr>
+<td><code>test_server_patterns.py</code></td>
+<td>Standalone embedded, server-managed embedded, and HTTP access, side by side</td>
+</tr>
+<tr>
+<td><code>test_server_http_endpoints.py</code></td>
+<td>The HTTP features the bindings document but do not wrap: multi-request transactions, server database commands, and line-protocol time-series writes, plus a projection read</td>
+</tr>
+<tr>
+<td><code>test_server_wire_protocols.py</code></td>
+<td>PostgreSQL (including a bound-parameter <code>{cypher}</code> query and Arrow ADBC), Bolt, and the Redis port setting, each with its real client; a default server opens none of their ports</td>
+</tr>
+<tr>
+<td><code>test_server_packaging.py</code></td>
+<td>The server stack is in the wheel and the API is reachable (fails, never skips)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="jvm-packaging-and-the-gates">JVM, packaging, and the gates<a class="headerlink" href="#jvm-packaging-and-the-gates" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What it checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_jvm.py</code></td>
+<td><code>start_jvm()</code> re-entry, close and reopen in one process, and exit with an unclosed database</td>
+</tr>
+<tr>
+<td><code>test_jvm_args.py</code></td>
+<td>JVM argument handling and the <code>conftest.py</code> hooks</td>
+</tr>
+<tr>
+<td><code>test_jvm_payload.py</code></td>
+<td>A static check that no Python list crosses into the JVM</td>
+</tr>
+<tr>
+<td><code>test_sigint.py</code></td>
+<td>Ctrl-C raises <code>KeyboardInterrupt</code> and runs cleanup once the JVM is started; <code>interrupt=True</code> keeps JPype's default (not collected on Windows)</td>
+</tr>
+<tr>
+<td><code>test_bridge_fixes.py</code></td>
+<td>Two fixes in the Java bridge: nested values read back as Python in the same transaction, and a date written as midnight UTC in any JVM time zone</td>
+</tr>
+<tr>
+<td><code>test_java_package_shadowing.py</code></td>
+<td>A folder named <code>java/</code> or <code>com/</code> must not change what a query returns</td>
+</tr>
+<tr>
+<td><code>test_runtime_cache.py</code></td>
+<td>The dev-mode runtime cache follows the wheel it was extracted from</td>
+</tr>
+<tr>
+<td><code>test_jar_provenance.py</code></td>
+<td>The wheel can say which engine it carries, not only which version it is</td>
+</tr>
+<tr>
+<td><code>test_wheel_platform_tag.py</code></td>
+<td>The wheel's manylinux platform tag, and <code>__version__</code> equals the installed distribution version</td>
+</tr>
+<tr>
+<td><code>test_wheel_size.py</code></td>
+<td>The wheel size gate: a wheel at or over 100 decimal megabytes fails the build</td>
+</tr>
+<tr>
+<td><code>test_check_test_skips.py</code></td>
+<td>The skip gate described below</td>
+</tr>
+</tbody>
+</table>
+<h3 id="docs-and-open-engine-findings">Docs and open engine findings<a class="headerlink" href="#docs-and-open-engine-findings" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What it checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_docs_examples.py</code></td>
+<td>Python blocks from the documentation run as code; see <a href="#documentation-example-tests">Documentation example tests</a></td>
+</tr>
+<tr>
+<td><code>test_count_pushdown_known_issues.py</code></td>
+<td>The openCypher count push-down and <code>BYTE</code> aggregate entries on <a href="../../guide/known-issues/">Known Engine Issues</a>: their workarounds pass, and plain regression tests assert the right answer (fixed in 26.11.1; they fail on the 26.10.1 wheel)</td>
+</tr>
+<tr>
+<td><code>test_light_edge_and_view_known_issues.py</code></td>
+<td>The two openCypher count entries on <a href="../../guide/known-issues/">Known Engine Issues</a> (a one-hop <code>count(*)</code> over <code>light_edges=True</code> edges in an edge type that is not <code>LIGHTWEIGHT</code>, and a pattern predicate over an edge type that a Graph Analytical View does not list): their workarounds pass, and plain regression tests assert the refusal and the right counts (fixed in 26.11.1; they fail on the 26.10.1 wheel).</td>
+</tr>
+<tr>
+<td><code>test_null_index_known_issues.py</code>, <code>test_declared_type_known_issues.py</code>, <code>test_dml_plan_cache_known_issues.py</code></td>
+<td>Plain regression tests for engine bugs that 26.10.1 fixed (null keys and index lookups, declared properties, positional parameters in a cached DML plan), with the workarounds that were documented for them</td>
+</tr>
+</tbody>
+</table>
+<h2 id="markers">Markers<a class="headerlink" href="#markers" title="Permanent link">&para;</a></h2>
+<p>The markers are registered in <code>bindings/python/pyproject.toml</code> (<code>server</code>, <code>server_wire</code>, and
+<code>integration</code>); the repo-root <code>pyproject.toml</code> mirrors that block.</p>
+<table>
+<thead>
+<tr>
+<th>Marker</th>
+<th>Tests</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>server</code></td>
+<td><code>test_server_creation</code>, <code>test_server_database_operations</code>, <code>test_server_custom_config</code>, <code>test_server_context_manager</code>, and <code>test_failed_server_start_does_not_hang_process_exit</code> in <code>test_server.py</code>, <code>test_server_starts_and_serves_http</code> in <code>test_server_packaging.py</code>, and <code>test_docs_api_access_examples</code> in <code>test_docs_examples.py</code></td>
+</tr>
+<tr>
+<td><code>server_wire</code></td>
+<td>Every test in <code>test_server_wire_protocols.py</code> (module-level <code>pytestmark</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><code>integration</code> is registered, but no test uses it.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>-m<span class="w"> </span>server
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>-m<span class="w"> </span><span class="s2">"not server"</span>
+</span></code></pre></div>
+<p><code>-m "not server"</code> leaves out only the tests marked <code>server</code>. Other tests start a server too:
+<code>test_server_patterns.py</code>, <code>test_server_http_endpoints.py</code>, and <code>test_server_wire_protocols.py</code>
+(marked <code>server_wire</code>). To leave out every server-starting test:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>-m<span class="w"> </span><span class="s2">"not server and not server_wire"</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>--ignore<span class="o">=</span>bindings/python/tests/test_server_patterns.py<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span>--ignore<span class="o">=</span>bindings/python/tests/test_server_http_endpoints.py
+</span></code></pre></div>
+<h2 id="skips-and-expected-failures">Skips and expected failures<a class="headerlink" href="#skips-and-expected-failures" title="Permanent link">&para;</a></h2>
+<p>CI runs the suite with no skips: <code>scripts/check_test_skips.py</code> fails the <code>test</code> job on any skip
+in the JUnit XML, and its list of accepted skips is empty (<code>tests/test_check_test_skips.py</code> tests
+the gate). A skip is a test that should have run and did not, so the suite does not use one for
+anything it can state otherwise:</p>
+<ul>
+<li><strong>A test file that cannot run on a platform is left out of collection</strong>, not skipped:
+  <code>tests/conftest.py</code> sets <code>collect_ignore</code> for <code>test_sigint.py</code> on Windows (it sends SIGINT to a
+  child process) and for <code>test_docs_examples.py</code> on the upstream pull request branch, which has
+  no <code>docs/</code>. A parametrized case Windows cannot create (a directory name with a question mark
+  in <code>test_importer_api.py</code>) is not generated there.</li>
+<li><strong>An optional Python package</strong> (numpy, pandas, pyarrow, requests, psycopg,
+  adbc-driver-postgresql, neo4j) uses <code>pytest.importorskip</code> without a custom reason. A run
+  without the package skips locally. CI installs every optional package the tests import (<code>numpy</code>,
+  <code>pandas</code>, <code>pyarrow</code>, <code>requests</code>, <code>psycopg</code>, <code>neo4j</code>, <code>redis</code>, <code>adbc-driver-postgresql</code>), and a
+  step fails the job if any test skipped for a missing import, so none of them skips there.</li>
+<li><strong>A bundled feature never skips</strong>: OpenCypher, the geo and graph-algorithm SQL functions, time
+  series, the HASH index, vector encodings, the importers, and the server stack run and fail when
+  they are missing.</li>
+</ul>
+<p>A skip that is truly unavoidable (a Windows limitation, a case that needs an engine fix that is
+still upstream) goes on the list in <code>scripts/check_test_skips.py</code> with the platform, the reason,
+and the upstream issue. For an engine bug prefer a strict <code>xfail</code>: it fails the suite as soon as
+the fix reaches the engine the suite runs on, which is the cue to convert it to a plain test.
+CI builds its wheel from upstream's current snapshot jars, so that can be days before a release
+carries the fix. The entry stays on the Known Engine Issues page until a release that carries the
+fix ships.</p>
+<p>A passing run ends with a summary of the form <code>N passed</code>, with no failures, errors, or skips. No test is marked <code>xfail</code> at present. An entry on <a href="../../guide/known-issues/">Known Engine Issues</a> whose fix is in the engine the suite builds against but not in the 26.10.1 wheel has plain regression tests that fail on that wheel. Run with <code>-rs</code> to see why a test skipped locally.</p>
+<h2 id="documentation-example-tests">Documentation example tests<a class="headerlink" href="#documentation-example-tests" title="Permanent link">&para;</a></h2>
+<p><code>tests/test_docs_examples.py</code> runs Python blocks from the documentation as real code, each in its
+own subprocess with its own working directory, so a snippet that starts the JVM cannot disturb
+another. One test covers each group of pages (paths relative to <code>bindings/python/docs/</code>):</p>
+<ul>
+<li><code>test_docs_installation_examples</code>: <code>getting-started/installation.md</code>.</li>
+<li><code>test_docs_index_and_quickstart_examples</code>: <code>index.md</code> and <code>getting-started/quickstart.md</code>. The
+  batch-insert snippet it also runs is a copy written in the test, so an edit to that quickstart
+  block is not caught.</li>
+<li><code>test_docs_api_access_examples</code> (marked <code>server</code>): the four access paths in
+  <code>api-access-methods.md</code>.</li>
+<li><code>test_docs_transaction_examples</code>: <code>guide/core/transactions.md</code>.</li>
+<li><code>test_docs_example_pages</code>: the <code>INSERT INTO Task SET</code> block from
+  <code>examples/01_simple_document_store.md</code>, against a seeded <code>Task</code> schema. The social-network
+  script in the same test is written in the test, so an edit to <code>examples/02_social_network_graph.md</code>
+  is not caught.</li>
+<li><code>test_docs_core_query_examples</code>: <code>guide/core/queries.md</code>, several blocks inside a database seeded
+  with the data the page assumes.</li>
+<li><code>test_docs_graph_guide_examples</code>: <code>guide/graphs.md</code>.</li>
+</ul>
+<p>The test finds a block by a piece of text it contains and fails if no Python block on the page
+contains that text. A block passes when its subprocess exits 0 within 120 seconds; printed
+output is not compared. Most Python blocks in the docs are not run. When you add or rewrite an
+example that should stay runnable, edit the page, extend <code>tests/test_docs_examples.py</code> with a
+needle for the new block, and rerun the file.</p>
+<h2 id="writing-a-test-for-this-suite">Writing a test for this suite<a class="headerlink" href="#writing-a-test-for-this-suite" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Use the shared fixtures</strong> in <code>tests/conftest.py</code>: <code>temp_db_path</code> (a fresh database path),
+   <code>temp_db</code> (an open database, closed and deleted afterwards), <code>temp_server_root</code>, and
+   <code>temp_dir_factory</code>, or pytest's own <code>tmp_path</code>. Server tests use <code>TEST_PASSWORD</code> as the root
+   password.</li>
+<li><strong>A teardown warns; it never swallows.</strong> A teardown that hides its own failure hides the bug
+   with it. <code>temp_db</code> shows the pattern: it closes the database if it is still open and turns a
+   failed close into a warning.</li>
+<li><strong>Do not skip on what the wheel ships.</strong> A test for the server stack, OpenCypher, or any other
+   bundled feature runs and fails when the feature is missing: a guard that skips cannot notice
+   the feature going missing (the server JARs left the wheel in 26.7.2 and the guarded tests
+   skipped into a green suite). Skip only for an optional Python package, through
+   <code>pytest.importorskip</code> without a custom reason, and leave a file that a platform cannot run
+   out of collection (<code>collect_ignore</code> in <code>tests/conftest.py</code>). A server test carries
+   <code>@pytest.mark.server</code>.</li>
+<li><strong>One JVM serves the whole session.</strong> A <code>start_jvm()</code> call with a different configuration
+   raises "already started", and engine-wide settings carry from one test to the next, so run
+   the full suite after adding a test. Anything that needs its own JVM, a crash, a lock held by
+   another process, or an isolated <code>sys.path</code> runs in a subprocess.</li>
+<li><strong>An optional dependency</strong> goes through <code>pytest.importorskip("module")</code> with its default
+   reason, so that CI fails when the module is missing. Add the module to the <code>test</code> extra in
+   <code>bindings/python/pyproject.toml</code>, to the install step in
+   <code>.github/workflows/test-python-bindings.yml</code>, and to the repo-root <code>pyproject.toml</code>.</li>
+<li><strong>Hang diagnostics are built in.</strong> A test still running after <code>ARCADEDB_TEST_JAVA_DUMP_AFTER_S</code>
+   seconds (540 by default) prints every Java thread's stack, and <code>faulthandler_timeout</code> dumps
+   the Python threads at 600 s. <code>ARCADEDB_PYTEST_FORCE_EXIT=1</code> ends the session with
+   <code>os._exit(0)</code> instead of a JVM shutdown, for debugging a hang at exit.</li>
+<li><strong>Bandit scans <code>tests/</code></strong> at low severity and low confidence. Put <code># nosec B608</code> on the
+   flagged line of an f-string SQL statement, as the existing tests do.</li>
+</ol>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">arcadedb_embedded</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">arcadedb</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">tests.conftest</span><span class="w"> </span><span class="kn">import</span> <span class="n">TEST_PASSWORD</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_insert_is_visible</span><span class="p">(</span><span class="n">temp_db</span><span class="p">):</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="n">temp_db</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s2">"sql"</span><span class="p">,</span> <span class="s2">"CREATE DOCUMENT TYPE Note"</span><span class="p">)</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="k">with</span> <span class="n">temp_db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>        <span class="n">temp_db</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s2">"sql"</span><span class="p">,</span> <span class="s2">"INSERT INTO Note SET k = 1"</span><span class="p">)</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="k">assert</span> <span class="n">temp_db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"sql"</span><span class="p">,</span> <span class="s2">"SELECT k FROM Note"</span><span class="p">)</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span> <span class="o">==</span> <span class="p">[{</span><span class="s2">"k"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}]</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">server</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_server_starts</span><span class="p">(</span><span class="n">temp_server_root</span><span class="p">):</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>    <span class="k">with</span> <span class="n">arcadedb</span><span class="o">.</span><span class="n">create_server</span><span class="p">(</span><span class="n">temp_server_root</span><span class="p">,</span> <span class="n">root_password</span><span class="o">=</span><span class="n">TEST_PASSWORD</span><span class="p">)</span> <span class="k">as</span> <span class="n">server</span><span class="p">:</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>        <span class="k">assert</span> <span class="n">server</span><span class="o">.</span><span class="n">is_started</span><span class="p">()</span>
+</span></code></pre></div>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="October 13, 2026 06:52:06 UTC"><span class="timeago" datetime="2026-10-13T06:52:06+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="October 13, 2026 06:52:06 UTC">2026-10-13</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="March 25, 2026 21:23:22 UTC"><span class="timeago" datetime="2026-03-25T21:23:22+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="March 25, 2026 21:23:22 UTC">2026-03-25</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../upstream-issues/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Upstream Issues and Fixes">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Upstream Issues and Fixes
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../release/" class="md-footer__link md-footer__link--next" aria-label="Next: Release Workflow">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Release Workflow
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 humemai
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/humemai/arcadedb-embedded-python" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/arcadedb-embedded/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.indexes", "navigation.top", "navigation.footer", "navigation.prune", "search.suggest", "search.highlight", "search.share", "header.autohide", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "toc.follow", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../js/timeago.min.js"></script>
+      
+        <script src="../../js/timeago_mkdocs_material.js"></script>
+      
+    
+  </body>
+</html>
