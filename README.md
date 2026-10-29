@@ -7,9 +7,11 @@ Current doc sets, each with a card on the landing page:
 - `dbbench/`
 - `audit-ready-memory/`
 
+External cards (no folder here): "ArcadeDB" links the engine manual, https://docs.arcadedb.com/arcadedb/, and "ArcadeDB in Python" links the Python package's docs, https://docs.arcadedb.com/arcadedb-python/. The two names match the two research pages and the two software pages on humem.ai.
+
 Unlisted (no card, files kept so existing links and the packages' own links keep working): `humemdb/` and `cypherglot/`, paused projects, hidden from the landing page on 2026-10-19 as on humem.ai.
 
-Retired: `arcadedb/`, the docs of the old `arcadedb-embedded` package. Since 2026-10-29 every path under `docs.humem.ai/arcadedb` (root, `latest` and the version folders) redirects to https://docs.arcadedb.com/arcadedb-python/ through a Cloudflare Single Redirect rule on the humem.ai zone (302 for the first week, then 301). The files stay in this repository; they are no longer reachable at their old URLs. The landing page keeps an "ArcadeDB" card that links to https://docs.arcadedb.com/, the manual, whose Python component holds the bindings' docs (an external card, no folder here); it matches how humem.ai/software/arcadedb presents the engine and the bindings together.
+Retired and removed: `arcadedb/`, the docs of the old `arcadedb-embedded` package. Since 2026-10-29 every path under `docs.humem.ai/arcadedb` (root, `latest` and the version folders) answers with a 301 to https://docs.arcadedb.com/arcadedb-python/ through a Cloudflare Single Redirect rule on the humem.ai zone (302 for the first hours). The folder was deleted the same day because no path under it could be reached any more; it is in the git history before that commit.
 
 The landing page (`index.html`) takes its colours, type, logo and favicon from the HumemAI design system, vendored into `brand/` from [humemai/design-system](https://github.com/humemai/design-system) (`brand/verify.sh` checks the copy). Each doc set's own theme is vendored in its source repo, under `docs/brand`.
 
