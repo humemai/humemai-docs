@@ -14,6 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400..600&family=Schibsted+Grotesk:wght@400..800&display=swap" rel="stylesheet">
     <!-- Colours, type and space: github.com/humemai/design-system, vendored in brand/. -->
     <link rel="stylesheet" href="/brand/css/tokens.css" />
+    <link rel="stylesheet" href="/brand/css/components.css" />
     <style>
       body {
         margin: 0;
@@ -60,38 +61,6 @@
         margin: 0;
         color: var(--hm-text-muted);
       }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(16.25rem, 1fr));
-        gap: var(--hm-space-5);
-      }
-      .card {
-        display: grid;
-        grid-template-rows: auto 1fr auto;
-        gap: var(--hm-space-2);
-        align-content: start;
-        padding: var(--hm-space-6);
-        background: var(--hm-surface-muted);
-        border: 1px solid var(--hm-border);
-        border-radius: var(--hm-radius-lg);
-        color: inherit;
-        text-decoration: none;
-        transition: border-color 160ms ease, transform 160ms ease;
-      }
-      .card:hover,
-      .card:focus-visible {
-        border-color: var(--hm-brand);
-        transform: translateY(-2px);
-      }
-      .card:focus-visible {
-        outline: 2px solid var(--hm-focus);
-        outline-offset: 2px;
-      }
-      .card span {
-        margin-top: var(--hm-space-2);
-        color: var(--hm-link);
-        font-weight: var(--hm-weight-semibold);
-      }
       footer {
         margin-top: var(--hm-space-10);
         color: var(--hm-text-muted);
@@ -99,11 +68,6 @@
       }
       footer a {
         color: var(--hm-link);
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .card {
-          transition: none;
-        }
       }
     </style>
   </head>
@@ -115,23 +79,23 @@
         <p>Guides and API references for HumemAI's open source projects.</p>
       </header>
 
-      <div class="grid">
-        <a class="card" href="https://docs.arcadedb.com/arcadedb/">
+      <div class="hm-card-grid">
+        <a class="hm-card" href="https://docs.arcadedb.com/arcadedb/">
           <h2>ArcadeDB</h2>
           <p>One engine for documents, graphs, vectors, and time series. HumemAI sends fixes to the engine and benchmarks it in DBBench. The manual lives on docs.arcadedb.com.</p>
           <span>Open docs →</span>
         </a>
-        <a class="card" href="https://docs.arcadedb.com/arcadedb-python/">
+        <a class="hm-card" href="https://docs.arcadedb.com/arcadedb-python/">
           <h2>ArcadeDB in Python</h2>
           <p>The ArcadeDB engine inside the Python process, installed with uv add arcadedb. HumemAI wrote the bindings and maintains them in the ArcadeDB project.</p>
           <span>Open docs →</span>
         </a>
-        <a class="card" href="/dbbench/">
+        <a class="hm-card" href="/dbbench/">
           <h2>DBBench</h2>
           <p>An independent, open benchmark of database engines: methodology, engine settings, and how to reproduce a result.</p>
           <span>Open docs →</span>
         </a>
-        <a class="card" href="/audit-ready-memory/">
+        <a class="hm-card" href="/audit-ready-memory/">
           <h2>Audit-Ready Memory</h2>
           <p>Local-first memory for AI agents with transparent logs, replay, and deletion workflows.</p>
           <span>Open docs →</span>
