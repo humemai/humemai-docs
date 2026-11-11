@@ -24,4 +24,4 @@ Each project's own repository builds its docs, and its deploy workflow pushes th
 - A link to a doc page needs the version segment: `https://docs.humem.ai/<project>/latest/<page>/` works and `https://docs.humem.ai/<project>/<page>/` is a 404. Only the project root `https://docs.humem.ai/<project>/` redirects.
 - To add, remove, hide or show a project, change its landing card in `index.html` and the lists above in the same pull request: every folder is either listed with a card or named as unlisted. A new project's deploy workflow can be copied from `humemai/mmdbbench` and needs the `HUMEMAI_DOCS_TOKEN` secret.
 - The bots push to `main` at any time: pull with rebase before you push, and never force-push.
-- There is no CI here. Before you merge, open `index.html` in a browser at a wide desktop width and a phone width, in light and dark mode, and run `brand/verify.sh`.
+- The only CI here is `.github/workflows/brand.yml`: it runs `brand/verify.sh` on a change to `brand/`, so a hand edit of the vendored copy fails. Before you merge, open `index.html` in a browser at a wide desktop width and a phone width, in light and dark mode, and run `brand/verify.sh`.
