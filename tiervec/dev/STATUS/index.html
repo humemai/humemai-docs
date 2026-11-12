@@ -1483,7 +1483,7 @@
 <h2 id="import-notes">Import notes<a class="headerlink" href="#import-notes" title="Permanent link">&para;</a></h2>
 <ul>
 <li>The Java package is <code>ai.humem.tiervec</code>, the name of the library. It was renamed from the package of the first import before the first release, so it is not a breaking change. The system property that forces the scalar twins is <code>ai.humem.tiervec.scalar</code>.</li>
-<li>Comments and Javadoc in the sources still use experiment-internal names (requirement ids, fix numbers, rule names). They will be cleaned up when the API is settled.</li>
+<li>Comments and Javadoc in the sources were rewritten in plain words: the experiment-internal names (requirement ids, fix numbers, rule names) are gone, and no code changed in that edit.</li>
 <li>The graph test helper <code>T</code> was renamed <code>GraphT</code>, because the flat tests have their own <code>T</code> and both now live in one module and one package.</li>
 <li>The test helpers got an <code>exitOnFailure</code> flag (default true, so a program run alone still ends the JVM on failure), and the end of each program's <code>main</code> is guarded by it. A JUnit wrapper sets it to false and reads the counters instead, because a <code>System.exit</code> would end the surefire JVM.</li>
 <li>The micro-benchmark <code>FlatMicro</code> and the benchmark harness of the experiment are not part of this repository. <code>Bench</code> and <code>NativeSmoke</code> are new programs written for it, not imports.</li>
