@@ -963,6 +963,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Unreleased">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -989,7 +1006,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#changed" class="md-nav__link">
+  <a href="#changed_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Changed
@@ -1167,6 +1184,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Unreleased">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1193,7 +1227,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#changed" class="md-nav__link">
+  <a href="#changed_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Changed
@@ -1282,6 +1316,10 @@
 </div>
 <p>All notable changes to tiervec are in this file. The layout follows <a href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>. The version rule and the steps of a release are in <a href="../RELEASING/">docs/RELEASING.md</a>. Until 1.0, a breaking change to the supported surface (<a href="../API/">docs/API.md</a>) needs a new minor version.</p>
 <h2 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Creating the GitHub release now publishes to Maven Central by itself and verifies the result (checksums, signatures, the built jars, a resolution from a fresh local repository), so the Publish click in the Central Portal is gone (<a href="../RELEASING/#the-publish-run">docs/RELEASING.md</a>).</li>
+</ul>
 <h2 id="010-2026-11-12">0.1.0 - 2026-11-12<a class="headerlink" href="#010-2026-11-12" title="Permanent link">&para;</a></h2>
 <p>The first release. It is the sources of the first experiment, imported and brought to the supported surface in <a href="../API/">docs/API.md</a>. Nothing was released under the old package name. Details are in <a href="../STATUS/">docs/STATUS.md</a>.</p>
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
@@ -1300,7 +1338,7 @@
 <li>Maven Central publishing for <code>ai.humem:tiervec</code>: the metadata Central requires in <code>pom.xml</code>, a <code>release</code> profile (sources jar, javadoc jar, GnuPG signatures, upload to the Central Portal), and the workflow <code>release-central.yml</code> with a dry run (<a href="../RELEASING/#maven-central">docs/RELEASING.md</a>).</li>
 <li>The documentation is published as a release version with the alias <code>latest</code> when a version tag is pushed, and <code>dev</code> stays the label of <code>main</code>.</li>
 </ul>
-<h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
+<h3 id="changed_1">Changed<a class="headerlink" href="#changed_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Package renamed from <code>com.humemai.vec</code> to <code>ai.humem.tiervec</code> (no other change). The system property that forces the scalar twins was renamed with it, from <code>humemai.vec.scalar</code> to <code>ai.humem.tiervec.scalar</code>.</li>
 </ul>
