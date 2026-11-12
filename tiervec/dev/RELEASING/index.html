@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Documentation for tiervec, a tiered vector index for agent-memory databases on the JVM (experimental, unreleased)">
+        <meta name="description" content="Documentation for tiervec, a tiered vector index for agent-memory databases on the JVM (experimental)">
       
       
         <meta name="author" content="HumemAI">
@@ -1042,17 +1042,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#before-the-first-release" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Before the first release
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1351,17 +1340,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#before-the-first-release" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Before the first release
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1432,9 +1410,9 @@
 
 <h1 id="releasing">Releasing<a class="headerlink" href="#releasing" title="Permanent link">&para;</a></h1>
 <div class="hm-banner">
-<p><strong>Experimental and unreleased.</strong> The API is not stable and nothing here is wired into a database engine yet. <a href="../API/#stability-policy-for-0x">What may change</a>.</p>
+<p><strong>Experimental.</strong> The API is not stable and nothing here is wired into a database engine yet. <a href="../API/#stability-policy-for-0x">What may change</a>.</p>
 </div>
-<p>This page is the rule for version numbers and the steps of a release. There is no release yet: the version on <code>main</code> is <code>0.1.0-SNAPSHOT</code>.</p>
+<p>This page is the rule for version numbers and the steps of a release. The first release is <code>0.1.0</code>. Between releases the version on <code>main</code> is the next <code>-SNAPSHOT</code>.</p>
 <h2 id="version-numbers">Version numbers<a class="headerlink" href="#version-numbers" title="Permanent link">&para;</a></h2>
 <ul>
 <li>A release version is <code>0.MINOR.PATCH</code> while the API is not stable. At 1.0 it becomes <code>MAJOR.MINOR.PATCH</code>.</li>
@@ -1556,15 +1534,6 @@
 <p>If the status is <code>FAILED</code>, read the messages in the portal, drop the deployment, fix the cause, and run the workflow again on the same tag. That is allowed because nothing was published. Fixing a problem in the sources needs a new version.</p>
 <h3 id="reminder-the-central-token-expires">Reminder: the Central token expires<a class="headerlink" href="#reminder-the-central-token-expires" title="Permanent link">&para;</a></h3>
 <p>The Central user token was created on 2026-11-12 with an expiry of one year, so it expires around 2027-11. Rotate it before then: generate a new token in the portal, set <code>CENTRAL_USERNAME</code> and <code>CENTRAL_PASSWORD</code> again, and keep the date of the new expiry here. An expired token shows as an authentication error (HTTP 401) in the upload step of the publish run, and the dry run cannot catch it because it uses no token. If the signing key has an expiry (the example above has three years), that date is a second rotation point: extend it with <code>gpg --edit-key &lt;FPR&gt; expire</code>, export it again as above and upload the public key again.</p>
-<h2 id="before-the-first-release">Before the first release<a class="headerlink" href="#before-the-first-release" title="Permanent link">&para;</a></h2>
-<p>These open points are named in the repository and are settled before <code>0.1.0</code> is tagged:</p>
-<ul>
-<li>Settled: the Java package is <code>ai.humem.tiervec</code> and the Maven coordinates are <code>ai.humem:tiervec</code>. The package was renamed before the first release, so the rename is not a breaking change. After the release a rename would be one.</li>
-<li>Settled: comments and Javadoc in the sources use plain wording. The requirement ids, fix numbers and rule names of the first experiment are gone (<a href="../STATUS/#import-notes">STATUS.md</a>).</li>
-<li>The supported surface is listed in <a href="../API/">API.md</a>.</li>
-<li>Settled: the documentation site publishes only the label <code>dev</code> (<a href="https://docs.humem.ai/tiervec/dev/">docs.humem.ai/tiervec/dev</a>) until the first release. <code>deploy-docs.yml</code> has a tag trigger that publishes the release version with the alias <code>latest</code>, and <code>dev</code> stays as the label of <code>main</code>.</li>
-<li>Settled: the workflow <code>release-central.yml</code> and the profile <code>release</code> exist (<a href="https://github.com/humemai/tiervec/issues/62">#62</a>). Before the tag, the four secrets of "Maven Central" must exist and the dry run must be green on the release branch.</li>
-</ul>
 
 
 
