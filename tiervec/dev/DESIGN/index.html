@@ -1,0 +1,1833 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for tiervec, a tiered vector index for agent-memory databases on the JVM (experimental, unreleased)">
+      
+      
+        <meta name="author" content="HumemAI">
+      
+      
+        <link rel="canonical" href="https://docs.humem.ai/tiervec/dev/DESIGN/">
+      
+      
+        <link rel="prev" href="../ROADMAP/">
+      
+      
+        <link rel="next" href="../ID-EPOCH-AND-REPLAY/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../brand/export/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Design - tiervec</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Schibsted+Grotesk:300,300i,400,400i,700,700i%7CDM+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Schibsted Grotesk";--md-code-font:"DM Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../brand/css/mkdocs.css">
+    
+      <link rel="stylesheet" href="../stylesheets/tiervec.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#design" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="tiervec" class="md-header__button md-logo" aria-label="tiervec" data-md-component="logo">
+      
+  <img src="../brand/logo/mark-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            tiervec
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Design
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/humemai/tiervec" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    humemai/tiervec
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../STATUS/" class="md-tabs__link">
+          
+  
+  
+  Status
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Design
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../API/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../RELEASING/" class="md-tabs__link">
+          
+  
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="tiervec" class="md-nav__button md-logo" aria-label="tiervec" data-md-component="logo">
+      
+  <img src="../brand/logo/mark-white.svg" alt="logo">
+
+    </a>
+    tiervec
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/humemai/tiervec" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    humemai/tiervec
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Status
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STATUS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-contract-vecindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The contract: VecIndex
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-parts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The parts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The parts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flat-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flat index
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graph index
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ivf-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IVF index
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-tier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The tier
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The tier">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exact-tail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact tail
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sealed-hnsw-segments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sealed HNSW segments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#atomic-swap-of-the-segment-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Atomic swap of the segment list
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tombstones-and-the-version-floor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tombstones and the version floor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bounds-and-threads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bounds and threads
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kernels-and-the-scalar-twin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kernels and the scalar twin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tier-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ID-EPOCH-AND-REPLAY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Id epoch and replay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SEGMENT-FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segment files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API and stability policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROVIDER-CONTRACT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host contract
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELEASING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releasing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CHANGELOG/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SUPPORT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../THIRD_PARTY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third-party code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-contract-vecindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The contract: VecIndex
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-parts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The parts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The parts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flat-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flat index
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#graph-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Graph index
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ivf-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IVF index
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-tier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The tier
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The tier">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exact-tail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact tail
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sealed-hnsw-segments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sealed HNSW segments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#atomic-swap-of-the-segment-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Atomic swap of the segment list
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#batches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batches
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tombstones-and-the-version-floor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tombstones and the version floor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Merge
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bounds-and-threads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bounds and threads
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kernels-and-the-scalar-twin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kernels and the scalar twin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tier-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tier configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href=".." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="./" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Design
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="design">Design<a class="headerlink" href="#design" title="Permanent link">&para;</a></h1>
+<div class="hm-banner">
+<p><strong>Experimental and unreleased.</strong> The API is not stable and nothing here is wired into a database engine yet. <a href="../API/#stability-policy-for-0x">What may change</a>.</p>
+</div>
+<p>This page describes what the code in <code>src/main/java/com/humemai/vec</code> does today. It is written from the sources and their Javadoc. Where something is not built yet, it says so.</p>
+<h2 id="the-contract-vecindex">The contract: <code>VecIndex</code><a class="headerlink" href="#the-contract-vecindex" title="Permanent link">&para;</a></h2>
+<p>Every index implements <code>VecIndex</code>, over <code>float[]</code> vectors with a <code>long</code> id and one of three metrics (<code>COSINE</code>, <code>DOT</code>, <code>L2</code>).</p>
+<ul>
+<li><code>add</code>, <code>delete</code> and <code>search</code> may be called concurrently from many threads, and a search never throws because of a concurrent write.</li>
+<li>Read-your-writes: after <code>add(id, v)</code> returns, a search that starts later in any thread can return <code>id</code>. After <code>delete(id)</code> returns, a search that starts later never returns <code>id</code>.</li>
+<li>Ids are unique: adding an existing id replaces its vector.</li>
+<li><code>Hit.score</code> is a similarity and higher is better for every metric (cosine and dot as they are, L2 as the negative squared distance).</li>
+<li><code>search(q, k, allow)</code> takes an optional <code>LongPredicate</code> filter and may return fewer than <code>k</code> hits only when fewer than <code>k</code> live vectors qualify.</li>
+</ul>
+<h2 id="the-parts">The parts<a class="headerlink" href="#the-parts" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FlatIndex</code></td>
+<td>Exact or quantized scan over every live vector. No graph. Has <code>serialize</code> and <code>load</code>.</td>
+</tr>
+<tr>
+<td><code>GraphIndex</code></td>
+<td>Mutable, concurrent HNSW-style graph. <code>seal()</code> turns it into a <code>SealedGraph</code>, <code>fromSealed</code> turns it back.</td>
+</tr>
+<tr>
+<td><code>SealedGraph</code></td>
+<td>Immutable compact graph. The only mutation is a soft delete through a bitset. Has <code>serialize</code> and <code>load</code> (one segment file, see <a href="../SEGMENT-FORMAT/">SEGMENT-FORMAT.md</a>).</td>
+</tr>
+<tr>
+<td><code>IvfIndex</code></td>
+<td>Standalone inverted-file index with k-means lists and a background retrain. Not a segment type of <code>TieredIndex</code>.</td>
+</tr>
+<tr>
+<td><code>TieredIndex</code></td>
+<td>The tier: an exact tail in front of sealed graph segments. A settled tier can be written with <code>checkpoint</code> and read with <code>open</code>.</td>
+</tr>
+<tr>
+<td><code>Kernels</code>, <code>VKernels</code>, <code>NKernels</code>, <code>Kern</code>, <code>VKern</code></td>
+<td>Distance kernels. <code>Kernels</code> picks vector or scalar code once per JVM or image, for the flat, IVF, and graph kernels. <code>NKernels</code> holds the Vector API kernels for a native image: the fp32 dot and squared L2, the int8 dot, the SQ8 dots, and block16; its 128-bit forms of the last four are also what an aarch64 JVM uses for them.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="flat-index">Flat index<a class="headerlink" href="#flat-index" title="Permanent link">&para;</a></h3>
+<p>Vectors live in chunks (the first chunks grow from 64 to 4096 slots, then 4096 per chunk), each with a float array, an id array, a live bitmap, and optional quantized codes. A slot is written once and never reused, so a reader never sees a half-written slot. Appends never copy old data.</p>
+<p>The read path takes no lock. A writer fills a slot and then sets its live bit with release semantics, which publishes it. Delete clears the bit. Replace writes a new slot, sets it live, and clears the old bit, so a search can briefly see both copies and the result is de-duplicated by id. Writers take one of 64 stripe monitors by id hash. <code>compact()</code> takes an exclusive lock that pauses writers, never searches.</p>
+<p>Quantization is chosen per index:</p>
+<ul>
+<li><code>NONE</code>: fp32 scan. The result equals brute force, with ties broken by the smaller id.</li>
+<li><code>SQ8</code>: symmetric int8 with one scale per vector. No training, so churn cannot make it stale.</li>
+<li><code>BINARY</code>: one sign bit per dimension against a per-dimension threshold, frozen after the first calibration set of live vectors. Until then searches are exact.</li>
+</ul>
+<p>A quantized search scans the codes, keeps the best <code>rerankFactor * k</code> candidates, rescores them in fp32, and returns the best <code>k</code>. Returned scores are always exact fp32 scores.</p>
+<h3 id="graph-index">Graph index<a class="headerlink" href="#graph-index" title="Permanent link">&para;</a></h3>
+<p>A multi-layer HNSW graph, with the alpha robust prune of DiskANN (Vamana) as a parameter (<code>alpha = 1</code> is the HNSW neighbor heuristic). Nodes live in fixed-size chunks and never move. Neighbor lists are copy-on-write arrays published with release and acquire <code>VarHandle</code> stores, so readers take no lock and always see a complete list. Writers take a striped monitor of the owning node, one at a time.</p>
+<ul>
+<li><code>add</code> publishes the node's own links, then marks it live, then adds the reverse links, then updates the entry point. A node is returnable only when live, and reachable only through published links.</li>
+<li><code>delete</code> marks a node deleted at once. Deleted nodes are still traversed. <code>consolidate()</code> repairs the neighbor lists that hold a tombstone, waits (never blocking a reader) until searches that started earlier are done, and then recycles the slots.</li>
+<li>A replace is a new node plus a tombstone of the old one.</li>
+<li>Search is a beam search at layer 0 with a greedy descent above. Filtered-out and deleted nodes are traversed but not collected. With a filter, after a visit budget with fewer than <code>k</code> collected, the search falls back to an exact scan over the nodes that pass the filter.</li>
+<li><code>filterScanBelow(fraction)</code> (default 0, off) lets a filtered search skip the walk when the allowed share is small. The share is estimated from 256 id slots spread over the index (a fixed number of predicate calls, no size hint from the host). When at most <code>fraction</code> of the sampled live slots pass, the search scans the allowed ids exactly, which costs one predicate call per live id and returns the exact top <code>k</code>. Above the threshold the search is unchanged. With the option off, a filtered search spends its whole visit budget before the scan when the allowed share is below about <code>ef</code> divided by the budget, and that wasted walk is most of the cost of a filtered search at a share near 0.01 (see issues 12 and 56).</li>
+<li>With <code>Params.sq8</code> the traversal uses int8 codes and the final candidates are rescored in fp32. Construction always uses fp32.</li>
+</ul>
+<h3 id="ivf-index">IVF index<a class="headerlink" href="#ivf-index" title="Permanent link">&para;</a></h3>
+<p>K-means centroids, one append-only list per centroid, and a search probes the nearest <code>nprobe</code> lists. Until the live count reaches <code>trainAt</code>, every search is an exact scan. Training is lazy. <code>needsRetrain()</code> measures drift, list skew, and growth, and <code>retrain()</code> rebuilds the model off to the side while writers continue (their changes go to a log that is replayed), then swaps the new model in with one volatile write. Searches never wait for a retrain. Deletes are tombstones in the lists, and <code>compact()</code> rewrites a list from its live slots.</p>
+<p>IVF has no serialization yet, and it is not used by <code>TieredIndex</code>.</p>
+<h2 id="the-tier">The tier<a class="headerlink" href="#the-tier" title="Permanent link">&para;</a></h2>
+<p><code>TieredIndex</code> is the composition. The vectors in the host's records are the source of truth. The tail, the segments, and the floor map are derived data that can be thrown away and rebuilt (<code>rebuildFrom</code>) from raw vectors, so the code never has to make the derived state durable. <code>rebuildFrom</code> swaps the rebuilt state in the way a merge does: a search that started before the swap keeps the floor entries that its segments need, and they are dropped when that search is done.</p>
+<h3 id="exact-tail">Exact tail<a class="headerlink" href="#exact-tail" title="Permanent link">&para;</a></h3>
+<p><code>add</code> puts the vector into the active tail, a <code>FlatIndex</code> (fp32 or SQ8), and a raw copy next to it. The raw copy is what a seal and a rebuild read. The vector is visible to the next search in any thread before <code>add</code> returns. <code>delete</code> removes it from the tails and hides every segment copy at once. <code>apply</code> does both for a whole batch (see Batches).</p>
+<h3 id="sealed-hnsw-segments">Sealed HNSW segments<a class="headerlink" href="#sealed-hnsw-segments" title="Permanent link">&para;</a></h3>
+<p>When the active tail reaches <code>tailLimit</code> vectors, or its first vector is older than <code>tailAgeMs</code>, and the index holds at least <code>smallLimit</code> vectors, one worker thread seals it:</p>
+<ol>
+<li>Freeze the tail under the write lock. A new empty tail takes over writes.</li>
+<li>Build a <code>GraphIndex</code> from the frozen contents and seal it, outside any lock, while searches and writes continue (searches scan both tails).</li>
+<li>Publish the segment with one volatile write of an immutable view that drops the frozen tail.</li>
+</ol>
+<p>A vector is always in the frozen tail, in the segment, or in both for an instant, and the dedupe resolves the overlap, so it is never missing. Below <code>smallLimit</code> live vectors no graph is built at all and every search is an exact scan.</p>
+<h3 id="atomic-swap-of-the-segment-list">Atomic swap of the segment list<a class="headerlink" href="#atomic-swap-of-the-segment-list" title="Permanent link">&para;</a></h3>
+<p>The segment list, the active tail, and the frozen tail live in one immutable view. A seal or a merge builds its result off to the side and publishes a new view with a single volatile write. A search reads the view once and finishes on it, so a search that started before a swap still sees everything it needs and the old segments stay valid for it. To keep that true for hidden copies, each view counts the searches running on it: a search raises the count, reads the view again to check that it is still current, and lowers the count when it is done (one atomic add each way, no lock). A view that a swap replaces while its count is not zero is held until the count reaches zero.</p>
+<h3 id="batches">Batches<a class="headerlink" href="#batches" title="Permanent link">&para;</a></h3>
+<p><code>apply(batch)</code> is the write path of a host transaction: the adds, then the deletes, under one hold of the write lock. The tail and the floor map change in place, so a new view cannot make a batch visible at one instant. A batch counter does: it is odd while a batch is applied and even otherwise, and only the writer that holds the lock changes it. A search reads it before it scans and waits while it is odd. After the scan it reads it again, behind an acquire fence. When the value changed, a batch was applied during the scan, the answer may mix the state before the batch with the state after it, and the search runs again on the current view. A search that returns therefore saw no batch in progress from the start of its scan to its end: all of every earlier batch and nothing of any later one. A single <code>add</code> or <code>delete</code> does not touch the counter, because each is atomic by itself.</p>
+<p>A search that is in the middle of a scan when a batch opens finishes the scan on the view it holds, which is still valid memory, and discards the answer. A search that starts inside the batch waits for it. A search that starts after the batch sees all of it, because the closing write of the counter comes after every change of the batch.</p>
+<p>The query path pays one volatile read before the scan and one fence and one volatile read after it, plus a second scan when a batch overlapped the first. A search that meets a batch waits for the length of the batch (a short spin, then parks of 20 microseconds). A stream of batches that follow each other faster than one scan takes can starve a search, so the rate of <code>apply</code> calls is the bound.</p>
+<h3 id="tombstones-and-the-version-floor">Tombstones and the version floor<a class="headerlink" href="#tombstones-and-the-version-floor" title="Permanent link">&para;</a></h3>
+<p>Versions come from one counter under the write lock. The floor map says "a segment copy of <code>id</code> is valid only when its version is at least <code>floor[id]</code>". Replace and delete raise the floor, but only when a segment or the frozen tail holds a copy of the id, so the map stays small. Searches filter segments through the floor inside the beam, so a deleted or replaced vector never appears and nothing waits for a merge. Each segment counts its hidden copies, and a segment with none is searched with the plain filter. Because the floor is a version and not a flag, an id that the host reuses after a delete is added with a newer version, so the new vector is visible while the old copies stay hidden.</p>
+<h3 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h3>
+<p>A search scans the tails exactly, searches every segment, drops hidden ids, applies the filter in both, and merges by score. Duplicate ids (a replace in flight) are resolved newest source first: active tail, frozen tail, then segments. <code>Freshness.SEALED_ONLY</code> skips the tails. It may lag (a vector added or replaced since the last seal is not in it) but never returns a deleted id, a stale vector, or an id that was never added.</p>
+<h3 id="merge">Merge<a class="headerlink" href="#merge" title="Permanent link">&para;</a></h3>
+<p>When the segment count exceeds <code>maxSegments</code>, or one segment is <code>deadFraction</code> hidden, the worker rebuilds the smallest segments (or the dead one) into one segment from their valid vectors only, throttled to <code>mergeRatePerSec</code> inserts per second so the cores that serve queries are not starved, and swaps it in. Floor entries whose stale copies are gone are dropped at the swap, except those that a segment of a held view still needs: a search that started before the swap can still be scanning an old segment, and without the entry its hidden copy would be valid again. The rest is dropped when the searches of the held views are done: the worker looks again every 5 ms while such a cleanup is pending, and <code>awaitIdle</code>, <code>mergeNow</code>, <code>sealNow</code> and <code>checkpoint</code> finish it on the calling thread, so a tier that <code>awaitIdle</code> reports idle has a settled floor map. The optional size-ratio trigger (<code>mergeTriggerRatio</code>) is described with the knobs.</p>
+<h3 id="bounds-and-threads">Bounds and threads<a class="headerlink" href="#bounds-and-threads" title="Permanent link">&para;</a></h3>
+<p>One worker thread runs one task at a time (a seal or a merge). There is a cap on segments. No allocation proportional to <code>n</code> happens on the query path. Back pressure: when the active tail holds <code>hardTailFactor * max(tailLimit, smallLimit)</code> vectors, <code>add</code> waits for the worker, bounded to 10 s. <code>awaitCapacity(deadline)</code> is the same wait as a pre-check for <code>apply</code>: it waits for room in the tail and returns <code>false</code> at the deadline. <code>apply</code> never waits for the worker and does not look at the limit, so one batch can take the tail above it. <code>add</code> and <code>delete</code> take one write lock for a short time, and <code>apply</code> takes it once for the whole batch. Searches take no lock.</p>
+<h2 id="kernels-and-the-scalar-twin">Kernels and the scalar twin<a class="headerlink" href="#kernels-and-the-scalar-twin" title="Permanent link">&para;</a></h2>
+<p><code>Kernels</code> holds the flat-tier distance kernels: float dot and L2, int8 dot, and Hamming. Each has a Vector API version in <code>VKernels</code> and a scalar twin. The choice is made once, when <code>Kernels</code> is initialized: scalar when <code>-Dhumemai.vec.scalar=true</code>, scalar when <code>VKernels</code> cannot load (for example without the <code>jdk.incubator.vector</code> module), vector otherwise. <code>Kernels.VECTOR</code> says which one is in use. <code>IvfIndex</code> uses the same kernels.</p>
+<p>On a JVM whose preferred float species has fewer than 8 lanes (128 bits: NEON on aarch64), <code>VKernels</code> has no fast form of the int8 dot, the SQ8 dots, and block16: its int8 dot is built on 256-bit species, which the JVM cannot map to NEON (138 times slower than the scalar twin in CI, <a href="https://github.com/humemai/tiervec/issues/52">#52</a>), and the other three need 8 float lanes. There <code>Kernels</code> uses the 128-bit forms of <code>NKernels</code> on aarch64 (<code>Kernels.JVM_NARROW</code>) and the scalar twins on any other host (<code>Kernels.JVM_QUANT_SCALAR</code>), and <code>Kernels.quantReason</code> says which and why. If <code>NKernels</code> cannot initialize on an aarch64 JVM, the scalar twins are used, never an exception. The fp32 dot and squared L2 stay in <code>VKernels</code> on every JVM, hamming stays scalar, and a JVM with 8 or more float lanes is unchanged. <code>Kern.dotQ8</code> follows the same rule, so one run uses one SQ8 dot in the flat and in the graph tier. AVX-512 and SVE are not used.</p>
+<p>Inside a GraalVM native image (<code>Kernels.IN_IMAGE</code>) the choice is different. <code>VKernels</code> is more than 10 times slower than scalar code there (a masked tail and a slice-based sum send the whole method through a slow path), so an image uses <code>NKernels</code> for every kernel that has a Vector API form (the fp32 dot and squared L2, the int8 dot, the SQ8 dots, and block16) when the module is present in the image, and the scalar twins otherwise. <code>NKernels</code> is the textbook form that an image compiles to SIMD code: a <code>static final</code> species, two accumulators, <code>fma</code>, <code>reduceLanes(ADD)</code>, a scalar tail, no masks. The species is chosen from <code>os.arch</code> in a static initializer, 128 bits on aarch64 and 256 bits everywhere else (a CPU with AVX-512 runs the 256-bit species), and the image builder must run that initializer, which <code>META-INF/native-image/com.humemai/tiervec/native-image.properties</code> asks for with <code>--initialize-at-build-time=com.humemai.vec.NKernels</code>. The initializer catches a missing module and leaves the species null, so an image built without the module still builds and <code>Kernels</code> selects the scalar twins, with the cause in <code>Kernels.scalarReason</code>. The int8, SQ8, and block16 kernels have two forms each in <code>NKernels</code>, one per species, chosen by <code>NKernels.WIDE</code>: the wide form for the 256-bit float species, and the narrow form for the 128-bit one, where the Vector API has no 32-bit byte species, so the byte vector is loaded at 64 or 128 bits and split into parts. Each form is the one that was fastest in an image on both Oracle GraalVM 25 and GraalVM CE 25.0.2, on x86-64 and arm64 Linux (<a href="https://github.com/humemai/tiervec/issues/48">#48</a>). Hamming has no Vector API form and stays scalar. <code>Kernels.JVM_VECTOR</code> and <code>Kernels.NATIVE_VECTOR</code> say which holder is in use. The fixed-order sum of the JVM kernels is not used in an image: a sum in a fixed order is fast only on Oracle GraalVM, so <code>NKernels</code> takes <code>reduceLanes</code>, and its result can differ from the JVM by rounding. To build the image, give the builder <code>--add-modules jdk.incubator.vector -H:+VectorAPISupport</code> (GraalVM 25; the properties file does not set them, so a scalar image stays possible).</p>
+<p><code>Kern</code> holds the graph kernels: float dot, squared L2, and the dot of a float query with SQ8 codes (in an image, <code>NKernels.dotF8</code>). Its Vector API versions are in <code>VKern</code>, and its scalar twins are the scalar twins of <code>Kernels</code>. <code>Kern</code> follows <code>Kernels.VECTOR</code>, and <code>Kernels</code> initializes both holder classes inside its <code>try</code>, so one run never mixes the two modes and a failure to load either holder selects the scalar twins for every index. <code>GraphIndex</code>, <code>SealedGraph</code>, and <code>TieredIndex</code> need no incubator class in that case.</p>
+<p>A scalar result and a vector result of the same float kernel can differ by rounding. <code>KernDiffTest</code> states the tolerance (1e-5 times the sum of the absolute terms) and compares exactly representable data bit for bit; for <code>NKernels</code> it uses 1e-4 times the sum of the absolute terms plus a floor of 1e-6, on lengths around the lane width and at 100, 128, and 770, for every form of every <code>NKernels</code> kernel, so the 128-bit forms of aarch64 are tested on an x86 host too. <code>NoIncubatorTest</code> starts a JVM without the module and builds and searches a tier in it. The graph, segment, and tier tests also run with the scalar twins, in the surefire execution <code>scalar-twin</code>.</p>
+<h2 id="tier-configuration">Tier configuration<a class="headerlink" href="#tier-configuration" title="Permanent link">&para;</a></h2>
+<p><code>TieredIndex.Config</code> is a record. <code>Config.defaults()</code> gives the defaults below, and <code>with...</code> methods return a changed copy. The constructor rejects <code>tailLimit &lt; 1</code>, <code>smallLimit &lt; 0</code>, <code>maxSegments &lt; 1</code>, <code>mergeFan &lt; 2</code>, <code>hardTailFactor &lt; 2</code>, <code>buildThreads &lt; 1</code>, a negative or infinite <code>mergeTriggerRatio</code>, and a <code>BINARY</code> tail quantizer.</p>
+<table>
+<thead>
+<tr>
+<th>Knob</th>
+<th>Default</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tailLimit</code></td>
+<td>2000</td>
+<td>Seal when the active tail has this many vectors.</td>
+</tr>
+<tr>
+<td><code>tailAgeMs</code></td>
+<td>60000</td>
+<td>Also seal when the oldest tail vector is older than this. 0 means never by age.</td>
+</tr>
+<tr>
+<td><code>smallLimit</code></td>
+<td>1000</td>
+<td>Below this many live vectors no graph is ever built and every search is an exact scan.</td>
+</tr>
+<tr>
+<td><code>maxSegments</code></td>
+<td>8</td>
+<td>Merge when the segment count exceeds this.</td>
+</tr>
+<tr>
+<td><code>mergeFan</code></td>
+<td>4</td>
+<td>How many of the smallest segments one merge takes.</td>
+</tr>
+<tr>
+<td><code>deadFraction</code></td>
+<td>0.3</td>
+<td>Compact (merge) a segment when this share of it is hidden.</td>
+</tr>
+<tr>
+<td><code>mergeRatePerSec</code></td>
+<td>50000</td>
+<td>Insert rate cap of the merge builder. 0 means unlimited.</td>
+</tr>
+<tr>
+<td><code>hardTailFactor</code></td>
+<td>4</td>
+<td>Back pressure: writers wait when the active tail holds this factor times <code>max(tailLimit, smallLimit)</code> vectors.</td>
+</tr>
+<tr>
+<td><code>tailQuant</code></td>
+<td><code>NONE</code></td>
+<td>Tail kernel: <code>NONE</code> scans fp32, <code>SQ8</code> scans int8 codes and reranks the best 5 times <code>k</code> candidates in fp32.</td>
+</tr>
+<tr>
+<td><code>graph</code></td>
+<td><code>GraphIndex.Params.defaults()</code></td>
+<td>Segment graph parameters: <code>M</code> 16, <code>efConstruction</code> 200, <code>efSearch</code> 100 (the search beam), <code>alpha</code> 1.0, <code>sq8</code> false, <code>seed</code> 42.</td>
+</tr>
+<tr>
+<td><code>buildThreads</code></td>
+<td><code>max(1, min(4, cpus - 1))</code></td>
+<td>Threads of one seal or merge build.</td>
+</tr>
+<tr>
+<td><code>splitBeam</code></td>
+<td>false</td>
+<td>When true and more than one segment is searched, segment <code>s</code> gets the beam <code>max(k, ceil(ef * rows(s) / rows of all searched segments))</code> instead of the full <code>ef</code>.</td>
+</tr>
+<tr>
+<td><code>mergeTriggerRatio</code></td>
+<td>0.0</td>
+<td>Size-ratio merge trigger, off at 0. See below.</td>
+</tr>
+</tbody>
+</table>
+<p>With <code>mergeTriggerRatio</code> X above 0, the segment with the most live rows is the big one. When the live rows of all the other segments together exceed X times the live rows of the big one, all segments are merged into one. Otherwise, if <code>maxSegments</code> is at least 2 and the count exceeds it, the count rule picks among the small segments only, so the big one is rewritten only by the ratio rule. With <code>maxSegments</code> 1 the count rule includes the big one and a merge happens at every seal. A merge into the big segment rewrites about (1 + X) / X vectors per inserted vector, on top of the small-segment merges.</p>
+<p>Other controls on the tier: <code>filterScanBelow(fraction)</code> (default 0, off) is the scan-first threshold of filtered searches, applied per segment (the tails are always scanned exactly), <code>sealNow()</code>, <code>mergeNow()</code> and <code>awaitIdle(timeoutMs)</code> run or wait for the worker, <code>search(q, k, allow, ef)</code> sets the beam per call, and <code>stats()</code> reports seals, merges, segment sizes, floor entries, write amplification, and a log of finished tasks.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../ROADMAP/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Roadmap">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Roadmap
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../ID-EPOCH-AND-REPLAY/" class="md-footer__link md-footer__link--next" aria-label="Next: Id epoch and replay">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Id epoch and replay
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 HumemAI
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/humemai/tiervec" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

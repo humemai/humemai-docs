@@ -1,0 +1,1642 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for tiervec, a tiered vector index for agent-memory databases on the JVM (experimental, unreleased)">
+      
+      
+        <meta name="author" content="HumemAI">
+      
+      
+        <link rel="canonical" href="https://docs.humem.ai/tiervec/dev/">
+      
+      
+      
+        <link rel="next" href="STATUS/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="brand/export/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>tiervec</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Schibsted+Grotesk:300,300i,400,400i,700,700i%7CDM+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Schibsted Grotesk";--md-code-font:"DM Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="brand/css/mkdocs.css">
+    
+      <link rel="stylesheet" href="stylesheets/tiervec.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tiervec" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="tiervec" class="md-header__button md-logo" aria-label="tiervec" data-md-component="logo">
+      
+  <img src="brand/logo/mark-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            tiervec
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Home
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/humemai/tiervec" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    humemai/tiervec
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="STATUS/" class="md-tabs__link">
+          
+  
+  
+  Status
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="DESIGN/" class="md-tabs__link">
+          
+  
+  
+  Design
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="API/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="RELEASING/" class="md-tabs__link">
+          
+  
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="tiervec" class="md-nav__button md-logo" aria-label="tiervec" data-md-component="logo">
+      
+  <img src="brand/logo/mark-white.svg" alt="logo">
+
+    </a>
+    tiervec
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/humemai/tiervec" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    humemai/tiervec
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-proven" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is proven
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#build-and-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build and test
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#native-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Native image
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requirements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#platform-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platform support
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing-and-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contributing and support
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        License
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Status
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="STATUS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ROADMAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="DESIGN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ID-EPOCH-AND-REPLAY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Id epoch and replay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="SEGMENT-FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segment files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="API/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API and stability policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="PROVIDER-CONTRACT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host contract
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="RELEASING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releasing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CHANGELOG/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="SUPPORT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="THIRD_PARTY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third-party code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it is
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-proven" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is proven
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#build-and-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build and test
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#native-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Native image
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requirements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#platform-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platform support
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing-and-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contributing and support
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        License
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="tiervec">tiervec<a class="headerlink" href="#tiervec" title="Permanent link">&para;</a></h1>
+<div class="hm-banner">
+<p><strong>Experimental and unreleased.</strong> The API is not stable and nothing here is wired into a database engine yet. <a href="API/#stability-policy-for-0x">What may change</a>.</p>
+</div>
+<p>A tiered vector index for agent-memory databases on the JVM.</p>
+<p><strong>Status: experimental.</strong> The API is not stable, there is no release, and nothing is wired into a database engine yet. No benchmark numbers are published. <a href="#what-is-proven">What is proven</a> says what the repository shows today, and <a href="STATUS/">docs/STATUS.md</a> has the detail.</p>
+<h2 id="what-it-is">What it is<a class="headerlink" href="#what-it-is" title="Permanent link">&para;</a></h2>
+<p>A library of vector-index algorithms meant to live inside a database engine, in the same process, with no network between the engine and the index. The first host is <a href="https://github.com/ArcadeData/arcadedb">ArcadeDB</a>.</p>
+<p>The design follows the workload of an agent's memory: many small and medium collections, a steady stream of small writes, deletes and updates, and queries that must see a write right away.</p>
+<ul>
+<li><strong>Exact tail.</strong> Recent writes sit in a bounded buffer that is scanned exactly, so a write is visible to the next query without waiting for an index build.</li>
+<li><strong>Sealed segments.</strong> Older vectors live in immutable HNSW graph segments. Below a size threshold no graph is built and every search is an exact scan. Segments are merged in the background and swapped in atomically.</li>
+<li><strong>Tombstones with a version floor</strong> handle deletes and updates, including ids that a database reuses after a delete.</li>
+<li><strong>Scalar twins of every kernel</strong> (flat, IVF, and graph), chosen once per JVM, so every index, the graph tier and the tiered index included, also runs without the Vector API module.</li>
+<li><strong>Pure Java</strong>, no native dependencies. It also builds into a GraalVM native image, where every kernel except hamming (fp32, int8, SQ8, and block) uses the Vector API too (see <a href="#native-image">Native image</a>).</li>
+</ul>
+<p>The repository also holds a standalone IVF (inverted file) index, which is not a tier segment yet. The host engine would own persistence, transactions and recovery: the tier can rebuild all of its derived state from the raw vectors. Serialization exists for the flat index and, as a first cut, for a settled tier: segment files with a manifest, written by <code>TieredIndex.checkpoint</code> and read by <code>TieredIndex.open</code> (<a href="SEGMENT-FORMAT/">docs/SEGMENT-FORMAT.md</a>). <a href="DESIGN/">docs/DESIGN.md</a> describes what the code does.</p>
+<h2 id="what-is-proven">What is proven<a class="headerlink" href="#what-is-proven" title="Permanent link">&para;</a></h2>
+<p>Every row says what the repository itself shows, and links the evidence. "Not measured yet" means no number is published here.</p>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Where it stands</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Does it build and pass its tests?</td>
+<td>Yes, on Linux x86-64 (JDK 21 and 25, fast and slow tests), Linux arm64, macOS arm64 and Windows x64 (fast tests only on these three). Native image smoke jobs run on the same four platforms.</td>
+<td><a href="#platform-support">Platform support</a>, <a href="STATUS/#what-exists">docs/STATUS.md</a></td>
+</tr>
+<tr>
+<td>Sizes the tests use</td>
+<td>The tests run on small collections. The long id-reuse test (<code>RidReuseBigLongTest</code>) and the long IVF program use 20,000 vectors, and the threaded graph program stays below 67,000. A self-search probe on the graph index ran at 100,000 to 200,000 vectors.</td>
+<td><a href="STATUS/#graph-self-search-recall">docs/STATUS.md</a></td>
+</tr>
+<tr>
+<td>Speed and recall at scale</td>
+<td>Not measured yet. No benchmark numbers are published in this repository, and nothing here is proven at 1,000,000 vectors or at 10,000,000.</td>
+<td><a href="STATUS/">docs/STATUS.md</a></td>
+</tr>
+<tr>
+<td>Concurrent readers and writers</td>
+<td>Tested at small sizes: threaded programs of 5 to 60 seconds, batch stress tests, and tests that hold a search inside a merge or a seal. Concurrent writers at scale: not proven.</td>
+<td><a href="STATUS/#record-id-reuse-and-tombstones">docs/STATUS.md</a></td>
+</tr>
+<tr>
+<td>Deletes, updates, reused ids, atomic batches</td>
+<td>Tested, including races between a search and a merge or a rebuild. The races found so far (<a href="https://github.com/humemai/tiervec/issues/3">#3</a>, <a href="https://github.com/humemai/tiervec/issues/26">#26</a>, <a href="https://github.com/humemai/tiervec/issues/28">#28</a>) have tests.</td>
+<td><a href="STATUS/#record-id-reuse-and-tombstones">docs/STATUS.md</a>, <a href="STATUS/#atomic-batches">docs/STATUS.md</a></td>
+</tr>
+<tr>
+<td>Restart and recovery</td>
+<td>A settled tier can be checkpointed and reopened. Tests stop the publish after each step (a simulated process kill), flip bits in every byte that a CRC covers, and forge files with valid CRCs. Power loss is not tested.</td>
+<td><a href="SEGMENT-FORMAT/">docs/SEGMENT-FORMAT.md</a>, <a href="STATUS/#id-epoch-and-replay">docs/STATUS.md</a></td>
+</tr>
+<tr>
+<td>Native image</td>
+<td>Smoke tests build and run an image and compare every answer with an exact scan. They do not cover segment files, <code>rebuildFrom</code> or concurrent writers. The image is not published.</td>
+<td><a href="STATUS/#what-does-not-exist-yet">docs/STATUS.md</a></td>
+</tr>
+<tr>
+<td>Inside a database engine</td>
+<td>No. Nothing here is wired into ArcadeDB or any other engine.</td>
+<td><a href="PROVIDER-CONTRACT/#status-of-every-guarantee">docs/PROVIDER-CONTRACT.md</a></td>
+</tr>
+<tr>
+<td>Release</td>
+<td>None. The version is <code>0.1.0-SNAPSHOT</code> and the API is not stable.</td>
+<td><a href="STATUS/#what-does-not-exist-yet">docs/STATUS.md</a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Known limits</strong></p>
+<ul>
+<li>Graph search is approximate. At the default <code>ef</code> (100), a query equal to an inserted vector is missed at about 1.2e-4 to 4.0e-4 per probe at 100,000 to 200,000 vectors, and the rate rises with the size of the index. A search at <code>ef</code> 1000 found 1,254 of the 1,260 misses that were diagnosed. The hardware of this measurement is not recorded. (<a href="STATUS/#graph-self-search-recall">details</a>)</li>
+<li>A filtered search with a small allowed share (about 0.01) spends most of its cost on a walk that falls back to an exact scan. The opt-in <code>filterScanBelow</code> skips the walk, it is off by default, and the range of shares where it pays is not measured yet (<a href="https://github.com/humemai/tiervec/issues/12">#12</a>, <a href="DESIGN/#graph-index">docs/DESIGN.md</a>).</li>
+<li><code>checkpoint</code> writes a settled tier only: no tail, no tombstones. Reads copy the file into memory, with no memory mapping (<a href="SEGMENT-FORMAT/#what-the-first-cut-leaves-out">docs/SEGMENT-FORMAT.md</a>).</li>
+<li>A search that meets a batch waits for it, and a stream of batches that follow each other faster than one scan takes can starve a search (<a href="STATUS/#atomic-batches">docs/STATUS.md</a>).</li>
+<li>In a native image a result can differ from the JVM by rounding. AVX-512 and SVE are not used (<a href="https://github.com/humemai/tiervec/issues/52">#52</a>).</li>
+</ul>
+<h2 id="build-and-test">Build and test<a class="headerlink" href="#build-and-test" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mvn -B -ntp verify            # fast tests: Vector API kernels, then the scalar twins
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>mvn -B -ntp verify -Pslow     # the long concurrency and stress tests (tag "slow")
+</code></pre></div>
+<p>The tests are the test programs of the experiment, wrapped as JUnit 5 tests. A wrapper runs the program, asserts that no check failed, and asserts that at least the expected number of checks ran.</p>
+<h2 id="native-image">Native image<a class="headerlink" href="#native-image" title="Permanent link">&para;</a></h2>
+<p>The library runs in a GraalVM native image. The CI job <code>native image smoke</code> builds the scalar image, and the jobs <code>native image smoke (vector, ...)</code> build the vector image on x86-64 and arm64 Linux and on macOS arm64 (GraalVM Community 25.0.2). The scalar image also builds on arm64 Linux (<code>native image smoke (arm64 Linux)</code>) and on macOS arm64 (<code>native image smoke (macOS arm64)</code>). The job <code>native image smoke (vector, Windows x64)</code> builds the vector image on Windows x64; there is no scalar image job on Windows.</p>
+<ul>
+<li>In an image every kernel that has a Vector API form uses it through <code>NKernels</code> (flat, IVF, and graph): the fp32 <code>dot</code> and <code>l2sq</code>, the int8 dot, the SQ8 dots, and <code>block16</code>. The species is fixed when the image is built: 256 bits on x86-64, 128 bits on aarch64 (where the Vector API has no 32-bit byte species, so the byte kernels load 64 or 128 bits of bytes and split them into parts). The Vector API kernels of the JVM are more than 10 times slower than scalar code in an image, so the image does not use them; <code>NKernels</code> is the form that the image compiles to SIMD code.</li>
+<li><code>hamming</code> has no Vector API form and stays scalar, in an image and on a JVM. AVX-512 and SVE are not used (the species stay 256 and 128 bits until measured).</li>
+<li>A result in an image can differ from a result on a JVM by rounding, because the lane sum of <code>NKernels</code> has the order of the instruction. Results are still bitwise equal between two calls on equal data within one image.</li>
+<li>To build an image with the Vector API kernels, give the image builder <code>--add-modules jdk.incubator.vector -H:+VectorAPISupport</code>. The jar carries <code>META-INF/native-image/com.humemai/tiervec/native-image.properties</code>, which sets <code>--initialize-at-build-time=com.humemai.vec.NKernels</code> for an application that has the jar on its class path; the species must be fixed at build time, or the kernels are slow. <code>-H:+VectorAPISupport</code> is an experimental option of GraalVM 25, and it needs GraalVM 25 or newer.</li>
+<li>Without <code>--add-modules jdk.incubator.vector</code> the image has the scalar twins for every kernel. <code>-Dhumemai.vec.scalar=true</code> forces the scalar twins in an image as well, when the property is set before the library is first used (an image takes <code>-D</code> options on its command line).</li>
+<li>The smoke program prints informational <code>SPEED</code> lines, one per kernel (<code>dot</code>, <code>dotI8</code>, <code>dotF8</code>, <code>dotF8x4</code>, and <code>block16</code> per block of 16 vectors), with the median time of 1,000,000 calls on 768 dimensions next to the scalar twin. They are not a bar.</li>
+</ul>
+<h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
+<ul>
+<li>JDK 21 or newer. CI builds and tests with Temurin 21 and 25 on x86-64 Linux, and runs the fast tests on arm64 Linux (JDK 21 and 25) and arm64 macOS (JDK 21). The job <code>fast tests (Windows x64, JDK 21)</code> runs the fast tests on Windows x64 (not the slow tests).</li>
+<li>Maven 3.9 or newer.</li>
+<li>The Vector API is an incubator module in these JDKs. Compile with <code>--add-modules jdk.incubator.vector</code>, and run with it to get the Vector API kernels; the <code>pom.xml</code> sets it for the compiler and for the test JVMs. At run time the module is optional: every kernel (flat, IVF, and graph) falls back to its scalar twin when the module is missing, or when <code>-Dhumemai.vec.scalar=true</code> is set.</li>
+<li>On a JVM with the Vector API, x86-64 vectorizes the fp32 <code>dot</code> and <code>l2sq</code>, the int8 dot, the SQ8 dots, and <code>block16</code>. On aarch64 (NEON, 128-bit float lanes) the fp32 <code>dot</code> and <code>l2sq</code> use the JVM kernels and the int8 dot, the SQ8 dots, and <code>block16</code> use the 128-bit forms of <code>NKernels</code>. <code>hamming</code> is scalar everywhere. A JVM with 128-bit lanes that is not aarch64 runs those four as scalar code. AVX-512 and SVE are not used (<a href="https://github.com/humemai/tiervec/issues/52">#52</a>).</li>
+<li>Nothing else at run time. JUnit 5 is a test dependency.</li>
+</ul>
+<h2 id="platform-support">Platform support<a class="headerlink" href="#platform-support" title="Permanent link">&para;</a></h2>
+<p>There are three tiers. For tier 1, each row names the CI job that proves it. A job marked "required" must pass before a pull request can merge into <code>main</code>. The other jobs run on every pull request but do not block it. All jobs run on GitHub-hosted runners.</p>
+<p><strong>Tier 1: tested in CI on every change</strong></p>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>Run by the job</th>
+<th>CI job</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linux x86-64, Temurin 21</td>
+<td>fast tests</td>
+<td><code>fast tests (JDK 21)</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Linux x86-64, Temurin 25</td>
+<td>fast tests</td>
+<td><code>fast tests (JDK 25)</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Workflow hygiene (actions pinned to a commit SHA)</td>
+<td>lint</td>
+<td><code>Ensure SHA pinned actions</code></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>Linux x86-64, Temurin 21 and 25</td>
+<td>slow tests (long concurrency and stress)</td>
+<td><code>slow tests (JDK 21)</code>, <code>slow tests (JDK 25)</code></td>
+<td>no</td>
+</tr>
+<tr>
+<td>Linux arm64, Temurin 21 and 25</td>
+<td>fast tests</td>
+<td><code>fast tests (arm64 Linux, JDK 21)</code>, <code>fast tests (arm64 Linux, JDK 25)</code></td>
+<td>no</td>
+</tr>
+<tr>
+<td>macOS arm64, Temurin 21</td>
+<td>fast tests</td>
+<td><code>fast tests (arm64 macOS, JDK 21)</code></td>
+<td>no</td>
+</tr>
+<tr>
+<td>Windows x64, Temurin 21</td>
+<td>fast tests</td>
+<td><code>fast tests (Windows x64, JDK 21)</code></td>
+<td>no</td>
+</tr>
+<tr>
+<td>Linux x86-64, GraalVM Community 21.0.2</td>
+<td>native image smoke, scalar kernels</td>
+<td><code>native image smoke</code></td>
+<td>no</td>
+</tr>
+<tr>
+<td>Linux arm64, GraalVM Community 21.0.2</td>
+<td>native image smoke, scalar kernels</td>
+<td><code>native image smoke (arm64 Linux)</code></td>
+<td>no</td>
+</tr>
+<tr>
+<td>macOS arm64, GraalVM Community 21.0.2</td>
+<td>native image smoke, scalar kernels</td>
+<td><code>native image smoke (macOS arm64)</code></td>
+<td>no</td>
+</tr>
+<tr>
+<td>Linux x86-64, GraalVM Community 25.0.2</td>
+<td>native image smoke, Vector API kernels</td>
+<td><code>native image smoke (vector, x86-64 Linux)</code></td>
+<td>no</td>
+</tr>
+<tr>
+<td>Linux arm64, GraalVM Community 25.0.2</td>
+<td>native image smoke, Vector API kernels</td>
+<td><code>native image smoke (vector, arm64 Linux)</code></td>
+<td>no</td>
+</tr>
+<tr>
+<td>macOS arm64, GraalVM Community 25.0.2</td>
+<td>native image smoke, Vector API kernels</td>
+<td><code>native image smoke (vector, macOS arm64)</code></td>
+<td>no</td>
+</tr>
+<tr>
+<td>Windows x64, GraalVM Community 25.0.2</td>
+<td>native image smoke, Vector API kernels</td>
+<td><code>native image smoke (vector, Windows x64)</code></td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<p>The slow tests run on Linux x86-64 only. There is no scalar-kernel native image job on Windows. The native image jobs run only when <code>src/main</code>, <code>src/smoke</code> or their workflow file change.</p>
+<p><strong>Tier 2: measured.</strong> None yet. No benchmark numbers are published in this repository. The <code>SPEED</code> lines that the native image jobs print are informational, and the one measurement in the repository (the graph self-search recall in <a href="STATUS/#graph-self-search-recall">docs/STATUS.md</a>) does not record its hardware. The shared GitHub runners are not a benchmark machine: a timing from them is a ratio between two things measured in the same run, not an absolute speed. A row moves here when its numbers and its hardware are published.</p>
+<p><strong>Tier 3: best effort.</strong> The code is plain Java 21 and has no native dependency, so it is expected to work, but nothing checks it and a problem there is fixed when it is cheap to do.</p>
+<ul>
+<li>macOS on Intel (x86-64): no CI job.</li>
+<li>Other JDK vendors and other JDK versions than 21 and 25: only Temurin 21 and 25 are tested.</li>
+<li>Other Linux distributions and other CPU features: the CI runners fix them. AVX-512 and SVE are not used (<a href="https://github.com/humemai/tiervec/issues/52">#52</a>).</li>
+</ul>
+<p><strong>Out:</strong> Windows on ARM, until GraalVM and the libraries around it support it. Nothing here builds or tests it.</p>
+<h2 id="documentation">Documentation<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h2>
+<p>The pages below are published at <a href="https://docs.humem.ai/tiervec/dev/">https://docs.humem.ai/tiervec/dev/</a> as the <code>dev</code> version. It follows <code>main</code> and is experimental and unreleased, like the library. The site is built from the Markdown files of this repository (<a href="CONTRIBUTING/#build-the-documentation">how to build it</a>).</p>
+<ul>
+<li><a href="API/">docs/API.md</a>: the supported public classes, the internal ones, and what may change in a 0.x release.</li>
+<li><a href="DESIGN/">docs/DESIGN.md</a>: the architecture and the knobs of the tier configuration.</li>
+<li><a href="PROVIDER-CONTRACT/">docs/PROVIDER-CONTRACT.md</a>: what a host database must provide and what the library guarantees, with the status of each line.</li>
+<li><a href="ID-EPOCH-AND-REPLAY/">docs/ID-EPOCH-AND-REPLAY.md</a>: how ids are numbered, the epoch rule, and replay after a restart.</li>
+<li><a href="SEGMENT-FORMAT/">docs/SEGMENT-FORMAT.md</a>: the segment file, the manifest, the publish order, and reopen, as the first cut implements them.</li>
+<li><a href="STATUS/">docs/STATUS.md</a>: what exists, what does not exist yet.</li>
+<li><a href="ROADMAP/">docs/ROADMAP.md</a>: what is planned and in what order, with the open issues, and the non-goals.</li>
+<li><a href="RELEASING/">docs/RELEASING.md</a>: the version rule and the steps of a release. <a href="CHANGELOG/">CHANGELOG.md</a> lists the changes.</li>
+</ul>
+<h2 id="contributing-and-support">Contributing and support<a class="headerlink" href="#contributing-and-support" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="CONTRIBUTING/">CONTRIBUTING.md</a>: how to build, test and open a pull request.</li>
+<li><a href="SUPPORT/">SUPPORT.md</a>: who maintains tiervec and where to ask for help.</li>
+<li><a href="SECURITY/">SECURITY.md</a>: how to report a security problem privately.</li>
+</ul>
+<h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
+<p>Apache-2.0, see <a href="https://github.com/humemai/tiervec/blob/main/LICENSE">LICENSE</a>. Papers and libraries this work builds on are listed in <a href="THIRD_PARTY/">THIRD_PARTY.md</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+        
+          
+          <a href="STATUS/" class="md-footer__link md-footer__link--next" aria-label="Next: Status">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Status
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 HumemAI
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/humemai/tiervec" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "toc.follow"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
