@@ -6,6 +6,7 @@ Current doc sets, each with a card on the landing page:
 
 - `mmdbbench/`
 - `audit-ready-memory/`
+- `tiervec/`: experimental and unreleased. It has one version, `dev`, which follows `main` of [humemai/tiervec](https://github.com/humemai/tiervec); there is no `latest` until a release. Its pages are at `https://docs.humem.ai/tiervec/dev/<page>/`, and the card links https://docs.humem.ai/tiervec/dev/.
 
 External cards (no folder here): "ArcadeDB" links the engine manual, https://docs.arcadedb.com/arcadedb/, and "ArcadeDB in Python" links the Python package's docs, https://docs.arcadedb.com/arcadedb-python/. The two names match the two research pages and the two software pages on humem.ai.
 
