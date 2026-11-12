@@ -971,6 +971,78 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#maven-central" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maven Central
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Maven Central">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secrets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-signing-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The signing key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dry-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dry run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-publish-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The publish run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reminder-the-central-token-expires" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reminder: the Central token expires
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#before-the-first-release" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1208,6 +1280,78 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#maven-central" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maven Central
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Maven Central">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secrets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-signing-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The signing key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dry-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dry run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-publish-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The publish run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reminder-the-central-token-expires" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reminder: the Central token expires
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#before-the-first-release" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1305,8 +1449,9 @@
 <li>A tag on the commit of <code>main</code> that carries the release version.</li>
 <li>A section in <a href="../CHANGELOG/">CHANGELOG.md</a> with the version and the date.</li>
 <li>A GitHub release whose notes are that section.</li>
+<li>A documentation version <code>&lt;version&gt;</code> with the alias <code>latest</code> at <a href="https://docs.humem.ai/tiervec/">https://docs.humem.ai/tiervec/</a>. The tag push publishes it (workflow <code>deploy-docs.yml</code>). A push to <code>main</code> publishes only <code>dev</code>.</li>
+<li>The artifact <code>ai.humem:tiervec:&lt;version&gt;</code> on Maven Central: the jar, a sources jar and a javadoc jar, each signed. The GitHub release starts the upload (workflow <code>release-central.yml</code>) and the maintainer confirms it in the Central Portal. The details are in the section "Maven Central" below (<a href="https://github.com/humemai/tiervec/issues/62">#62</a>).</li>
 </ul>
-<p>No jar is published yet. Publishing to Maven Central is a separate step with its own issue (<a href="https://github.com/humemai/tiervec/issues/62">#62</a>).</p>
 <h2 id="the-changelog">The changelog<a class="headerlink" href="#the-changelog" title="Permanent link">&para;</a></h2>
 <p><a href="../CHANGELOG/">CHANGELOG.md</a> follows the "Keep a Changelog" layout: a section <code>Unreleased</code> at the top, then one section per release, newest first. The groups in a section are <code>Added</code>, <code>Changed</code>, <code>Deprecated</code>, <code>Removed</code>, <code>Fixed</code> and <code>Security</code>.</p>
 <p>A pull request that changes the supported surface, the file format, or a documented guarantee adds its line to <code>Unreleased</code> in the same pull request. A breaking change says so and says what to change. A change in the file format says which older readers refuse the new files (<a href="../SEGMENT-FORMAT/#versioning-and-compatibility">SEGMENT-FORMAT.md</a>).</p>
@@ -1318,28 +1463,107 @@
 <li>In <code>pom.xml</code>, change <code>&lt;version&gt;</code> to the release version (no <code>-SNAPSHOT</code>).</li>
 <li>In <code>CHANGELOG.md</code>, rename <code>Unreleased</code> to <code>&lt;version&gt; - YYYY-MM-DD</code>, add an empty <code>Unreleased</code> above it, and read the entry once against <code>git log &lt;previous tag&gt;..HEAD</code>.</li>
 <li>Update <code>docs/STATUS.md</code> and the README status table where the release changes what they say (for example the line "A release: none").</li>
+<li>Run the Central dry run on the branch and read its result (see "Maven Central" below):</li>
+</ol>
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>gh workflow run release-central.yml --ref release/&lt;version&gt; -f dry-run=true
+</code></pre></div>
+<ol>
 <li>Open a pull request named <code>Release &lt;version&gt;</code>, wait for green, and merge it.</li>
 <li>Tag the merge commit and push the tag. The tag is the bare version:</li>
 </ol>
-<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git tag &lt;version&gt; &lt;merge-sha&gt;
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>git push origin &lt;version&gt;
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git tag &lt;version&gt; &lt;merge-sha&gt;
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>git push origin &lt;version&gt;
 </code></pre></div>
+<p>The tag push starts the workflow <code>Deploy docs</code>. It publishes the documentation as <code>&lt;version&gt;</code> with the alias <code>latest</code>, and <code>latest</code> is the default of the site.</p>
 <ol>
 <li>Publish the GitHub release. The notes are the changelog section of this version:</li>
 </ol>
-<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>gh release create &lt;version&gt; --title &lt;version&gt; --notes-file &lt;file with the section&gt;
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>gh release create &lt;version&gt; --title &lt;version&gt; --notes-file &lt;file with the section&gt;
 </code></pre></div>
+<p>Publishing the release starts the workflow <code>Release to Maven Central</code>. It builds from the tag, runs the fast tests, signs, uploads the bundle and waits until the portal has validated it. It does not publish.</p>
 <ol>
+<li>Confirm the upload in the Central Portal and press Publish (see "Maven Central" below). Then check that a small project resolves <code>ai.humem:tiervec:&lt;version&gt;</code> from Maven Central. That is the done-when of issue <a href="https://github.com/humemai/tiervec/issues/62">#62</a>.</li>
 <li>In a second pull request, set <code>&lt;version&gt;</code> on <code>main</code> to the next <code>-SNAPSHOT</code> (see above).</li>
 </ol>
-<p>A tag is never moved or deleted. A mistake in a release is fixed by the next PATCH release, and the changelog says so.</p>
+<p>A tag is never moved or deleted. A mistake in a release is fixed by the next PATCH release, and the changelog says so. A version on Maven Central cannot be changed or removed once it is published.</p>
+<h2 id="maven-central">Maven Central<a class="headerlink" href="#maven-central" title="Permanent link">&para;</a></h2>
+<p>The artifact is <code>ai.humem:tiervec</code>. The namespace <code>ai.humem</code> is verified on the Central Portal (<a href="https://central.sonatype.com">https://central.sonatype.com</a>), account <code>taewoon@humem.ai</code>. Central accepts the artifact only with a complete <code>pom.xml</code> (name, description, url, license, developers, scm), a sources jar, a javadoc jar and a GnuPG signature on every file. The profile <code>release</code> in <code>pom.xml</code> builds and signs all of that, and the plugin <code>central-publishing-maven-plugin</code> uploads one bundle. The profile has <code>autoPublish</code> set to <code>false</code>: the deployment stops at <code>VALIDATED</code> and nothing becomes public until the maintainer presses Publish in the portal.</p>
+<p>Only the workflow <code>release-central.yml</code> runs the profile with real credentials. Nobody runs it from a laptop.</p>
+<h3 id="secrets">Secrets<a class="headerlink" href="#secrets" title="Permanent link">&para;</a></h3>
+<p>Four repository secrets of <code>humemai/tiervec</code> (Settings, Secrets and variables, Actions). The workflow reads nothing else.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>What it holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CENTRAL_USERNAME</code></td>
+<td>The user name of the Central Portal user token</td>
+</tr>
+<tr>
+<td><code>CENTRAL_PASSWORD</code></td>
+<td>The password of the same token</td>
+</tr>
+<tr>
+<td><code>GPG_PRIVATE_KEY</code></td>
+<td>The armored private signing key</td>
+</tr>
+<tr>
+<td><code>GPG_PASSPHRASE</code></td>
+<td>The passphrase of that key</td>
+</tr>
+</tbody>
+</table>
+<p>Check that the four names exist (the values cannot be read, and the command shows names only):</p>
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>gh api repos/humemai/tiervec/actions/secrets --jq '[.secrets[].name]'
+</code></pre></div>
+<p>The workflow never prints a value, never puts one on a command line and never writes one to a file. The <code>settings.xml</code> it creates has <code>${env.CENTRAL_USERNAME}</code> and <code>${env.CENTRAL_PASSWORD}</code> references, mode 600, in the runner temp directory, and it removes the file and the GnuPG home at the end.</p>
+<h3 id="the-signing-key">The signing key<a class="headerlink" href="#the-signing-key" title="Permanent link">&para;</a></h3>
+<p>Create a key (a second key is not needed if one exists), store it as secrets without printing it, and publish the public key. <code>&lt;FPR&gt;</code> is the fingerprint that <code>gpg --list-secret-keys --keyid-format long</code> shows.</p>
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>gpg --quick-generate-key "HumemAI tiervec releases &lt;taewoon@humem.ai&gt;" ed25519 sign 3y
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>gpg --list-secret-keys --keyid-format long taewoon@humem.ai
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>gpg --armor --export-secret-keys &lt;FPR&gt; | gh secret set GPG_PRIVATE_KEY --repo humemai/tiervec
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>gh secret set GPG_PASSPHRASE --repo humemai/tiervec
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>gpg --keyserver hkps://keyserver.ubuntu.com --send-keys &lt;FPR&gt;
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>gpg --armor --export &lt;FPR&gt; &gt; tiervec-release-key.asc
+</code></pre></div>
+<p><code>gh secret set GPG_PASSPHRASE</code> asks for the value, so it does not reach the shell history. Upload <code>tiervec-release-key.asc</code> at <a href="https://keys.openpgp.org/upload">https://keys.openpgp.org/upload</a> and follow the link in the e-mail it sends, then delete the file. Central looks the public key up on these key servers when it validates a signature, so a deployment fails validation until the key is published.</p>
+<p>The token pair comes from the portal (Account, Generate User Token). Store it the same way, each command asks for its value:</p>
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>gh secret set CENTRAL_USERNAME --repo humemai/tiervec
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>gh secret set CENTRAL_PASSWORD --repo humemai/tiervec
+</code></pre></div>
+<h3 id="dry-run">Dry run<a class="headerlink" href="#dry-run" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>gh workflow run release-central.yml --ref &lt;branch or main&gt; -f dry-run=true
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>gh run list --workflow release-central.yml --limit 1
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>gh run view &lt;run-id&gt; --log-failed
+</code></pre></div>
+<p>The dry run is the default of the manual trigger and runs on any branch (GitHub dispatches a workflow only when its file is on <code>main</code>). It also runs on every pull request that changes <code>pom.xml</code>, <code>src/main</code> or the workflow file, so a Javadoc error or a broken release profile shows up in the pull request and not at release time; that check is not required. It generates a throwaway signing key inside the job, so it needs no secret and has no Central credentials: it cannot publish. It exports that key and imports it into a second GnuPG home with the script <code>.github/scripts/import-signing-key.sh</code>, the same script the publish run uses, so the import from an environment variable and the signing with a passphrase are rehearsed. It builds with JDK 21 (<code>-Prelease -DskipTests</code>, with a <code>-SNAPSHOT</code> version written as its release form in the job's checkout, because the Central plugin writes a bundle only for a release version), signs, writes the Central bundle, and then checks the bundle: the jar, sources jar, javadoc jar and pom are all there with checksums and a valid signature, the sources jar and the javadoc jar have content, and the pom has the elements Central requires. It uploads the bundle as the run artifact <code>central-dry-run-bundle</code> (7 days).</p>
+<p>It does not prove that the real key, the passphrase and the token work, or that the key is on a key server. The publish run checks the first two early: it imports the key with the same script, signs a probe file with the passphrase, and stops before the build if that fails.</p>
+<p>The dry run covers what changes with the code, such as a Javadoc error. Run it on the release branch before the tag (step 6).</p>
+<h3 id="the-publish-run">The publish run<a class="headerlink" href="#the-publish-run" title="Permanent link">&para;</a></h3>
+<p>The run starts when a GitHub release is published, or by hand with <code>-f dry-run=false</code> on the tag. It refuses to run unless the ref is a tag that equals the version in <code>pom.xml</code> (a bare version, no <code>-SNAPSHOT</code>), the tagged commit is on <code>main</code>, and all four secrets are present.</p>
+<p>To confirm in the portal:</p>
+<ol>
+<li>Open <a href="https://central.sonatype.com/publishing/deployments">https://central.sonatype.com/publishing/deployments</a>.</li>
+<li>Find the deployment named <code>ai.humem:tiervec:&lt;version&gt;</code>. Its status must be <code>VALIDATED</code>.</li>
+<li>Press Publish. The status goes through <code>PUBLISHING</code> to <code>PUBLISHED</code>, and the files appear under <a href="https://repo.maven.apache.org/maven2/ai/humem/tiervec/">https://repo.maven.apache.org/maven2/ai/humem/tiervec/</a> after a while (the search index is slower than the repository).</li>
+</ol>
+<p>If the status is <code>FAILED</code>, read the messages in the portal, drop the deployment, fix the cause, and run the workflow again on the same tag. That is allowed because nothing was published. Fixing a problem in the sources needs a new version.</p>
+<h3 id="reminder-the-central-token-expires">Reminder: the Central token expires<a class="headerlink" href="#reminder-the-central-token-expires" title="Permanent link">&para;</a></h3>
+<p>The Central user token was created on 2026-11-12 with an expiry of one year, so it expires around 2027-11. Rotate it before then: generate a new token in the portal, set <code>CENTRAL_USERNAME</code> and <code>CENTRAL_PASSWORD</code> again, and keep the date of the new expiry here. An expired token shows as an authentication error (HTTP 401) in the upload step of the publish run, and the dry run cannot catch it because it uses no token. If the signing key has an expiry (the example above has three years), that date is a second rotation point: extend it with <code>gpg --edit-key &lt;FPR&gt; expire</code>, export it again as above and upload the public key again.</p>
 <h2 id="before-the-first-release">Before the first release<a class="headerlink" href="#before-the-first-release" title="Permanent link">&para;</a></h2>
 <p>These open points are named in the repository and are settled before <code>0.1.0</code> is tagged:</p>
 <ul>
 <li>Settled: the Java package is <code>ai.humem.tiervec</code> and the Maven coordinates are <code>ai.humem:tiervec</code>. The package was renamed before the first release, so the rename is not a breaking change. After the release a rename would be one.</li>
 <li>Settled: comments and Javadoc in the sources use plain wording. The requirement ids, fix numbers and rule names of the first experiment are gone (<a href="../STATUS/#import-notes">STATUS.md</a>).</li>
 <li>The supported surface is listed in <a href="../API/">API.md</a>.</li>
-<li>The documentation site publishes only the label <code>dev</code> (<a href="https://docs.humem.ai/tiervec/dev/">docs.humem.ai/tiervec/dev</a>), because there is no release and no <code>latest</code> alias. The release pull request gives <code>deploy-docs.yml</code> a tag trigger that publishes the release version with the alias <code>latest</code>, and <code>dev</code> stays as the label of <code>main</code>.</li>
+<li>Settled: the documentation site publishes only the label <code>dev</code> (<a href="https://docs.humem.ai/tiervec/dev/">docs.humem.ai/tiervec/dev</a>) until the first release. <code>deploy-docs.yml</code> has a tag trigger that publishes the release version with the alias <code>latest</code>, and <code>dev</code> stays as the label of <code>main</code>.</li>
+<li>Settled: the workflow <code>release-central.yml</code> and the profile <code>release</code> exist (<a href="https://github.com/humemai/tiervec/issues/62">#62</a>). Before the tag, the four secrets of "Maven Central" must exist and the dry run must be green on the release branch.</li>
 </ul>
 
 

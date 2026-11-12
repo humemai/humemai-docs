@@ -1273,6 +1273,8 @@
 <li>CI on JDK 21 and 25, with the fast tests also on arm64 and on Windows x64.</li>
 <li>The supported public surface and the stability policy (<a href="../API/">docs/API.md</a>).</li>
 <li>A benchmark harness for the tier (<code>src/bench</code>, <a href="../BENCHMARKS/">docs/BENCHMARKS.md</a>) with a CI smoke at 10,000 vectors. No result file is published yet.</li>
+<li>Maven Central publishing for <code>ai.humem:tiervec</code>: the metadata Central requires in <code>pom.xml</code>, a <code>release</code> profile (sources jar, javadoc jar, GnuPG signatures, upload to the Central Portal), and the workflow <code>release-central.yml</code> with a dry run (<a href="../RELEASING/#maven-central">docs/RELEASING.md</a>).</li>
+<li>The documentation is published as a release version with the alias <code>latest</code> when a version tag is pushed, and <code>dev</code> stays the label of <code>main</code>.</li>
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
