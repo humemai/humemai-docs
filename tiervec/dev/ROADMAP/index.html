@@ -886,6 +886,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BENCHMARKS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1325,7 +1353,7 @@
 <p>One tracking issue with a checklist: <a href="https://github.com/humemai/tiervec/issues/19">#19</a>: Later: work that waits until the host contract holds</p>
 <p>It covers 1-bit and 4-bit quantization schemes, IVF as a segment format, an on-disk graph, and other language bindings. Each item becomes its own issue when it is promoted.</p>
 <h2 id="how-to-read-measurements">How to read measurements<a class="headerlink" href="#how-to-read-measurements" title="Permanent link">&para;</a></h2>
-<p>Measurements will be published with the harness, and none are published yet. A single run (n=1) is descriptive: it shows what happened, not what usually happens. A claim of a 1.3x difference or larger needs at least five runs, each in a fresh JVM, and a smaller difference needs more. Every study states its claim, its arms, its number of runs, and the bound it must meet before it runs. Memory figures say which unit and which counter they use, and latency figures say whether the JIT was warm.</p>
+<p>The harness is in the repository (<a href="../BENCHMARKS/">BENCHMARKS.md</a>), and no measurement is published yet. A single run (n=1) is descriptive: it shows what happened, not what usually happens. A claim of a 1.3x difference or larger needs at least five runs, each in a fresh JVM, and a smaller difference needs more. Every study states its claim, its arms, its number of runs, and the bound it must meet before it runs. Memory figures say which unit and which counter they use, and latency figures say whether the JIT was warm.</p>
 <h2 id="non-goals">Non-goals<a class="headerlink" href="#non-goals" title="Permanent link">&para;</a></h2>
 <ul>
 <li>A server. The index is a library that runs in the host's process, with no network between the host and the index.</li>

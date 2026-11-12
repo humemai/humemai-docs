@@ -912,6 +912,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="BENCHMARKS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1339,8 +1367,8 @@
 </tr>
 <tr>
 <td>Speed and recall at scale</td>
-<td>Not measured yet. No benchmark numbers are published in this repository, and nothing here is proven at 1,000,000 vectors or at 10,000,000.</td>
-<td><a href="STATUS/">docs/STATUS.md</a></td>
+<td>Not measured yet. No benchmark numbers are published in this repository, and nothing here is proven at 1,000,000 vectors or at 10,000,000. A harness for these measurements exists, and CI runs it at 10,000 vectors as a smoke test.</td>
+<td><a href="BENCHMARKS/">docs/BENCHMARKS.md</a>, <a href="STATUS/">docs/STATUS.md</a></td>
 </tr>
 <tr>
 <td>Concurrent readers and writers</td>
@@ -1386,22 +1414,22 @@
 <div class="language-text highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mvn -B -ntp verify            # fast tests: Vector API kernels, then the scalar twins
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>mvn -B -ntp verify -Pslow     # the long concurrency and stress tests (tag "slow")
 </code></pre></div>
-<p>The tests are the test programs of the experiment, wrapped as JUnit 5 tests. A wrapper runs the program, asserts that no check failed, and asserts that at least the expected number of checks ran.</p>
+<p>The tests are test programs, wrapped as JUnit 5 tests. A wrapper runs the program, asserts that no check failed, and asserts that at least the expected number of checks ran. The benchmark harness is not part of the Maven build: <a href="BENCHMARKS/">docs/BENCHMARKS.md</a> says how to compile and run it.</p>
 <h2 id="native-image">Native image<a class="headerlink" href="#native-image" title="Permanent link">&para;</a></h2>
 <p>The library runs in a GraalVM native image. The CI job <code>native image smoke</code> builds the scalar image, and the jobs <code>native image smoke (vector, ...)</code> build the vector image on x86-64 and arm64 Linux and on macOS arm64 (GraalVM Community 25.0.2). The scalar image also builds on arm64 Linux (<code>native image smoke (arm64 Linux)</code>) and on macOS arm64 (<code>native image smoke (macOS arm64)</code>). The job <code>native image smoke (vector, Windows x64)</code> builds the vector image on Windows x64; there is no scalar image job on Windows.</p>
 <ul>
 <li>In an image every kernel that has a Vector API form uses it through <code>NKernels</code> (flat, IVF, and graph): the fp32 <code>dot</code> and <code>l2sq</code>, the int8 dot, the SQ8 dots, and <code>block16</code>. The species is fixed when the image is built: 256 bits on x86-64, 128 bits on aarch64 (where the Vector API has no 32-bit byte species, so the byte kernels load 64 or 128 bits of bytes and split them into parts). The Vector API kernels of the JVM are more than 10 times slower than scalar code in an image, so the image does not use them; <code>NKernels</code> is the form that the image compiles to SIMD code.</li>
 <li><code>hamming</code> has no Vector API form and stays scalar, in an image and on a JVM. AVX-512 and SVE are not used (the species stay 256 and 128 bits until measured).</li>
 <li>A result in an image can differ from a result on a JVM by rounding, because the lane sum of <code>NKernels</code> has the order of the instruction. Results are still bitwise equal between two calls on equal data within one image.</li>
-<li>To build an image with the Vector API kernels, give the image builder <code>--add-modules jdk.incubator.vector -H:+VectorAPISupport</code>. The jar carries <code>META-INF/native-image/com.humemai/tiervec/native-image.properties</code>, which sets <code>--initialize-at-build-time=com.humemai.vec.NKernels</code> for an application that has the jar on its class path; the species must be fixed at build time, or the kernels are slow. <code>-H:+VectorAPISupport</code> is an experimental option of GraalVM 25, and it needs GraalVM 25 or newer.</li>
-<li>Without <code>--add-modules jdk.incubator.vector</code> the image has the scalar twins for every kernel. <code>-Dhumemai.vec.scalar=true</code> forces the scalar twins in an image as well, when the property is set before the library is first used (an image takes <code>-D</code> options on its command line).</li>
+<li>To build an image with the Vector API kernels, give the image builder <code>--add-modules jdk.incubator.vector -H:+VectorAPISupport</code>. The jar carries <code>META-INF/native-image/ai.humem/tiervec/native-image.properties</code>, which sets <code>--initialize-at-build-time=ai.humem.tiervec.NKernels</code> for an application that has the jar on its class path; the species must be fixed at build time, or the kernels are slow. <code>-H:+VectorAPISupport</code> is an experimental option of GraalVM 25, and it needs GraalVM 25 or newer.</li>
+<li>Without <code>--add-modules jdk.incubator.vector</code> the image has the scalar twins for every kernel. <code>-Dai.humem.tiervec.scalar=true</code> forces the scalar twins in an image as well, when the property is set before the library is first used (an image takes <code>-D</code> options on its command line).</li>
 <li>The smoke program prints informational <code>SPEED</code> lines, one per kernel (<code>dot</code>, <code>dotI8</code>, <code>dotF8</code>, <code>dotF8x4</code>, and <code>block16</code> per block of 16 vectors), with the median time of 1,000,000 calls on 768 dimensions next to the scalar twin. They are not a bar.</li>
 </ul>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <ul>
 <li>JDK 21 or newer. CI builds and tests with Temurin 21 and 25 on x86-64 Linux, and runs the fast tests on arm64 Linux (JDK 21 and 25) and arm64 macOS (JDK 21). The job <code>fast tests (Windows x64, JDK 21)</code> runs the fast tests on Windows x64 (not the slow tests).</li>
 <li>Maven 3.9 or newer.</li>
-<li>The Vector API is an incubator module in these JDKs. Compile with <code>--add-modules jdk.incubator.vector</code>, and run with it to get the Vector API kernels; the <code>pom.xml</code> sets it for the compiler and for the test JVMs. At run time the module is optional: every kernel (flat, IVF, and graph) falls back to its scalar twin when the module is missing, or when <code>-Dhumemai.vec.scalar=true</code> is set.</li>
+<li>The Vector API is an incubator module in these JDKs. Compile with <code>--add-modules jdk.incubator.vector</code>, and run with it to get the Vector API kernels; the <code>pom.xml</code> sets it for the compiler and for the test JVMs. At run time the module is optional: every kernel (flat, IVF, and graph) falls back to its scalar twin when the module is missing, or when <code>-Dai.humem.tiervec.scalar=true</code> is set.</li>
 <li>On a JVM with the Vector API, x86-64 vectorizes the fp32 <code>dot</code> and <code>l2sq</code>, the int8 dot, the SQ8 dots, and <code>block16</code>. On aarch64 (NEON, 128-bit float lanes) the fp32 <code>dot</code> and <code>l2sq</code> use the JVM kernels and the int8 dot, the SQ8 dots, and <code>block16</code> use the 128-bit forms of <code>NKernels</code>. <code>hamming</code> is scalar everywhere. A JVM with 128-bit lanes that is not aarch64 runs those four as scalar code. AVX-512 and SVE are not used (<a href="https://github.com/humemai/tiervec/issues/52">#52</a>).</li>
 <li>Nothing else at run time. JUnit 5 is a test dependency.</li>
 </ul>
@@ -1505,7 +1533,7 @@
 </tbody>
 </table>
 <p>The slow tests run on Linux x86-64 only. There is no scalar-kernel native image job on Windows. The native image jobs run only when <code>src/main</code>, <code>src/smoke</code> or their workflow file change.</p>
-<p><strong>Tier 2: measured.</strong> None yet. No benchmark numbers are published in this repository. The <code>SPEED</code> lines that the native image jobs print are informational, and the one measurement in the repository (the graph self-search recall in <a href="STATUS/#graph-self-search-recall">docs/STATUS.md</a>) does not record its hardware. The shared GitHub runners are not a benchmark machine: a timing from them is a ratio between two things measured in the same run, not an absolute speed. A row moves here when its numbers and its hardware are published.</p>
+<p><strong>Tier 2: measured.</strong> None yet. No benchmark numbers are published in this repository. The harness is described in <a href="BENCHMARKS/">docs/BENCHMARKS.md</a>; a row moves here when a result file with its hardware, JDK and commit is committed under <code>results/</code>. The <code>SPEED</code> lines that the native image jobs print are informational, and the one measurement in the repository (the graph self-search recall in <a href="STATUS/#graph-self-search-recall">docs/STATUS.md</a>) does not record its hardware. The shared GitHub runners are not a benchmark machine: a timing from them is a ratio between two things measured in the same run, not an absolute speed. A row moves here when its numbers and its hardware are published.</p>
 <p><strong>Tier 3: best effort.</strong> The code is plain Java 21 and has no native dependency, so it is expected to work, but nothing checks it and a problem there is fixed when it is cheap to do.</p>
 <ul>
 <li>macOS on Intel (x86-64): no CI job.</li>
@@ -1521,6 +1549,7 @@
 <li><a href="PROVIDER-CONTRACT/">docs/PROVIDER-CONTRACT.md</a>: what a host database must provide and what the library guarantees, with the status of each line.</li>
 <li><a href="ID-EPOCH-AND-REPLAY/">docs/ID-EPOCH-AND-REPLAY.md</a>: how ids are numbered, the epoch rule, and replay after a restart.</li>
 <li><a href="SEGMENT-FORMAT/">docs/SEGMENT-FORMAT.md</a>: the segment file, the manifest, the publish order, and reopen, as the first cut implements them.</li>
+<li><a href="BENCHMARKS/">docs/BENCHMARKS.md</a>: the benchmark harness, how to run it, and what a result file holds.</li>
 <li><a href="STATUS/">docs/STATUS.md</a>: what exists, what does not exist yet.</li>
 <li><a href="ROADMAP/">docs/ROADMAP.md</a>: what is planned and in what order, with the open issues, and the non-goals.</li>
 <li><a href="RELEASING/">docs/RELEASING.md</a>: the version rule and the steps of a release. <a href="CHANGELOG/">CHANGELOG.md</a> lists the changes.</li>

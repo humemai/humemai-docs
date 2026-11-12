@@ -1008,6 +1008,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BENCHMARKS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1528,7 +1556,7 @@
 <div class="hm-banner">
 <p><strong>Experimental and unreleased.</strong> The API is not stable and nothing here is wired into a database engine yet. <a href="../API/#stability-policy-for-0x">What may change</a>.</p>
 </div>
-<p>This page describes what the code in <code>src/main/java/com/humemai/vec</code> does today. It is written from the sources and their Javadoc. Where something is not built yet, it says so.</p>
+<p>This page describes what the code in <code>src/main/java/ai/humem/tiervec</code> does today. It is written from the sources and their Javadoc. Where something is not built yet, it says so.</p>
 <h2 id="the-contract-vecindex">The contract: <code>VecIndex</code><a class="headerlink" href="#the-contract-vecindex" title="Permanent link">&para;</a></h2>
 <p>Every index implements <code>VecIndex</code>, over <code>float[]</code> vectors with a <code>long</code> id and one of three metrics (<code>COSINE</code>, <code>DOT</code>, <code>L2</code>).</p>
 <ul>
@@ -1623,9 +1651,9 @@
 <h3 id="bounds-and-threads">Bounds and threads<a class="headerlink" href="#bounds-and-threads" title="Permanent link">&para;</a></h3>
 <p>One worker thread runs one task at a time (a seal or a merge). There is a cap on segments. No allocation proportional to <code>n</code> happens on the query path. Back pressure: when the active tail holds <code>hardTailFactor * max(tailLimit, smallLimit)</code> vectors, <code>add</code> waits for the worker, bounded to 10 s. <code>awaitCapacity(deadline)</code> is the same wait as a pre-check for <code>apply</code>: it waits for room in the tail and returns <code>false</code> at the deadline. <code>apply</code> never waits for the worker and does not look at the limit, so one batch can take the tail above it. <code>add</code> and <code>delete</code> take one write lock for a short time, and <code>apply</code> takes it once for the whole batch. Searches take no lock.</p>
 <h2 id="kernels-and-the-scalar-twin">Kernels and the scalar twin<a class="headerlink" href="#kernels-and-the-scalar-twin" title="Permanent link">&para;</a></h2>
-<p><code>Kernels</code> holds the flat-tier distance kernels: float dot and L2, int8 dot, and Hamming. Each has a Vector API version in <code>VKernels</code> and a scalar twin. The choice is made once, when <code>Kernels</code> is initialized: scalar when <code>-Dhumemai.vec.scalar=true</code>, scalar when <code>VKernels</code> cannot load (for example without the <code>jdk.incubator.vector</code> module), vector otherwise. <code>Kernels.VECTOR</code> says which one is in use. <code>IvfIndex</code> uses the same kernels.</p>
+<p><code>Kernels</code> holds the flat-tier distance kernels: float dot and L2, int8 dot, and Hamming. Each has a Vector API version in <code>VKernels</code> and a scalar twin. The choice is made once, when <code>Kernels</code> is initialized: scalar when <code>-Dai.humem.tiervec.scalar=true</code>, scalar when <code>VKernels</code> cannot load (for example without the <code>jdk.incubator.vector</code> module), vector otherwise. <code>Kernels.VECTOR</code> says which one is in use. <code>IvfIndex</code> uses the same kernels.</p>
 <p>On a JVM whose preferred float species has fewer than 8 lanes (128 bits: NEON on aarch64), <code>VKernels</code> has no fast form of the int8 dot, the SQ8 dots, and block16: its int8 dot is built on 256-bit species, which the JVM cannot map to NEON (138 times slower than the scalar twin in CI, <a href="https://github.com/humemai/tiervec/issues/52">#52</a>), and the other three need 8 float lanes. There <code>Kernels</code> uses the 128-bit forms of <code>NKernels</code> on aarch64 (<code>Kernels.JVM_NARROW</code>) and the scalar twins on any other host (<code>Kernels.JVM_QUANT_SCALAR</code>), and <code>Kernels.quantReason</code> says which and why. If <code>NKernels</code> cannot initialize on an aarch64 JVM, the scalar twins are used, never an exception. The fp32 dot and squared L2 stay in <code>VKernels</code> on every JVM, hamming stays scalar, and a JVM with 8 or more float lanes is unchanged. <code>Kern.dotQ8</code> follows the same rule, so one run uses one SQ8 dot in the flat and in the graph tier. AVX-512 and SVE are not used.</p>
-<p>Inside a GraalVM native image (<code>Kernels.IN_IMAGE</code>) the choice is different. <code>VKernels</code> is more than 10 times slower than scalar code there (a masked tail and a slice-based sum send the whole method through a slow path), so an image uses <code>NKernels</code> for every kernel that has a Vector API form (the fp32 dot and squared L2, the int8 dot, the SQ8 dots, and block16) when the module is present in the image, and the scalar twins otherwise. <code>NKernels</code> is the textbook form that an image compiles to SIMD code: a <code>static final</code> species, two accumulators, <code>fma</code>, <code>reduceLanes(ADD)</code>, a scalar tail, no masks. The species is chosen from <code>os.arch</code> in a static initializer, 128 bits on aarch64 and 256 bits everywhere else (a CPU with AVX-512 runs the 256-bit species), and the image builder must run that initializer, which <code>META-INF/native-image/com.humemai/tiervec/native-image.properties</code> asks for with <code>--initialize-at-build-time=com.humemai.vec.NKernels</code>. The initializer catches a missing module and leaves the species null, so an image built without the module still builds and <code>Kernels</code> selects the scalar twins, with the cause in <code>Kernels.scalarReason</code>. The int8, SQ8, and block16 kernels have two forms each in <code>NKernels</code>, one per species, chosen by <code>NKernels.WIDE</code>: the wide form for the 256-bit float species, and the narrow form for the 128-bit one, where the Vector API has no 32-bit byte species, so the byte vector is loaded at 64 or 128 bits and split into parts. Each form is the one that was fastest in an image on both Oracle GraalVM 25 and GraalVM CE 25.0.2, on x86-64 and arm64 Linux (<a href="https://github.com/humemai/tiervec/issues/48">#48</a>). Hamming has no Vector API form and stays scalar. <code>Kernels.JVM_VECTOR</code> and <code>Kernels.NATIVE_VECTOR</code> say which holder is in use. The fixed-order sum of the JVM kernels is not used in an image: a sum in a fixed order is fast only on Oracle GraalVM, so <code>NKernels</code> takes <code>reduceLanes</code>, and its result can differ from the JVM by rounding. To build the image, give the builder <code>--add-modules jdk.incubator.vector -H:+VectorAPISupport</code> (GraalVM 25; the properties file does not set them, so a scalar image stays possible).</p>
+<p>Inside a GraalVM native image (<code>Kernels.IN_IMAGE</code>) the choice is different. <code>VKernels</code> is more than 10 times slower than scalar code there (a masked tail and a slice-based sum send the whole method through a slow path), so an image uses <code>NKernels</code> for every kernel that has a Vector API form (the fp32 dot and squared L2, the int8 dot, the SQ8 dots, and block16) when the module is present in the image, and the scalar twins otherwise. <code>NKernels</code> is the textbook form that an image compiles to SIMD code: a <code>static final</code> species, two accumulators, <code>fma</code>, <code>reduceLanes(ADD)</code>, a scalar tail, no masks. The species is chosen from <code>os.arch</code> in a static initializer, 128 bits on aarch64 and 256 bits everywhere else (a CPU with AVX-512 runs the 256-bit species), and the image builder must run that initializer, which <code>META-INF/native-image/ai.humem/tiervec/native-image.properties</code> asks for with <code>--initialize-at-build-time=ai.humem.tiervec.NKernels</code>. The initializer catches a missing module and leaves the species null, so an image built without the module still builds and <code>Kernels</code> selects the scalar twins, with the cause in <code>Kernels.scalarReason</code>. The int8, SQ8, and block16 kernels have two forms each in <code>NKernels</code>, one per species, chosen by <code>NKernels.WIDE</code>: the wide form for the 256-bit float species, and the narrow form for the 128-bit one, where the Vector API has no 32-bit byte species, so the byte vector is loaded at 64 or 128 bits and split into parts. Each form is the one that was fastest in an image on both Oracle GraalVM 25 and GraalVM CE 25.0.2, on x86-64 and arm64 Linux (<a href="https://github.com/humemai/tiervec/issues/48">#48</a>). Hamming has no Vector API form and stays scalar. <code>Kernels.JVM_VECTOR</code> and <code>Kernels.NATIVE_VECTOR</code> say which holder is in use. The fixed-order sum of the JVM kernels is not used in an image: a sum in a fixed order is fast only on Oracle GraalVM, so <code>NKernels</code> takes <code>reduceLanes</code>, and its result can differ from the JVM by rounding. To build the image, give the builder <code>--add-modules jdk.incubator.vector -H:+VectorAPISupport</code> (GraalVM 25; the properties file does not set them, so a scalar image stays possible).</p>
 <p><code>Kern</code> holds the graph kernels: float dot, squared L2, and the dot of a float query with SQ8 codes (in an image, <code>NKernels.dotF8</code>). Its Vector API versions are in <code>VKern</code>, and its scalar twins are the scalar twins of <code>Kernels</code>. <code>Kern</code> follows <code>Kernels.VECTOR</code>, and <code>Kernels</code> initializes both holder classes inside its <code>try</code>, so one run never mixes the two modes and a failure to load either holder selects the scalar twins for every index. <code>GraphIndex</code>, <code>SealedGraph</code>, and <code>TieredIndex</code> need no incubator class in that case.</p>
 <p>A scalar result and a vector result of the same float kernel can differ by rounding. <code>KernDiffTest</code> states the tolerance (1e-5 times the sum of the absolute terms) and compares exactly representable data bit for bit; for <code>NKernels</code> it uses 1e-4 times the sum of the absolute terms plus a floor of 1e-6, on lengths around the lane width and at 100, 128, and 770, for every form of every <code>NKernels</code> kernel, so the 128-bit forms of aarch64 are tested on an x86 host too. <code>NoIncubatorTest</code> starts a JVM without the module and builds and searches a tier in it. The graph, segment, and tier tests also run with the scalar twins, in the surefire execution <code>scalar-twin</code>.</p>
 <h2 id="tier-configuration">Tier configuration<a class="headerlink" href="#tier-configuration" title="Permanent link">&para;</a></h2>

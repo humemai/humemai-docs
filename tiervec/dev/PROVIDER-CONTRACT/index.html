@@ -18,7 +18,7 @@
         <link rel="prev" href="../API/">
       
       
-        <link rel="next" href="../RELEASING/">
+        <link rel="next" href="../BENCHMARKS/">
       
       
         
@@ -1018,6 +1018,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BENCHMARKS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1567,7 +1595,7 @@
 <li><code>partly</code>: a form of the guarantee exists, or it is built and no dedicated test checks it. The line says what is missing.</li>
 <li><code>planned</code>: not built. The issue number is the tracking issue, and the acceptance test in that issue is the bar.</li>
 </ul>
-<p>Names of planned interfaces and methods are descriptive, not final. The Java package is <code>com.humemai.vec</code> today, and a rename before the first release is still open (see <a href="../STATUS/">STATUS.md</a>).</p>
+<p>Names of planned interfaces and methods are descriptive, not final. The Java package is <code>ai.humem.tiervec</code>.</p>
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <p>What the host must provide:</p>
 <ol>
@@ -1816,7 +1844,7 @@
 <li>Conversion. If the host reports distances where lower is better, the adapter converts scores, and a parity test on the same data checks the conversion.</li>
 </ul>
 <h2 id="status-of-every-guarantee">Status of every guarantee<a class="headerlink" href="#status-of-every-guarantee" title="Permanent link">&para;</a></h2>
-<p>Rows marked <code>exists today</code> or <code>partly</code> name the class and method, and the test that checks them where one exists. Tests are in <code>src/test/java/com/humemai/vec</code>. <code>TierTests</code> is the tier program, run one test at a time by <code>TierSuiteTest</code> in the fast job, and <code>TierConcurrentLongTest</code> runs the long threaded test in the slow job.</p>
+<p>Rows marked <code>exists today</code> or <code>partly</code> name the class and method, and the test that checks them where one exists. Tests are in <code>src/test/java/ai/humem/tiervec</code>. <code>TierTests</code> is the tier program, run one test at a time by <code>TierSuiteTest</code> in the fast job, and <code>TierConcurrentLongTest</code> runs the long threaded test in the slow job.</p>
 <table>
 <thead>
 <tr>
@@ -2078,13 +2106,13 @@
         
         
           
-          <a href="../RELEASING/" class="md-footer__link md-footer__link--next" aria-label="Next: Releasing">
+          <a href="../BENCHMARKS/" class="md-footer__link md-footer__link--next" aria-label="Next: Benchmark harness">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Releasing
+                Benchmark harness
               </div>
             </div>
             <div class="md-footer__button md-icon">

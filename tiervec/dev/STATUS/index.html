@@ -897,6 +897,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BENCHMARKS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1306,7 +1334,7 @@
 <div class="hm-banner">
 <p><strong>Experimental and unreleased.</strong> The API is not stable and nothing here is wired into a database engine yet. <a href="../API/#stability-policy-for-0x">What may change</a>.</p>
 </div>
-<p>Experimental. The sources come from the first experiment and were imported unchanged except for the test wrappers and the small edits listed under "Import notes". Measurements of the experiment live in a private harness and are not published yet. This repository has no benchmark numbers.</p>
+<p>Experimental. The sources come from the first experiment and were imported unchanged except for the test wrappers and the small edits listed under "Import notes". Measurements of the experiment live in a private harness and are not published yet. This repository has no benchmark numbers. It has a harness for new measurements of the tier (<a href="../BENCHMARKS/">BENCHMARKS.md</a>), and no result file yet.</p>
 <h2 id="what-exists">What exists<a class="headerlink" href="#what-exists" title="Permanent link">&para;</a></h2>
 <p>Each part has the test programs of the experiment, wrapped as JUnit 5 tests that CI runs on JDK 21 and 25 (see <a href="../#build-and-test">README</a>). The fast tests also run on arm64: Linux with JDK 21 and 25, macOS with JDK 21 (none of these jobs is a required check). They also run on Windows x64 with JDK 21 (<code>fast tests (Windows x64, JDK 21)</code>; not a required check). The slow tests run on x86-64 Linux only, not on Windows.</p>
 <table>
@@ -1449,16 +1477,16 @@
 <li>IVF as a segment type of the tier. <code>IvfIndex</code> is standalone.</li>
 <li>Native-image coverage beyond the smoke job. The program does not write or read segment files (<code>checkpoint</code>, <code>open</code>), does not call <code>rebuildFrom</code>, and uses no concurrent writers; the image is built on Linux (x86-64 and arm64) and on macOS arm64 in CI, and on Windows x64 in the vector job only (there is no scalar image job on Windows), and it is not published.</li>
 <li>A release: no publish workflow, version <code>0.1.0-SNAPSHOT</code>. The version rule and the steps are in <a href="../RELEASING/">RELEASING.md</a>.</li>
-<li>Published measurements. They are in a private harness and will be published later.</li>
+<li>Published measurements. The experiment's own measurements are in a private harness. The harness <code>Bench</code> (<a href="../BENCHMARKS/">BENCHMARKS.md</a>) is in the repository and the CI job <code>bench smoke</code> runs it at 10,000 vectors, but no result file is committed yet.</li>
 <li>The longer mode of the graph test program (a recall curve at n = 20000) is not wired into the JUnit tests.</li>
 </ul>
 <h2 id="import-notes">Import notes<a class="headerlink" href="#import-notes" title="Permanent link">&para;</a></h2>
 <ul>
-<li>The Java package stays <code>com.humemai.vec</code> for now. A rename before the first release is a later decision.</li>
+<li>The Java package is <code>ai.humem.tiervec</code>, the name of the library. It was renamed from the package of the first import before the first release, so it is not a breaking change. The system property that forces the scalar twins is <code>ai.humem.tiervec.scalar</code>.</li>
 <li>Comments and Javadoc in the sources still use experiment-internal names (requirement ids, fix numbers, rule names). They will be cleaned up when the API is settled.</li>
 <li>The graph test helper <code>T</code> was renamed <code>GraphT</code>, because the flat tests have their own <code>T</code> and both now live in one module and one package.</li>
 <li>The test helpers got an <code>exitOnFailure</code> flag (default true, so a program run alone still ends the JVM on failure), and the end of each program's <code>main</code> is guarded by it. A JUnit wrapper sets it to false and reads the counters instead, because a <code>System.exit</code> would end the surefire JVM.</li>
-<li>The micro-benchmark <code>FlatMicro</code>, the benchmark harness, and the native-image smoke test of the experiment are not part of this repository.</li>
+<li>The micro-benchmark <code>FlatMicro</code> and the benchmark harness of the experiment are not part of this repository. <code>Bench</code> and <code>NativeSmoke</code> are new programs written for it, not imports.</li>
 <li>One edit to a main source, <code>GraphIndex.java</code> (issue <a href="https://github.com/humemai/tiervec/issues/3">#3</a>, found by the slow CI job): <code>consolidate()</code>, <code>repairOrphans</code> and <code>seal()</code> size their bitsets and arrays from a snapshot of <code>nextOrd</code>, and a concurrent <code>add</code> can publish a node allocated after the snapshot as the entry point (or, in <code>repairOrphans</code>, return one from its search), so the node index fell past the end. <code>bit</code> now reads an index past the end as not set, <code>repairOrphans</code> sizes its arrays to cover the entry point, and <code>seal()</code> ignores an entry point from after its snapshot. <code>GraphConsolidateRaceTest</code> builds that view without threads. It was pushed alone first and failed the fast job on the unfixed code.</li>
 </ul>
 

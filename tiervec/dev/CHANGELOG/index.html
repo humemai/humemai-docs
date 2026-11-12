@@ -768,6 +768,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BENCHMARKS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -943,6 +971,17 @@
     <span class="md-ellipsis">
       
         Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
       
     </span>
   </a>
@@ -1131,6 +1170,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1222,6 +1272,11 @@
 <li>A GraalVM native image smoke test on Linux (x86-64 and arm64), macOS arm64 and Windows x64.</li>
 <li>CI on JDK 21 and 25, with the fast tests also on arm64 and on Windows x64.</li>
 <li>The supported public surface and the stability policy (<a href="../API/">docs/API.md</a>).</li>
+<li>A benchmark harness for the tier (<code>src/bench</code>, <a href="../BENCHMARKS/">docs/BENCHMARKS.md</a>) with a CI smoke at 10,000 vectors. No result file is published yet.</li>
+</ul>
+<h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Package renamed from <code>com.humemai.vec</code> to <code>ai.humem.tiervec</code> (no other change). The system property that forces the scalar twins was renamed with it, from <code>humemai.vec.scalar</code> to <code>ai.humem.tiervec.scalar</code>.</li>
 </ul>
 
 
