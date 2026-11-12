@@ -1,0 +1,2179 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for tiervec, a tiered vector index for agent-memory databases on the JVM (experimental)">
+      
+      
+        <meta name="author" content="HumemAI">
+      
+      
+        <link rel="canonical" href="https://docs.humem.ai/tiervec/0.1.1/PROVIDER-CONTRACT/">
+      
+      
+        <link rel="prev" href="../API/">
+      
+      
+        <link rel="next" href="../BENCHMARKS/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../brand/export/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Host contract - tiervec</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Schibsted+Grotesk:300,300i,400,400i,700,700i%7CDM+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Schibsted Grotesk";--md-code-font:"DM Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../brand/css/mkdocs.css">
+    
+      <link rel="stylesheet" href="../stylesheets/tiervec.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#host-contract" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="tiervec" class="md-header__button md-logo" aria-label="tiervec" data-md-component="logo">
+      
+  <img src="../brand/logo/mark-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            tiervec
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Host contract
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/humemai/tiervec" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    humemai/tiervec
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../STATUS/" class="md-tabs__link">
+          
+  
+  
+  Status
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../DESIGN/" class="md-tabs__link">
+          
+  
+  
+  Design
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../API/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../RELEASING/" class="md-tabs__link">
+          
+  
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="tiervec" class="md-nav__button md-logo" aria-label="tiervec" data-md-component="logo">
+      
+  <img src="../brand/logo/mark-white.svg" alt="logo">
+
+    </a>
+    tiervec
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/humemai/tiervec" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    humemai/tiervec
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Status
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STATUS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DESIGN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ID-EPOCH-AND-REPLAY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Id epoch and replay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SEGMENT-FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segment files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API and stability policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host contract
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host contract
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#purpose-and-non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose and non-goals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-the-marks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the marks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#roles-and-host-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roles and host interfaces
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#identity-and-the-epoch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity and the epoch
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mutation-replay-and-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mutation, replay, and ordering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#visibility-and-publish" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Visibility and publish
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metrics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Errors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#versioning-and-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Versioning and capabilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-host-adapter-typically-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a host adapter typically does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status-of-every-guarantee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status of every guarantee
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BENCHMARKS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELEASING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releasing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CHANGELOG/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SUPPORT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../THIRD_PARTY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third-party code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#purpose-and-non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purpose and non-goals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-the-marks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the marks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#roles-and-host-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roles and host interfaces
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#identity-and-the-epoch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity and the epoch
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mutation-replay-and-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mutation, replay, and ordering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#visibility-and-publish" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Visibility and publish
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recovery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metrics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Errors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#versioning-and-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Versioning and capabilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-host-adapter-typically-does" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a host adapter typically does
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#status-of-every-guarantee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Status of every guarantee
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href=".." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../API/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Reference
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="host-contract">Host contract<a class="headerlink" href="#host-contract" title="Permanent link">&para;</a></h1>
+<div class="hm-banner">
+<p><strong>Experimental.</strong> The API is not stable and nothing here is wired into a database engine yet. <a href="../API/#stability-policy-for-0x">What may change</a>.</p>
+</div>
+<p>This page states what a database (the host) must provide to embed tiervec, and what tiervec guarantees in return. It is written for an engine developer who reviews the contract before writing an adapter. The word provider appears in the file name: tiervec is the provider of a vector index, and the host is the database that calls it.</p>
+<p>The library is experimental and is not wired into any database yet. Most lines below describe where the library is going, not where it is. Every line carries a mark, so a reader can tell a promise from a plan. Nothing here is a measurement: measurements will be published with the harness.</p>
+<p>Two companion pages go deeper where a topic is large: <a href="../ID-EPOCH-AND-REPLAY/">ID-EPOCH-AND-REPLAY.md</a> for ids, epochs, and recovery after a crash, and <a href="../DESIGN/">DESIGN.md</a> for what the code does today.</p>
+<h2 id="purpose-and-non-goals">Purpose and non-goals<a class="headerlink" href="#purpose-and-non-goals" title="Permanent link">&para;</a></h2>
+<p>A host that embeds an index has to know what is atomic, who sees a write and when, which calls may block, which threads the library creates, and what happens after a crash. This page is the one place where those answers live, so a reviewer does not have to read the code.</p>
+<p>The contract is written in host terms and names no particular database. The host-side interfaces use only <code>long</code>, <code>float[]</code>, <code>Map&lt;String, String&gt;</code>, <code>java.util.concurrent.Executor</code>, and <code>java.util.function</code> types, so the library needs no dependency on any database.</p>
+<p>Non-goals:</p>
+<ul>
+<li>Transactions. The library has no rollback and no notion of uncommitted rows. They stay on the host side.</li>
+<li>Record storage. The host's records are the source of truth. Everything the library keeps is derived and can be rebuilt from them.</li>
+<li>A query language, a server, or a network. The host parses its own queries and hands the library vectors and allowed-id sets.</li>
+<li>Ordering across several indexes.</li>
+</ul>
+<h2 id="reading-the-marks">Reading the marks<a class="headerlink" href="#reading-the-marks" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>exists today</code>: built on the main branch at the time of writing, and checked by a test that the status table at the end names. The class and method are named.</li>
+<li><code>partly</code>: a form of the guarantee exists, or it is built and no dedicated test checks it. The line says what is missing.</li>
+<li><code>planned</code>: not built. The issue number is the tracking issue, and the acceptance test in that issue is the bar.</li>
+</ul>
+<p>Names of planned interfaces and methods are descriptive, not final. The Java package is <code>ai.humem.tiervec</code>.</p>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>What the host must provide:</p>
+<ol>
+<li>Ids: an opaque <code>long</code> per vector version, minted by the host, unique inside an epoch, and strictly increasing for adds inside an epoch. The epoch changes whenever the host renumbers.</li>
+<li>Apply order: one batch per committed transaction per index, applied only when the transaction's changes stand, serialized per index.</li>
+<li>Records: a way to read every live record, to ask whether an id is live, and to learn the highest id the host itself recovered after a crash.</li>
+<li>Resources: an executor, a build permit, and a memory budget, so the library creates no thread of its own, and a capacity check before each batch.</li>
+<li>Transactions: the overlay of uncommitted rows, the mapping from ids to the host's records, and the translation of the host's filters into an allowed-id predicate.</li>
+</ol>
+<p>What tiervec guarantees:</p>
+<ol>
+<li>A batch is visible as a unit. After <code>apply</code> returns, a search that starts later sees the adds and not the deletes, and applying the same batch again changes nothing visible.</li>
+<li>A search returns at most <code>k</code> hits, best first, with no duplicate id and no id deleted before the search started. The allowed-id predicate is applied inside the search. The query path takes no lock and creates no thread, but a search waits while a batch is being applied (see <code>apply(batch)</code>).</li>
+<li>A search stops at a deadline or a cancel flag that the host supplies.</li>
+<li>After a reopen, the persisted state is either reconciled with the host's records or discarded in favor of a rebuild. It never returns a vector for an id that now means a different vector.</li>
+<li>Errors are unchecked and classified, and a contract version and a capability set tell the host what exists.</li>
+</ol>
+<h2 id="roles-and-host-interfaces">Roles and host interfaces<a class="headerlink" href="#roles-and-host-interfaces" title="Permanent link">&para;</a></h2>
+<p>The library defines three small interfaces for itself. A separate adapter, outside the library core, implements them on top of the host's own classes. No host class appears in the library's API.</p>
+<table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>What the host supplies</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Environment</td>
+<td>An executor for every seal, merge, and build task. A build permit: ask with a kind and an estimate of peak bytes, receive a permit or a refusal. A memory budget in bytes, read at each decision. A metric sink with counters and gauges.</td>
+<td><code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>)</td>
+</tr>
+<tr>
+<td>Record source</td>
+<td>The host's epoch. Every live record. Every live record with an id above a given id. A liveness test for one id. The highest id the host recovered after its own crash.</td>
+<td><code>exists today</code>: <code>RecordSource</code>, used by <code>TieredIndex.open</code>, tested by <code>EpochReplayTest</code> with a fake host</td>
+</tr>
+<tr>
+<td>Search context</td>
+<td>A deadline and a cancel flag, polled by the library during a search.</td>
+<td><code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/11">#11</a>)</td>
+</tr>
+</tbody>
+</table>
+<p>Today the library has none of the three. It runs one worker thread and, during a seal or a merge, a few build threads (<code>Config.buildThreads</code>), and it reads its records only through <code>add</code> and <code>rebuildFrom</code>.</p>
+<h2 id="operations">Operations<a class="headerlink" href="#operations" title="Permanent link">&para;</a></h2>
+<p>Each row names who does what. "Host" is the adapter on the host side, "library" is tiervec.</p>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Host does</th>
+<th>Library guarantees</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>add(id, vector)</code> and <code>delete(id)</code>, single calls</td>
+<td>Calls them with the rules of the identity section.</td>
+<td>Each call is atomic and visible to the next search in any thread. <code>add</code> of a held id replaces its vector. <code>delete</code> returns <code>true</code> when the id existed.</td>
+<td><code>exists today</code>: <code>TieredIndex.add</code>, <code>TieredIndex.delete</code>, <code>VecIndex</code></td>
+</tr>
+<tr>
+<td><code>apply(batch)</code></td>
+<td>Calls it with an ordered list of adds and deletes, once per committed transaction per index, serialized per index, with add ids strictly increasing inside the epoch.</td>
+<td>The whole batch becomes visible together: adds are applied before deletes, under one hold of the write lock, and a search sees all of the batch or none of it. Re-applying a batch changes nothing visible. A search that overlaps a batch waits for it or runs again, so a batch can delay a search by its own length.</td>
+<td><code>exists today</code>: <code>TieredIndex.apply</code>. Tests: <code>ApplyBatchTest</code> (visibility, a search held across a batch, re-apply), <code>ApplyStressTest</code> (slow: updater and searcher threads)</td>
+</tr>
+<tr>
+<td><code>awaitCapacity(deadline)</code></td>
+<td>Calls it before <code>apply</code>, outside any lock of its own.</td>
+<td>Waits for room in the tail or returns <code>false</code>. <code>apply</code> itself never sleeps on the library's maintenance. The behavior at the hard tail limit is defined and tested: <code>apply</code> does not look at the limit, and one batch may take the tail above it.</td>
+<td><code>exists today</code>: <code>TieredIndex.awaitCapacity</code>, with the deadline on the <code>System.nanoTime()</code> clock. Test: <code>ApplyBatchTest.behaviorAtTheHardTailLimit</code>. The single call <code>TieredIndex.add</code> keeps its own wait of up to 10 s at the hard limit</td>
+</tr>
+<tr>
+<td><code>search(query, k, allowed, context)</code></td>
+<td>Passes the query, <code>k</code>, an allowed-id predicate (optionally with a size hint), and a search context.</td>
+<td>At most <code>k</code> hits, best first, no duplicate id, no deleted id, fewer than <code>k</code> only when fewer qualify. A search stops when the context says so.</td>
+<td><code>exists today</code> without the context: <code>TieredIndex.search</code>, three overloads. Context: <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/11">#11</a>). Size hint: <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/12">#12</a>)</td>
+</tr>
+<tr>
+<td><code>open(config, fingerprint, environment, record source, directory)</code></td>
+<td>Passes the index definition (dimension, metric), the configuration, its fingerprint, the interfaces above, and a directory that only this node uses (or none, for memory only).</td>
+<td>Returns ready or cold. A mismatch of fingerprint, dimension, metric, or epoch discards persisted state and returns cold, never a wrong answer.</td>
+<td><code>partly</code>: <code>TieredIndex.open(dir, dim, metric, config, RecordSource)</code> checks the epoch, drops ids above the recovered maximum, hides ids that are not live, and replays the live records above the high-water id (<code>EpochReplayTest</code>). It takes no environment and no fingerprint string (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>), it needs a directory, and a cold index is built on the calling thread (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>)</td>
+</tr>
+<tr>
+<td><code>awaitReady(deadline)</code></td>
+<td>Calls it before the first search of a cold index, and from its own warm-up hook.</td>
+<td>Builds from the record source on the host executor under a host permit, never on the caller's query thread unless the caller asks for that.</td>
+<td><code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/9">#9</a>, <a href="https://github.com/humemai/tiervec/issues/13">#13</a>)</td>
+</tr>
+<tr>
+<td><code>rebuildFrom(records, epoch, snapshot position)</code></td>
+<td>Calls it for a first build, a rebuild, the fallback after corruption, and after a renumbering.</td>
+<td>Replaces all derived state without blocking <code>apply</code> or <code>search</code>. Adds and deletes that arrive during the build are kept and applied after the swap. Streams the records instead of copying them first.</td>
+<td><code>exists today</code> for the epoch, the snapshot position, and the catch-up: <code>TieredIndex.rebuildFrom(Supplier&lt;Snapshot&gt;, long)</code> and <code>rebuildFrom(records, epoch, snapshotPosition)</code>, tested by <code>EpochReplayTest.writesThatArriveDuringTheBuildAreKeptAndAppliedAfterTheSwap</code> and <code>EpochReplayStressTest.aRebuildNeverLosesAWriteThatArrivesDuringIt</code>. <code>partly</code> for the rest: the build copies all records into a map first instead of streaming them and runs on the calling thread (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>), and the swap holds the write lock while the recorded writes are applied. The form <code>rebuildFrom(Iterable)</code> still holds the write lock for the whole build</td>
+</tr>
+<tr>
+<td><code>flush()</code></td>
+<td>Calls it where the host flushes its own indexes.</td>
+<td>Writes the manifest and any dirty state, returns when durable, idempotent.</td>
+<td><code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/9">#9</a>)</td>
+</tr>
+<tr>
+<td><code>close()</code></td>
+<td>Calls it when the host closes the index.</td>
+<td>Stops accepting work, waits for or cancels the tasks it submitted, releases files, idempotent, never creates a thread.</td>
+<td><code>partly</code>: <code>TieredIndex.close()</code> stops the worker thread and a second call is harmless. No defined behavior for searches in flight. Rest: <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>, <a href="https://github.com/humemai/tiervec/issues/18">#18</a>)</td>
+</tr>
+<tr>
+<td><code>drop()</code> and <code>clear()</code></td>
+<td>Calls <code>drop</code> when the index is deleted and <code>clear</code> when its data is truncated.</td>
+<td>Removes every file it wrote and all in-memory state, idempotent.</td>
+<td><code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/9">#9</a>)</td>
+</tr>
+<tr>
+<td><code>verify()</code></td>
+<td>Calls it from the host's own integrity check.</td>
+<td>Returns a list of problems and never throws for a damaged file.</td>
+<td><code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/9">#9</a>, <a href="https://github.com/humemai/tiervec/issues/17">#17</a>)</td>
+</tr>
+<tr>
+<td><code>onRenumber(newEpoch)</code></td>
+<td>Calls it at the point where it reissues ids.</td>
+<td>Drops derived state and rebuilds in the new id space.</td>
+<td><code>partly</code>: <code>rebuildFrom(source, newEpoch)</code> does it. <code>onRenumber</code> as a named call is not built, and the host stops applying writes of the old numbering when it renumbers</td>
+</tr>
+<tr>
+<td><code>metrics</code></td>
+<td>Reads it into its own statistics.</td>
+<td>A map of counters and gauges, plus an optional push sink.</td>
+<td><code>partly</code>: <code>TieredIndex.stats()</code> returns a <code>Stats</code> record. Map and sink: <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>)</td>
+</tr>
+<tr>
+<td><code>contractVersion()</code>, <code>capabilities()</code>, <code>health()</code></td>
+<td>Checks them at creation and when index metadata changes.</td>
+<td>A major and a minor number, a capability set, and a health state.</td>
+<td><code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>)</td>
+</tr>
+<tr>
+<td>Suspend and resume of background maintenance</td>
+<td>Calls it around a bulk load.</td>
+<td>No seal or merge starts while suspended. <code>apply</code> still works.</td>
+<td><code>planned</code>, no issue filed yet</td>
+</tr>
+</tbody>
+</table>
+<h2 id="identity-and-the-epoch">Identity and the epoch<a class="headerlink" href="#identity-and-the-epoch" title="Permanent link">&para;</a></h2>
+<p>The library keys every vector by an opaque <code>long</code> id that the host supplies. The id is not a record id of the host: a record id can be reused after a delete, can be wider than 64 bits, and can change when the host moves a record. An id inside an epoch cannot be reused.</p>
+<ul>
+<li>The host mints ids. They are unique inside an epoch, and the ids of adds strictly increase inside an epoch. Gaps are allowed. <code>exists today</code>: ids are plain <code>long</code> values in <code>VecIndex.add</code>, <code>Hit</code>, and <code>TieredIndex.IdVector</code>. A check of the ordering rule is <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/7">#7</a>): the library relies on it for the high-water id and does not verify it.</li>
+<li>An update is a new id plus a delete of the old id, sent in one batch. The library needs nothing special for it: two ids, and the delete hides the old copy. <code>exists today</code> as one batch (<code>TieredIndex.apply</code>) and as two calls.</li>
+<li>The epoch names one numbering of ids. The host passes it to <code>open</code> and <code>rebuildFrom</code>. The manifest stores it. A different epoch means persisted state is discarded and the index starts cold. <code>exists today</code>: <code>EpochReplayTest.anEpochMismatchGivesAColdIndex</code> and <code>EpochReplayTest.theManifestStoresTheEpochAndTheHighWaterId</code>.</li>
+<li>A host that reuses ids anyway (a record id used directly as the key) is served in memory by the version floor: an id added after a delete is visible, and the old copies stay hidden. <code>partly</code>: <code>TieredIndex.add</code>, <code>TieredIndex.delete</code>, and the floor described in <a href="../DESIGN/">DESIGN.md</a> are built, and the tests cover replace, not delete followed by add of the same id. Tests for reuse across seal and merge are <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/5">#5</a>). Persisting such a tier is not covered by this contract.</li>
+</ul>
+<p>The id models, their consequences, and the open questions are in <a href="../ID-EPOCH-AND-REPLAY/">ID-EPOCH-AND-REPLAY.md</a>.</p>
+<h2 id="mutation-replay-and-ordering">Mutation, replay, and ordering<a class="headerlink" href="#mutation-replay-and-ordering" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Idempotence. <code>add</code> of a held id replaces it with the same vector, and <code>delete</code> of an absent id returns <code>false</code> and changes nothing. A host may therefore replay a batch after a crash, and replaying one that was already applied changes nothing visible. <code>exists today</code> for single calls: <code>TieredIndex.add</code>, <code>TieredIndex.delete</code>. <code>exists today</code> for whole batches: <code>TieredIndex.apply</code>, tested by <code>ApplyBatchTest.applyingTheSameBatchAgainChangesNothingVisible</code>.</li>
+<li>Order. Inside a batch, adds are applied before deletes. Across batches, the host serializes calls per index. The library needs no remove-before-add rule, because ids are unique. <code>exists today</code>: <code>TieredIndex.apply</code>, tested by <code>ApplyBatchTest.theWholeBatchIsVisibleAfterApplyReturns</code> (an id that one batch adds and deletes ends deleted).</li>
+<li>Apply at commit, or apply after validation. The recommended host behavior is to stage a transaction's changes and call <code>apply</code> only when the changes stand. The library then never sees an id of a rolled-back transaction and needs no retract operation. The reason is that a sealed segment is immutable and can be made durable on its own schedule: a row applied too early and then rolled back can be sealed before the rollback runs. The floor hides it from results, but the segment still holds a row for an id the host has forgotten, and the host may hand that id to another record after a restart. The library has no transaction notion, so nothing in it contradicts deferred apply. <code>exists today</code> on the library side, as a property of the code with nothing to test. Staging is the adapter's job.</li>
+<li>A host that cannot defer can undo an add with <code>delete</code> and undo a delete by adding the vector again. The version floor makes that correct in memory. The library has no retract operation. The capability set will say which style a given library version supports. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>).</li>
+<li>Replay after a reopen: the host replays every live record above the manifest's high-water id, and the library checks liveness of every id it holds. Specified in <a href="../ID-EPOCH-AND-REPLAY/">ID-EPOCH-AND-REPLAY.md</a>. <code>exists today</code>: <code>TieredIndex.open(dir, dim, metric, config, RecordSource)</code>, tested by <code>EpochReplayTest.theHostReplaysEverythingAboveTheHighWaterId</code> and <code>EpochReplayTest.theLivenessCheckHidesIdsTheHostDeleted</code>.</li>
+</ul>
+<h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Arguments: a query vector, <code>k</code>, an allowed-id predicate (or none), and a context. An optional effort knob sets the beam width of the segment search. A non-positive <code>k</code> returns an empty result. <code>exists today</code> without the context: <code>TieredIndex.search(float[], int, LongPredicate)</code>, <code>search(..., Freshness)</code>, <code>search(..., int ef)</code>.</li>
+<li>Result: at most <code>k</code> hits, best first, each <code>Hit(id, score)</code>, no duplicate ids. Fewer than <code>k</code> only when fewer live vectors qualify. <code>exists today</code>: <code>VecIndex.search</code>, <code>Hit</code>.</li>
+<li>Score: higher is better for every metric. Cosine and dot are returned as they are, L2 as the negative squared distance. A host whose engine uses a distance where lower is better converts, and checks the conversion with a parity test on the same data. <code>exists today</code>: <code>Hit</code>. A public scorer for a single pair of vectors, which a host needs to score its own uncommitted rows with the same arithmetic, is <code>planned</code>, no issue filed yet.</li>
+<li>Exactness flag: <code>SearchResult.exact</code> tells the host that no segment was searched and the tail scan was exact. <code>exists today</code>: <code>TieredIndex.search(..., Freshness)</code>.</li>
+<li>Allowed-id predicate. The host supplies a <code>LongPredicate</code>. It must be cheap, side-effect free, safe to call more than once for the same id, and it must not call back into the index. The library applies it inside the segment search and the tail scan, so the top <code>k</code> of the qualifying set is correct, and a graph walk with few qualifying ids falls back to an exact scan after a visit budget. <code>exists today</code>: the predicate parameter of <code>TieredIndex.search</code>. Correctness of filtered search is checked by unit tests. How it behaves across the range of selectivities has not been measured. An optional size hint and a live count, so that a small allowed set is scanned exactly, are <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/12">#12</a>).</li>
+<li>Context. The library polls the context at a fixed, documented interval inside the tail scan and the segment search and between segments, and throws <code>SearchCancelledException</code> when it says stop. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/11">#11</a>, <a href="https://github.com/humemai/tiervec/issues/18">#18</a>).</li>
+<li>Threads and locks. A search runs on the calling thread, takes no lock, and never waits for a seal, a merge, or the build of a rebuild. It can be delayed by a batch in progress, for the length of that batch (it waits until the batch is whole, and scans again when a batch overlapped its scan; see <code>apply(batch)</code>), and by the swap of a snapshot rebuild together with its catch-up. A stream of batches that follow each other faster than one scan takes can starve it. <code>partly</code>: built in <code>TieredIndex.search</code> and stated in its class documentation, and <code>ApplyBatchTest</code> checks the wait for a batch, but no dedicated test checks the rest.</li>
+<li>Freshness. By default a search sees the tails, so a write is visible at once. <code>Freshness.SEALED_ONLY</code> skips the tails and may lag. It never returns a deleted id, a stale vector, or an id that was never added. <code>exists today</code>: <code>TieredIndex.Freshness</code>.</li>
+</ul>
+<h2 id="visibility-and-publish">Visibility and publish<a class="headerlink" href="#visibility-and-publish" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The writing transaction sees its own uncommitted rows through the host's overlay. Any other session sees nothing before commit. After commit, the batch is visible from the moment <code>apply</code> returns. A host that calls <code>apply</code> before it tells its client the commit is done gives that client read-your-writes. The overlay is the adapter's job, see the last section.</li>
+<li>The segment list, the active tail, and the frozen tail live in one immutable view. A seal or a merge publishes a new view with one volatile write, and a search reads the view once. <code>exists today</code>: the view inside <code>TieredIndex</code>.</li>
+<li>An in-flight search finishes on the view it read, and retired segments stay valid until the last reader leaves. In memory, garbage collection does that. <code>partly</code>: there is no dedicated test of a long search across a swap. A memory-mapped reader would need a reference count before it unmaps, and none is planned yet.</li>
+<li>Seal and merge never block a search, and block <code>add</code>, <code>delete</code>, and <code>apply</code> only for a short critical section. <code>exists today</code> for seal, merge, and <code>rebuildFrom(Supplier&lt;Snapshot&gt;, long)</code>, whose swap holds the write lock for the catch-up (<code>EpochReplayTest.writesThatArriveDuringTheBuildAreKeptAndAppliedAfterTheSwap</code> lets a write from another thread through during the build). <code>partly</code> for the one-argument <code>rebuildFrom(Iterable)</code>, which holds the write lock for the whole build.</li>
+<li>Close with searches in flight: later calls throw <code>ClosedException</code>, and an in-flight search finishes or throws it, never returning a wrong id. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>).</li>
+</ul>
+<h2 id="lifecycle">Lifecycle<a class="headerlink" href="#lifecycle" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Open: the host opens after its own recovery has finished, so the records and ids it exposes are final. The result is ready or cold.</li>
+<li>Readiness: a cold index is built from the record source, on the host executor, under a host permit.</li>
+<li>Rebuild from records: always available, and always correct, because the vectors in the host's records are the truth. It is the answer to every integrity failure.</li>
+<li>Flush, close, drop, clear, and verify: as in the operations table.</li>
+<li>Files: a host may keep the library's files outside its own storage. The library never registers a file with the host's storage manager, writes only inside the directory it is given, and treats a restored or replicated copy that has no files as a cold index. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/9">#9</a>).</li>
+<li>Persistence: the format, as the first cut writes it, is in <a href="../SEGMENT-FORMAT/">SEGMENT-FORMAT.md</a>. A settled tier is written by <code>TieredIndex.checkpoint</code> and read by <code>TieredIndex.open</code>. The tests for damaged files and crashes at scale are <a href="https://github.com/humemai/tiervec/issues/17">#17</a>.</li>
+</ul>
+<h2 id="recovery">Recovery<a class="headerlink" href="#recovery" title="Permanent link">&para;</a></h2>
+<ul>
+<li>After a restart the host replays what the persisted state lacks, and the library reconciles what the host deleted or never made durable. The steps, the high-water id, the liveness check, and the durable-prefix rule are in <a href="../ID-EPOCH-AND-REPLAY/">ID-EPOCH-AND-REPLAY.md</a>. <code>exists today</code> for a process kill: <code>EpochReplayTest.aCrashAtEveryStepOfAPublishLeavesAnIndexThatMatchesTheHost</code> and <code>EpochReplayStressTest.crashAndReopenLoop</code>.</li>
+<li>Requirement on the host, write-ahead: the index is never ahead of the host's durable log. A <code>checkpoint</code> may cover only transactions that the host has already made durable. If the library persisted a delete (a compacted segment) that the host then forgot in a crash, the record is live again in the host with an id at or below the recovered maximum and no segment holds it, and no rule of the library repairs that. The library cannot check the requirement, so a host that calls <code>checkpoint</code> before its own flush has a host error; the host that flushes first never sees the case. A library-side refusal to persist an unconfirmed delete is not built. <code>exists today</code> as a requirement; the test host of <code>EpochReplayStressTest</code> follows it.</li>
+<li>Any integrity failure at open throws, and the host calls <code>rebuildFrom</code>. A second failure is a host error. <code>partly</code>: <code>TieredIndex.open</code> throws <code>SegmentFormat.CorruptException</code>, a checked <code>IOException</code> (and <code>UnsupportedException</code>, <code>MismatchException</code>, <code>NoSuchFileException</code>), and an overload that takes a rebuild source does the fallback. The unchecked <code>CorruptStateException</code> of the error classes is <a href="https://github.com/humemai/tiervec/issues/18">#18</a>.</li>
+<li>The claim: a process kill leaves the last published generation or the one before it. No claim is made about power loss until a test says otherwise. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/17">#17</a>).</li>
+</ul>
+<h2 id="resources">Resources<a class="headerlink" href="#resources" title="Permanent link">&para;</a></h2>
+<ul>
+<li>No thread of the library's own. Every seal, merge, and build task, including the parallel part of a build, goes to the host executor. <code>partly</code>: today <code>TieredIndex</code> starts one worker thread and, per build, a few threads (<code>Config.buildThreads</code>). <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>).</li>
+<li>Build permit. Before each seal, merge, and rebuild the library asks for a permit with an estimate of peak bytes, computed from the sizes of the segments involved. On refusal it defers and retries with back-off, and never builds without a permit. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>).</li>
+<li>Memory budget. The library keeps its resident bytes below the budget by deferring merges and shrinking its tail limit. <code>partly</code>: <code>TieredIndex.bytesHeld()</code> reports resident bytes, and nothing reads a budget yet. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>).</li>
+<li>Throttle. The insert rate of a merge build is capped (<code>Config.mergeRatePerSec</code>). It is a politeness limit for the threads that serve queries, not a substitute for a permit. <code>partly</code>: built, and no dedicated test checks the cap.</li>
+<li>Back pressure is a pre-check (<code>awaitCapacity</code>), and the tail is bounded. <code>partly</code>: <code>TieredIndex.awaitCapacity</code> is built and tested. The bound is soft: <code>apply</code> does not look at it, so one batch can take the tail above the hard limit, and <code>TieredIndex.add</code> adds after its own wait of up to 10 s.</li>
+<li>No search-time thread creation, and no allocation proportional to the collection size on the query path. <code>partly</code>: built in <code>TieredIndex.search</code>, and no dedicated test checks it.</li>
+<li>The graph kernels need the <code>jdk.incubator.vector</code> module at run time. The graph kernels have a scalar twin that is used when the module is absent, <code>exists today</code>: <code>KernDiffTest</code> compares the vector and the scalar kernel, and <code>NoIncubatorTest</code> builds and searches a tier in a JVM without the module. A native-image build of the library and a smoke program is checked by the workflow <code>native-image.yml</code> (the job <code>native image smoke</code>, and the vector variant <code>native image smoke (vector, ...)</code> on x86-64 and arm64 Linux), <code>exists today</code>, not a required check. In a native image the graph kernels (dot, squared L2, and the SQ8 dot) use the Vector API through <code>NKernels</code> with a build-time species, and a score can differ from the JVM by rounding.</li>
+</ul>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The library reads its configuration from a <code>Map&lt;String, String&gt;</code> and a fingerprint. The fingerprint is a canonical string and a hash over the data-affecting settings only: dimension, metric, id width, graph parameters, segment quantization, and layer layout. Search-time knobs (the beam width, the split-beam switch) and the settings of the tail are not part of it, because the tail is not persisted. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>).</li>
+<li>The host stores the fingerprint in its index metadata and passes it back at open. A mismatch discards persisted state.</li>
+<li>Unknown keys are rejected at creation with the key named, and ignored with a warning at load, so a downgrade still opens.</li>
+<li>Search-time knobs may change at run time. Data-affecting keys may not.</li>
+<li><code>partly</code>: the typed <code>TieredIndex.Config</code> record with validation, <code>with...</code> copies, and <code>Config.defaults()</code> is built, and no dedicated test checks the validation. The knobs are in <a href="../DESIGN/">DESIGN.md</a>.</li>
+</ul>
+<h2 id="metrics">Metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
+<ul>
+<li>A pull form: a <code>Map&lt;String, Long&gt;</code> of counters and gauges. A push form: a sink with <code>counter(name)</code> and <code>gauge(name, supplier)</code>. Names are prefixed <code>tiervec.</code>. No metrics library is a dependency. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>).</li>
+<li>The quantities are the ones <code>TieredIndex.Stats</code> holds today: seals, merges, failures, back-pressure waits, tail size, segment count, bytes held, floor entries, and write amplification (a gauge in thousandths). <code>partly</code>: <code>TieredIndex.stats()</code>.</li>
+</ul>
+<h2 id="errors">Errors<a class="headerlink" href="#errors" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Unchecked only. The base is a provider exception. Classes: <code>CorruptStateException</code> (the host falls back to <code>rebuildFrom</code>), <code>SearchCancelledException</code>, <code>ClosedException</code>, and <code>BuildRefusedException</code>. Programming errors stay <code>IllegalArgumentException</code> and <code>IllegalStateException</code>. <code>partly</code>: the two standard exceptions exist today (a dimension mismatch throws <code>IllegalArgumentException</code>). The classified family is <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>).</li>
+<li>A background failure never throws into <code>apply</code> or <code>search</code>. It is counted, kept as the last error, and retried. A health state reports ok, degraded (a task failing repeatedly), or failed (the worker is dead). <code>partly</code>: <code>TieredIndex.lastError()</code>, <code>TieredIndex.workerAlive()</code>, and the <code>failures</code> count in <code>Stats</code>. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>).</li>
+</ul>
+<h2 id="versioning-and-capabilities">Versioning and capabilities<a class="headerlink" href="#versioning-and-capabilities" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The contract has a major and a minor number. The host refuses a library with a larger major. A larger minor is accepted, and capabilities it does not know are ignored. New operations are added as default methods. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>).</li>
+<li>The segment file and the manifest have their own version numbers, under the same rule. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/6">#6</a>, <a href="https://github.com/humemai/tiervec/issues/9">#9</a>).</li>
+<li>Capabilities are a bit set: deferred apply, selective plan, persistence, and snapshot rebuild, with more as they appear. The host checks them at creation. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>).</li>
+<li>What tiervec does not offer, so a host can refuse such an index definition at creation and not at query time: grouped (per-group top <code>k</code>) search, and approximate scores from compressed codes without an exact rescoring pass. Returned scores are exact fp32 scores. <code>exists today</code> as a fact about the code. The check through capabilities is <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>).</li>
+</ul>
+<h2 id="what-a-host-adapter-typically-does">What a host adapter typically does<a class="headerlink" href="#what-a-host-adapter-typically-does" title="Permanent link">&para;</a></h2>
+<p>The adapter is the host's code. It sits between the host's classes and the library, and it is where the host's own concepts end.</p>
+<ul>
+<li>Key mapping. The adapter keeps a table from library id to the host's record handle, and mints a new id for every new vector version. A hit costs one lookup in that table. An update sends an add of the new id and a delete of the old id in one batch.</li>
+<li>Overlay of uncommitted rows. The library has no transaction notion. For a search inside an open transaction, the adapter scores that transaction's pending rows exactly, with the same metric, merges them with the library's hits by score, and masks the ids the transaction has superseded by excluding them in the allowed-id predicate.</li>
+<li>Allowed-id bridging. The host's filter produces a set of record handles. The adapter wraps it as a <code>LongPredicate</code> over library ids: map the id to its record handle, then test membership. It passes a size hint when it knows one.</li>
+<li>Staging. The adapter holds a transaction's adds and deletes until the changes stand, then calls <code>apply</code> once.</li>
+<li>Recovery glue. The adapter implements the record source on top of the host's own record scan and id table, and persists the epoch beside its own data.</li>
+<li>Conversion. If the host reports distances where lower is better, the adapter converts scores, and a parity test on the same data checks the conversion.</li>
+</ul>
+<h2 id="status-of-every-guarantee">Status of every guarantee<a class="headerlink" href="#status-of-every-guarantee" title="Permanent link">&para;</a></h2>
+<p>Rows marked <code>exists today</code> or <code>partly</code> name the class and method, and the test that checks them where one exists. Tests are in <code>src/test/java/ai/humem/tiervec</code>. <code>TierTests</code> is the tier program, run one test at a time by <code>TierSuiteTest</code> in the fast job, and <code>TierConcurrentLongTest</code> runs the long threaded test in the slow job.</p>
+<table>
+<thead>
+<tr>
+<th>Guarantee</th>
+<th>Status</th>
+<th>Class and method</th>
+<th>Checked by</th>
+<th>Issue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Opaque <code>long</code> ids, replace by adding a held id</td>
+<td><code>exists today</code></td>
+<td><code>VecIndex.add</code>, <code>TieredIndex.add</code>, <code>Hit</code></td>
+<td><code>TierTests.testTailOnly</code>, <code>TierTests.testDeleteReplace</code> (a replaced id is found by its new vector)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>delete</code> returns <code>true</code> when the id existed and <code>false</code> otherwise, and a deleted id is never returned</td>
+<td><code>exists today</code></td>
+<td><code>TieredIndex.delete</code></td>
+<td><code>TierTests.testTailOnly</code>, <code>TierTests.testDeleteReplace</code>, <code>TierConcurrentLongTest</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Read-your-writes for single calls</td>
+<td><code>exists today</code></td>
+<td><code>TieredIndex.add</code>, <code>TieredIndex.search</code></td>
+<td><code>TierTests.testSealStress</code> (the writer and another thread find a vector right after <code>add</code> returned), <code>TierConcurrentLongTest</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Reused id visible, old copies hidden, in memory</td>
+<td><code>partly</code></td>
+<td>the version floor in <code>TieredIndex</code></td>
+<td><code>TierTests.testDeleteReplace</code> covers replace, not delete followed by add of the same id</td>
+<td>Reuse across seal and merge: <a href="https://github.com/humemai/tiervec/issues/5">#5</a></td>
+</tr>
+<tr>
+<td>Search arguments, result order</td>
+<td><code>exists today</code></td>
+<td><code>TieredIndex.search</code>, <code>VecIndex.search</code></td>
+<td><code>TierTests.testTailOnly</code> (equals brute force), <code>TierTests.testDeleteReplace</code> (sorted, no deleted id)</td>
+<td></td>
+</tr>
+<tr>
+<td>Score convention</td>
+<td><code>exists today</code></td>
+<td><code>Hit</code></td>
+<td><code>TierTests.testMetrics</code> (returned scores equal the exact score for each metric)</td>
+<td></td>
+</tr>
+<tr>
+<td>Allowed-id predicate inside the search</td>
+<td><code>exists today</code></td>
+<td><code>TieredIndex.search</code></td>
+<td><code>TierTests.testTailOnly</code> (equals brute force), <code>TierTests.testSegmentsRecall</code> (filtered recall bound)</td>
+<td>Selectivity study and size hint: <a href="https://github.com/humemai/tiervec/issues/12">#12</a></td>
+</tr>
+<tr>
+<td>Atomic publish of the segment list</td>
+<td><code>exists today</code></td>
+<td>the view inside <code>TieredIndex</code></td>
+<td><code>TierTests.testSwapInstantHooks</code> (no vector missing just before or just after a swap)</td>
+<td></td>
+</tr>
+<tr>
+<td>No lock and no thread on the query path</td>
+<td><code>partly</code></td>
+<td><code>TieredIndex.search</code></td>
+<td>no dedicated test: the code takes no lock, and <code>TierConcurrentLongTest</code> runs searches during seals and merges</td>
+<td></td>
+</tr>
+<tr>
+<td>Rebuild from records</td>
+<td><code>partly</code></td>
+<td><code>TieredIndex.rebuildFrom(Iterable)</code></td>
+<td><code>TierTests.testRebuild</code></td>
+<td>Holds the write lock for the whole build</td>
+</tr>
+<tr>
+<td>Rebuild with an epoch and a snapshot position, writes kept during the build</td>
+<td><code>exists today</code></td>
+<td><code>TieredIndex.rebuildFrom(Supplier&lt;Snapshot&gt;, long)</code></td>
+<td><code>EpochReplayTest.writesThatArriveDuringTheBuildAreKeptAndAppliedAfterTheSwap</code>, <code>EpochReplayTest.anAbortedRebuildChangesNothing</code>, <code>EpochReplayStressTest.aRebuildNeverLosesAWriteThatArrivesDuringIt</code>, <code>EpochReplayLongTest</code> (slow)</td>
+<td>Streaming instead of a map, host executor: <a href="https://github.com/humemai/tiervec/issues/13">#13</a></td>
+</tr>
+<tr>
+<td>Close stops the worker, second call harmless</td>
+<td><code>partly</code></td>
+<td><code>TieredIndex.close</code></td>
+<td><code>TierTests.testClose</code></td>
+<td>Searches in flight, tasks it submitted: <a href="https://github.com/humemai/tiervec/issues/13">#13</a>, <a href="https://github.com/humemai/tiervec/issues/18">#18</a></td>
+</tr>
+<tr>
+<td>Statistics</td>
+<td><code>partly</code></td>
+<td><code>TieredIndex.stats</code></td>
+<td><code>TierTests.testMerge</code> and <code>TierTests.testSealStress</code> assert fields of it</td>
+<td>Map and sink: <a href="https://github.com/humemai/tiervec/issues/18">#18</a></td>
+</tr>
+<tr>
+<td>Background failure kept and counted</td>
+<td><code>partly</code></td>
+<td><code>TieredIndex.lastError</code>, <code>Stats.failures</code></td>
+<td>no dedicated test: the tier tests assert that <code>failures</code> stays zero</td>
+<td>Health state: <a href="https://github.com/humemai/tiervec/issues/18">#18</a></td>
+</tr>
+<tr>
+<td>Merge throttle</td>
+<td><code>partly</code></td>
+<td><code>Config.mergeRatePerSec</code></td>
+<td>no dedicated test</td>
+<td></td>
+</tr>
+<tr>
+<td>Atomic batch, <code>awaitCapacity</code>, re-apply</td>
+<td><code>exists today</code></td>
+<td><code>TieredIndex.apply</code>, <code>TieredIndex.awaitCapacity</code></td>
+<td><code>ApplyBatchTest</code> (visibility, a search held across a batch, re-apply, the hard tail limit), <code>ApplyStressTest</code> (slow)</td>
+<td>A batch can delay a search by its own length</td>
+</tr>
+<tr>
+<td>Search context, deadline, cancellation</td>
+<td><code>planned</code></td>
+<td></td>
+<td></td>
+<td><a href="https://github.com/humemai/tiervec/issues/11">#11</a></td>
+</tr>
+<tr>
+<td>Size hint and live count for the allowed-id predicate</td>
+<td><code>planned</code></td>
+<td></td>
+<td></td>
+<td><a href="https://github.com/humemai/tiervec/issues/12">#12</a></td>
+</tr>
+<tr>
+<td>Host executor, build permit, memory budget, no own threads</td>
+<td><code>planned</code></td>
+<td></td>
+<td></td>
+<td><a href="https://github.com/humemai/tiervec/issues/13">#13</a></td>
+</tr>
+<tr>
+<td>Epoch, high-water id, replay, liveness check, durable prefix</td>
+<td><code>exists today</code></td>
+<td><code>TieredIndex.open(dir, dim, metric, config, RecordSource)</code>, <code>TieredIndex.checkpoint</code>, <code>RecordSource</code></td>
+<td><code>EpochReplayTest</code>, <code>EpochReplayStressTest</code>, <code>EpochReplayLongTest</code> (slow)</td>
+<td>A check of the id order: <a href="https://github.com/humemai/tiervec/issues/7">#7</a>. A delete that the host forgot after a checkpoint: the host flushes its deletes first</td>
+</tr>
+<tr>
+<td>Segment file and manifest specification</td>
+<td><code>partly</code></td>
+<td><a href="../SEGMENT-FORMAT/">SEGMENT-FORMAT.md</a> (the format as the first cut writes it)</td>
+<td><code>SegmentFormatTest.sectionBytesMatchTheInMemoryCounter</code> (size formulas against the in-memory counter)</td>
+<td>Review of the format: <a href="https://github.com/humemai/tiervec/issues/6">#6</a></td>
+</tr>
+<tr>
+<td>Persistence, open, flush, drop, clear, verify</td>
+<td><code>partly</code></td>
+<td><code>TieredIndex.checkpoint</code>, <code>TieredIndex.open</code>, <code>SealedGraph.serialize</code>, <code>SealedGraph.load</code></td>
+<td><code>TierReopenTest</code>, <code>ManifestCrashTest</code>, <code>SegmentFormatTest</code></td>
+<td>A settled tier only (the host replays the tail through <code>RecordSource</code>), no non-empty tombstones, no memory mapping. <code>flush</code>, <code>drop</code>, <code>clear</code>, <code>verify</code>: <a href="https://github.com/humemai/tiervec/issues/9">#9</a> follow-ups</td>
+</tr>
+<tr>
+<td>Corruption and crash tests</td>
+<td><code>planned</code></td>
+<td></td>
+<td></td>
+<td><a href="https://github.com/humemai/tiervec/issues/17">#17</a></td>
+</tr>
+<tr>
+<td>Configuration map, fingerprint, capabilities, contract version, error classes, health</td>
+<td><code>planned</code></td>
+<td></td>
+<td></td>
+<td><a href="https://github.com/humemai/tiervec/issues/18">#18</a></td>
+</tr>
+<tr>
+<td>Scalar twin of the graph kernel</td>
+<td><code>exists today</code></td>
+<td><code>Kern</code>, <code>VKern</code></td>
+<td><code>KernDiffTest</code>, <code>NoIncubatorTest</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Native-image build and smoke test</td>
+<td><code>exists today</code></td>
+<td><code>src/smoke</code> (<code>NativeSmoke</code>)</td>
+<td>the workflow <code>native-image.yml</code>, jobs <code>native image smoke</code> and <code>native image smoke (vector, ...)</code></td>
+<td>Segment files and concurrent writers are not in it; not a required check</td>
+</tr>
+<tr>
+<td>Public scorer for one pair of vectors</td>
+<td><code>planned</code></td>
+<td></td>
+<td></td>
+<td>no issue filed yet</td>
+</tr>
+<tr>
+<td>Suspend and resume of background maintenance</td>
+<td><code>planned</code></td>
+<td></td>
+<td></td>
+<td>no issue filed yet</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../API/" class="md-footer__link md-footer__link--prev" aria-label="Previous: API and stability policy">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                API and stability policy
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../BENCHMARKS/" class="md-footer__link md-footer__link--next" aria-label="Next: Benchmark harness">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Benchmark harness
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 HumemAI
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/humemai/tiervec" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "toc.follow"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>

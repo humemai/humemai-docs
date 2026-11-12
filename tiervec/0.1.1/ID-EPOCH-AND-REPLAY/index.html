@@ -1,0 +1,1704 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for tiervec, a tiered vector index for agent-memory databases on the JVM (experimental)">
+      
+      
+        <meta name="author" content="HumemAI">
+      
+      
+        <link rel="canonical" href="https://docs.humem.ai/tiervec/0.1.1/ID-EPOCH-AND-REPLAY/">
+      
+      
+        <link rel="prev" href="../DESIGN/">
+      
+      
+        <link rel="next" href="../SEGMENT-FORMAT/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../brand/export/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Id epoch and replay - tiervec</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Schibsted+Grotesk:300,300i,400,400i,700,700i%7CDM+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Schibsted Grotesk";--md-code-font:"DM Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../brand/css/mkdocs.css">
+    
+      <link rel="stylesheet" href="../stylesheets/tiervec.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#id-epoch-and-replay" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="tiervec" class="md-header__button md-logo" aria-label="tiervec" data-md-component="logo">
+      
+  <img src="../brand/logo/mark-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            tiervec
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Id epoch and replay
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/humemai/tiervec" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    humemai/tiervec
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../STATUS/" class="md-tabs__link">
+          
+  
+  
+  Status
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../DESIGN/" class="md-tabs__link">
+          
+  
+  
+  Design
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../API/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../RELEASING/" class="md-tabs__link">
+          
+  
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="tiervec" class="md-nav__button md-logo" aria-label="tiervec" data-md-component="logo">
+      
+  <img src="../brand/logo/mark-white.svg" alt="logo">
+
+    </a>
+    tiervec
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/humemai/tiervec" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    humemai/tiervec
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Status
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../STATUS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Status
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ROADMAP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DESIGN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Id epoch and replay
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Id epoch and replay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-it-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why it exists
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#terms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#id-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Id models
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-epoch-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The epoch rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-replay-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The replay protocol
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-idempotence-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The idempotence rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-durable-prefix-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The durable-prefix rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-crash-leaves-at-each-point" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a crash leaves, at each point
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open-questions-for-a-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open questions for a host
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SEGMENT-FORMAT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segment files
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../API/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API and stability policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROVIDER-CONTRACT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host contract
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BENCHMARKS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELEASING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Releasing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CHANGELOG/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTRIBUTING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SUPPORT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Support
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../THIRD_PARTY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Third-party code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-it-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why it exists
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#terms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Terms
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#id-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Id models
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-epoch-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The epoch rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-replay-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The replay protocol
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-idempotence-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The idempotence rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-durable-prefix-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The durable-prefix rule
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-a-crash-leaves-at-each-point" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a crash leaves, at each point
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open-questions-for-a-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open questions for a host
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href=".." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../DESIGN/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Design
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="id-epoch-and-replay">Id epoch and replay<a class="headerlink" href="#id-epoch-and-replay" title="Permanent link">&para;</a></h1>
+<div class="hm-banner">
+<p><strong>Experimental.</strong> The API is not stable and nothing here is wired into a database engine yet. <a href="../API/#stability-policy-for-0x">What may change</a>.</p>
+</div>
+<p>This page specifies how a host numbers the vectors it gives to tiervec, how it tells the library that the numbering changed, and what the host and the library do after a restart. It belongs to the <a href="../PROVIDER-CONTRACT/">host contract</a> and answers the questions that page leaves open about ids and recovery.</p>
+<p>Status: specification, partly built. A piece is built only when it is marked <code>exists today</code> and names the test that shows it; everything else is <code>planned</code>. The tracking issues are <a href="https://github.com/humemai/tiervec/issues/7">#7</a> (epoch, snapshot rebuild, replay) and <a href="https://github.com/humemai/tiervec/issues/9">#9</a> (the manifest that stores the epoch). Nothing here is a measurement.</p>
+<h2 id="why-it-exists">Why it exists<a class="headerlink" href="#why-it-exists" title="Permanent link">&para;</a></h2>
+<p>The library keys every vector by an opaque <code>long</code> id that the host supplies. A host can renumber its ids (for example when it compacts its own storage), can reuse them, and can replay writes after a crash. A persisted segment that does not know which numbering its ids belong to can, after a restart, return the wrong vector for an id, and nobody notices. Without a replay protocol, every host invents its own recovery and gets the edge cases differently wrong.</p>
+<p>The library is meant to hold derived data only. The vectors in the host's records are the truth, so every rule below is built to keep that true: whatever the library persisted can be checked against the records, and thrown away when the check fails.</p>
+<h2 id="terms">Terms<a class="headerlink" href="#terms" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Id: the <code>long</code> that the host passes to <code>add</code> and <code>delete</code> and receives back in <code>Hit</code>.</li>
+<li>Epoch: a <code>long</code> that names one numbering of ids. The library compares epochs only for equality and never orders them.</li>
+<li>High-water id: the largest id held by any sealed segment of the persisted state. Every id in the tail is above it. This holds because a seal takes the whole frozen tail, and because add ids increase inside an epoch.</li>
+<li>Recovered maximum: the highest id the host itself found after its own recovery.</li>
+<li>Cold: an index with no usable persisted state. It is built from the host's records.</li>
+</ul>
+<h2 id="id-models">Id models<a class="headerlink" href="#id-models" title="Permanent link">&para;</a></h2>
+<p>Three models are possible. They differ in what the key is, and so in what the host and the library must do about reuse, ordering, and renumbering.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Stable host id plus epoch (recommended)</th>
+<th>Host record handle as the key</th>
+<th>Dense id that a compaction can reissue, with no epoch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What the key is</td>
+<td>A <code>long</code> that the host mints per vector version, never reused inside an epoch, increasing for adds.</td>
+<td>The host's own record handle, packed into a <code>long</code>.</td>
+<td>The host's dense ordinal, <code>0</code> to <code>n - 1</code>, reissued in rank order when the host compacts.</td>
+</tr>
+<tr>
+<td>Width</td>
+<td>Fits a <code>long</code> by construction.</td>
+<td>A handle can be wider than 64 bits. Packing needs a width limit and an overflow check, and a wider key changes every id array in the segment format.</td>
+<td>Fits a <code>long</code>.</td>
+</tr>
+<tr>
+<td>Reuse of a record handle</td>
+<td>Impossible inside an epoch: a record that reuses its handle gets a new id.</td>
+<td>Possible. A freed handle can come back for another vector, so a delete and a later add carry the same key. Correct only through the version floor.</td>
+<td>Not an issue between compactions.</td>
+</tr>
+<tr>
+<td>Update</td>
+<td>An add of the new id plus a delete of the old id, in one batch. The floor degenerates to a set of dead ids.</td>
+<td>An add of the same key replaces the old copy, and the old copy is hidden by a floor raise.</td>
+<td>As the stable id, between compactions.</td>
+</tr>
+<tr>
+<td>Delete on disk</td>
+<td><code>delete(id)</code>. Tombstones on disk are an optimization, because open checks liveness.</td>
+<td>A floor raise per key. After a reopen the floor must be rebuilt from durable delete events in order, which needs a position in the host's log and an ordered iterator over it.</td>
+<td>As the stable id.</td>
+</tr>
+<tr>
+<td>Ordering rule for the library</td>
+<td>None: ids are unique.</td>
+<td>The host must send the delete before the add of the same key, and must supply a version per operation, because a counter inside the library reissues versions on replay.</td>
+<td>None, between compactions.</td>
+</tr>
+<tr>
+<td>Renumbering</td>
+<td>Detected: the epoch changes, and persisted state is discarded.</td>
+<td>A host that moves records changes keys, and nothing detects it.</td>
+<td>Not detected. Persisted state silently refers to the old numbering, and id 7 may now be another vector.</td>
+</tr>
+<tr>
+<td>What the library changes</td>
+<td>An epoch parameter on open and rebuild, and an epoch and a high-water id in the manifest. The in-memory tier is unchanged.</td>
+<td>A persisted floor, the key packing, and an optional section that carries the host's handle for each row, which can go stale.</td>
+<td>Nothing, and that is the problem.</td>
+</tr>
+<tr>
+<td>Residual risk</td>
+<td>The epoch must survive a crash that falls between the host's renumbering and the library's notice.</td>
+<td>Reuse across a reopen is closed only by replaying the host's log in order, which is host work.</td>
+<td>Persisted state is unsafe. Only a memory-only index, rebuilt at every open, is safe. A content fingerprint (live count, next id at the last checkpoint, a hash of the live ids in order) detects a renumbering with high probability and does not prove it.</td>
+</tr>
+</tbody>
+</table>
+<p>The recommended model is the first. Reasons, all from the table: no reuse hazard inside an epoch, no width problem, no reconstruction of a floor from events the host may not store, a host mapping that usually exists already (the host finds a record from an id with a table it keeps), and no change to the in-memory tier.</p>
+<p><code>exists today</code>: the in-memory tier works with all three models, because the version floor hides old copies of a reused id (<code>TieredIndex.add</code>, <code>TieredIndex.delete</code>, <a href="../DESIGN/">DESIGN.md</a>). Tests for reuse across seal and merge are <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/5">#5</a>). The epoch and the high-water id are stored in the manifest and used at open (see the sections below).</p>
+<p>With persistence on, one more rule follows from the high-water id. A host does not add a held id again with a different vector. In memory, the tier would replace it. After a reopen, the replay rule would miss a replaced vector whose id is at or below the high-water id, and the old copy could come back. A new vector version gets a new id. Adding a held id with the same vector is the replay case, and it is allowed.</p>
+<h2 id="the-epoch-rule">The epoch rule<a class="headerlink" href="#the-epoch-rule" title="Permanent link">&para;</a></h2>
+<ol>
+<li>The host passes an epoch to <code>open</code> and to <code>rebuildFrom</code>.</li>
+<li>The epoch changes whenever the host reissues or renumbers ids, including a compaction that renumbers, a restore from a backup that renumbers, and an import. It does not change when the host rebuilds an index and keeps its ids.</li>
+<li>Inside an epoch, the ids of adds strictly increase in the order the host applies them. Gaps are allowed. An id is not reused inside an epoch, not even after a delete.</li>
+<li>The manifest stores the epoch. At open, an epoch that differs from the host's gives a cold index. Persisted state is discarded as a whole, never partly reused.</li>
+<li>When the host renumbers while the library is running, it calls <code>onRenumber(newEpoch)</code> at the point where it reissues ids. The library drops its derived state and rebuilds in the new id space.</li>
+<li>The host persists the epoch together with its own data, in the same atomic step as the renumbering, so that a crash cannot leave new ids with the old epoch.</li>
+</ol>
+<p>Rules 1 to 4 <code>exists today</code>: <code>TieredIndex.rebuildFrom(Supplier&lt;Snapshot&gt;, long)</code> and <code>TieredIndex.open(dir, dim, metric, config, RecordSource)</code> take the epoch, <code>TieredIndex.checkpoint</code> stores it in the manifest, and an open with another epoch gives a cold index. Tests: <code>EpochReplayTest.rebuildFromTakesTheEpochAndTheSnapshotPosition</code>, <code>EpochReplayTest.theManifestStoresTheEpochAndTheHighWaterId</code>, <code>EpochReplayTest.anEpochMismatchGivesAColdIndex</code>. A manifest of the previous layout (epoch unset, written by a tier that never had an epoch) still opens through <code>open(dir, config)</code>, and a host that has an epoch gets a cold index from it (<code>EpochReplayTest.aManifestOfThePreviousLayoutOpensAndGivesAColdIndexWhenTheHostHasAnEpoch</code>, which also opens a manifest with a larger minor version). The manifest layout did not change, because it already had the two fields, so the format version did not change either. <code>Long.MIN_VALUE</code> is not a valid epoch: it is how the manifest says none. Rule 5: <code>rebuildFrom(source, newEpoch)</code> is the call that moves the library into a new numbering, with the tests above, and the host stops applying writes of the old numbering when it renumbers; a method named <code>onRenumber</code> is <code>planned</code>. Rule 6 is the host's side. The library relies on the order of ids and does not check it (<code>planned</code>, <a href="https://github.com/humemai/tiervec/issues/7">#7</a>).</p>
+<h2 id="the-replay-protocol">The replay protocol<a class="headerlink" href="#the-replay-protocol" title="Permanent link">&para;</a></h2>
+<p>The host replays what the persisted state lacks, and the library reconciles what the host deleted or never made durable. This is the sequence after a restart, with the host's side marked as host.</p>
+<ol>
+<li>Host: finish the host's own recovery first, so that its records, its id table, and its recovered maximum are final. The library opens after that.</li>
+<li>Host: call <code>open</code> with the index definition, the configuration and its fingerprint, the environment, the record source, and the directory. The record source offers the epoch, every live record, every live record above a given id, a liveness test for one id, and the recovered maximum.</li>
+<li>Library: find the newest valid manifest. A damaged or truncated manifest falls back to the previous generation, and when none is usable the library throws <code>CorruptStateException</code>, so that the host calls <code>rebuildFrom</code>.</li>
+<li>Library: compare the manifest's fingerprint, dimension, metric, and epoch with the host's. Any mismatch gives a cold index and ends the sequence here.</li>
+<li>Library: apply the durable-prefix rule. Every held id above the recovered maximum is dropped (see below).</li>
+<li>Library: for every id still held in a segment, ask the record source whether the id is live. A record that is not live marks the row dead. This is a check per held id, not a scan of the host's pages.</li>
+<li>Library: ask the record source for every live record above the high-water id, in increasing id order, and append the vectors to the tail. Segments are not touched.</li>
+<li>Library: report ready. The host resumes normal traffic: one <code>apply</code> per committed transaction.</li>
+</ol>
+<p>If the persisted state is cold, the host calls <code>rebuildFrom</code> over its live records, with its epoch and a snapshot position, and the library reports ready when the build is swapped in.</p>
+<p>Rebuild while the host keeps writing: the host passes a snapshot position, which is the highest id covered by the records it hands over. The library builds without blocking <code>apply</code> or <code>search</code>. Adds above the snapshot position that arrive during the build are kept and applied after the swap. Deletes that arrive during the build are kept as well, in arrival order, and applied after the swap, so that a delete of an id that the snapshot contains is not lost. None is lost and none is applied twice. <code>exists today</code>: <code>TieredIndex.rebuildFrom(Supplier&lt;Snapshot&gt;, long)</code>, and the form <code>rebuildFrom(records, epoch, snapshotPosition)</code>. The text above does not say who starts first, the host's snapshot or the library's record of writes. The order that is safe is: the library starts to record the writes it accepts, then asks the host for the snapshot. A write that the host applied before the library started to record, and that the snapshot does not cover, would be lost. So the host takes its snapshot inside the supplier that the library calls, and serializes that with its own calls of <code>apply</code>. At the swap, under one hold of the write lock, the recorded writes are applied to the rebuilt state in arrival order, adds at or below the snapshot position skipped, and recording stops. Tests: <code>EpochReplayTest.writesThatArriveDuringTheBuildAreKeptAndAppliedAfterTheSwap</code> (a write from another thread gets through during the build, adds above the position are kept once, deletes of ids of the snapshot are applied, and a late batch at or below the position is not applied again), <code>EpochReplayTest.anAbortedRebuildChangesNothing</code>, <code>EpochReplayStressTest.aRebuildNeverLosesAWriteThatArrivesDuringIt</code> (a host thread writes without a pause while the tier is rebuilt from snapshots), and its long variant in <code>EpochReplayLongTest</code>. The one-argument <code>rebuildFrom(Iterable&lt;IdVector&gt;)</code> is unchanged: it holds the write lock for the whole build and keeps the epoch.</p>
+<p>Steps 3 to 8 <code>exists today</code> as <code>TieredIndex.open(dir, dim, metric, config, RecordSource)</code>, with these differences from the text above. The fingerprint, the dimension, the metric, and the epoch are compared, and any failure to read the directory (damage, a newer format, no manifest) gives a cold index with the cause in <code>openFallbackCause()</code>, where step 3 says the library throws <code>CorruptStateException</code>; that class does not exist yet ([#18]). The replay of step 7 is applied with <code>apply</code> in batches of 1024. Step 8 is the return of <code>open</code>. Tests: <code>EpochReplayTest.theHostReplaysEverythingAboveTheHighWaterId</code>, <code>EpochReplayTest.theLivenessCheckHidesIdsTheHostDeleted</code> (the rows are hidden in memory only, and a liveness check alone writes nothing), <code>EpochReplayTest.idsAboveTheRecoveredMaximumAreDroppedBeforeTheIndexIsReady</code>.</p>
+<h2 id="the-idempotence-rule">The idempotence rule<a class="headerlink" href="#the-idempotence-rule" title="Permanent link">&para;</a></h2>
+<p><code>add</code> of a held id replaces it with the same vector, and <code>delete</code> of an absent id returns <code>false</code> and changes nothing. Re-applying a batch therefore changes nothing visible, on one condition that the host guarantees: inside an epoch, an id always denotes one vector.</p>
+<p>Because of this, the host may start a replay at or below the true position. A replay that starts too early is slower, never wrong. This is what lets the high-water id lag, and what makes a crash in the middle of a replay harmless.</p>
+<p><code>exists today</code> for single calls: <code>TieredIndex.add</code>, <code>TieredIndex.delete</code>. <code>exists today</code> for whole batches: <code>TieredIndex.apply</code>, tested by <code>ApplyBatchTest.applyingTheSameBatchAgainChangesNothingVisible</code>. <code>exists today</code> across a checkpoint and a reopen: <code>EpochReplayTest.replayingTheSameBatchesAfterAReopenChangesNothing</code> applies the batches of the host again, in order, after <code>open</code>.</p>
+<h2 id="the-durable-prefix-rule">The durable-prefix rule<a class="headerlink" href="#the-durable-prefix-rule" title="Permanent link">&para;</a></h2>
+<p>A commit can count as final in the host's view and still miss the disk (for example under an asynchronous log flush). A segment that the library persisted earlier can then hold an id that the host forgot and hands to another record after the restart.</p>
+<p>Ids increase in the order in which the host applies batches, so the ids the host lost are exactly the ids above its recovered maximum. At open, the library drops every held id above that maximum.</p>
+<p>Two consequences follow from the way the library persists state. They are part of the rule.</p>
+<ul>
+<li>Dead is sticky. A row that an open or an <code>apply</code> has marked dead stays dead in every later generation. A liveness check may kill rows and never revives one. Otherwise, after the host mints a new record with a dropped id, a later open would find that id live again and bring back the old vector.</li>
+<li>The high-water id is lowered to the recovered maximum when rows are dropped. The host may mint the dropped ids again for new records, and those records must lie above the high-water id, so that a later replay finds them.</li>
+<li>The drop must be durable before the library reports ready, or the library discards the persisted state and goes cold. The library may always choose cold. The first implementation may do so whenever the rule drops a row.</li>
+</ul>
+<p><code>exists today</code>, without the shortcut: <code>TieredIndex.open(dir, dim, metric, config, RecordSource)</code> drops every held id above <code>recoveredMax()</code>, rebuilds the segments without those rows (<code>mergeNow</code>), and publishes a new generation (<code>checkpoint</code>) before it returns; when that fails the tier goes cold. The high-water id of the new generation is the largest id that the remaining segments hold, which is at most the recovered maximum. Dead is sticky because a dropped row is in no later generation. A row that the liveness check hides stays in the older files only, and every open asks again, which is safe because an id is not reused inside an epoch. The recovered maximum is the highest id that the host found when it recovered, not the highest id it holds when it calls <code>open</code>: a host that minted new records in between passes the older value, and the tier then drops the persisted copies of those ids and replays the new records (a host that passes its current maximum keeps the old vectors under the re-minted ids, which is a host error that the library cannot see). Tests: <code>EpochReplayTest.idsAboveTheRecoveredMaximumAreDroppedBeforeTheIndexIsReady</code> (the host forgets 40 adds and mints the same ids again for other vectors: this open and a later one return the new vectors only, and a reader that knows nothing about the host finds none of the lost rows), <code>EpochReplayStressTest.crashAndReopenLoop</code>, and its long variant in <code>EpochReplayLongTest</code>.</p>
+<p>The rule covers adds. It does not say what happens to a delete that the library persisted (a compacted segment) and the host then forgot: the record is live again in the host, with an id at or below the recovered maximum, and no segment holds it any more, so nothing replays it. The tests keep to the safer reading: the host makes its deletes durable before it lets the library checkpoint (<code>FakeHost.flushDeletes</code>). The contract needs a sentence on this from the host's side, or a decision that the library refuses to persist a delete that the host has not confirmed.</p>
+<h2 id="what-a-crash-leaves-at-each-point">What a crash leaves, at each point<a class="headerlink" href="#what-a-crash-leaves-at-each-point" title="Permanent link">&para;</a></h2>
+<p>A process kill is assumed. No claim is made about power loss until a test says otherwise (<a href="https://github.com/humemai/tiervec/issues/17">#17</a>).</p>
+<table>
+<thead>
+<tr>
+<th>The crash falls</th>
+<th>What is durable</th>
+<th>What the next open does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>In the host, before its commit is durable</td>
+<td>Nothing of this batch, in the host or in the library.</td>
+<td>Nothing to do. The library never saw the batch, because the host applies only when changes stand.</td>
+</tr>
+<tr>
+<td>After the host's commit is durable and before <code>apply</code> ran</td>
+<td>The host's records.</td>
+<td>Step 7 of the replay: the live records above the high-water id come back into the tail.</td>
+</tr>
+<tr>
+<td>After <code>apply</code>, before any seal</td>
+<td>The host's records. The tail was in memory only.</td>
+<td>As above.</td>
+</tr>
+<tr>
+<td>During a seal or merge, before the new manifest is durable</td>
+<td>The previous generation, plus an orphan segment file.</td>
+<td>The previous generation opens. The orphan is deleted. The records above its high-water id are replayed.</td>
+</tr>
+<tr>
+<td>After a new manifest is durable, and the host lost the commit that its segment holds</td>
+<td>A segment that holds ids the host no longer has.</td>
+<td>The durable-prefix rule drops the ids above the recovered maximum.</td>
+</tr>
+<tr>
+<td>After a delete was applied in memory and before a manifest recorded it</td>
+<td>The host's records without the record.</td>
+<td>Step 6: the liveness check marks the row dead.</td>
+</tr>
+<tr>
+<td>During a rebuild</td>
+<td>The previous persisted state. A rebuild replaces state only at the swap and publishes a new manifest after it.</td>
+<td>The previous state opens, or the host rebuilds again.</td>
+</tr>
+<tr>
+<td>After the host renumbered, before the library heard of it</td>
+<td>The host's new numbering and its epoch, if it persisted them with the renumbering (rule 6). Old segments with the old epoch.</td>
+<td>The epoch differs, so the index is cold and the host rebuilds.</td>
+</tr>
+<tr>
+<td>In the middle of a replay</td>
+<td>Nothing new. A replay changes nothing durable until the next publish.</td>
+<td>The same replay again. It is idempotent.</td>
+</tr>
+<tr>
+<td>A segment or manifest is damaged</td>
+<td>Whatever damage the file has.</td>
+<td><code>CorruptStateException</code>, and the host calls <code>rebuildFrom</code>. A second failure is a host error.</td>
+</tr>
+</tbody>
+</table>
+<p><code>exists today</code> for a process kill: <code>EpochReplayTest.aCrashAtEveryStepOfAPublishLeavesAnIndexThatMatchesTheHost</code> runs the fault hook after each of the six publish steps, and <code>EpochReplayStressTest.crashAndReopenLoop</code> crashes the host and the tier at random points (sometimes in the middle of a publish) and checks after every reopen that the tier holds exactly the host's live records, each with the host's vector. The row for a crash in the middle of a replay has no test of its own: a replay changes nothing durable, and applying a batch again is tested. No claim is made about power loss (<a href="https://github.com/humemai/tiervec/issues/17">#17</a>).</p>
+<h2 id="open-questions-for-a-host">Open questions for a host<a class="headerlink" href="#open-questions-for-a-host" title="Permanent link">&para;</a></h2>
+<p>A host answers these before it relies on the protocol. A different answer changes a rule above.</p>
+<ol>
+<li>Can the host persist an epoch atomically with any renumbering of its ids? If it cannot, the library has only the content fingerprint, which detects a renumbering with high probability and does not prove it, and the host must accept a rebuild after every compaction, or a memory-only index.</li>
+<li>Does the host report every path that reissues ids? Compaction is the obvious one. A restore from a backup, an import, a rebuild of the host's own tables, and the installation of a replica's snapshot are others.</li>
+<li>Are ids minted in the order in which the host applies batches, even with concurrent transactions? The rule needs a strictly increasing order, so the host serializes <code>apply</code> per index and mints in that order, or it mints under a lock that gives the same order.</li>
+<li>Can the host list its live records above a given id without scanning everything, and test one id for liveness in constant time? The cost of step 6 and step 7 is the cost of these two calls.</li>
+<li>Can the host tell the highest id it recovered after a crash? Under which flush modes can a commit that it counted as final be lost?</li>
+<li>Does the host call <code>apply</code> only when changes stand? If it must apply earlier, it must undo an add with a delete and a delete with an add of the vector, and the persisted state then may contain ids of transactions that did not stand, which only the durable-prefix rule covers.</li>
+<li>When does the host open the index relative to its own recovery? The library needs final records.</li>
+<li>What does a replica, a restored copy, or a copy from a backup contain? The library's files may be absent or older than the records. Absent files give a cold index.</li>
+<li>How much memory does the staging of a long transaction hold until it applies? The library does not bound that.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../DESIGN/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Design">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Design
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../SEGMENT-FORMAT/" class="md-footer__link md-footer__link--next" aria-label="Next: Segment files">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Segment files
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 HumemAI
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/humemai/tiervec" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.path", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "toc.follow"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>
