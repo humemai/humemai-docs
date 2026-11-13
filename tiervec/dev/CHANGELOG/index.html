@@ -963,6 +963,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Unreleased">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1006,7 +1023,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#added" class="md-nav__link">
+  <a href="#added_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Added
@@ -1195,6 +1212,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Unreleased">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Added
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1238,7 +1272,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#added" class="md-nav__link">
+  <a href="#added_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Added
@@ -1338,6 +1372,10 @@
 </div>
 <p>All notable changes to tiervec are in this file. The layout follows <a href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>. The version rule and the steps of a release are in <a href="../RELEASING/">docs/RELEASING.md</a>. Until 1.0, a breaking change to the supported surface (<a href="../API/">docs/API.md</a>) needs a new minor version.</p>
 <h2 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Benchmark harness: <code>--data</code> reads a real embedding set that <code>scripts/prep_real_dataset.py</code> converts from parquet (raw float32 files with exact answers), and <code>--engine jvector</code> builds and searches the same data with JVector at the same <code>M</code> and <code>efConstruction</code>, in the bench profile only (JVector is not a dependency of the library). A CI smoke runs both on a small generated set (<a href="../BENCHMARKS/">docs/BENCHMARKS.md</a>, <a href="https://github.com/humemai/tiervec/issues/108">issue #108</a>).</li>
+</ul>
 <h2 id="011-2026-11-13">0.1.1 - 2026-11-13<a class="headerlink" href="#011-2026-11-13" title="Permanent link">&para;</a></h2>
 <p>The library code is unchanged from <code>0.1.0</code>: no source file changed. The changes are in the release workflow and the pom.</p>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
@@ -1346,7 +1384,7 @@
 </ul>
 <h2 id="010-2026-11-12">0.1.0 - 2026-11-12<a class="headerlink" href="#010-2026-11-12" title="Permanent link">&para;</a></h2>
 <p>The first release. It is the sources of the first experiment, imported and brought to the supported surface in <a href="../API/">docs/API.md</a>. Nothing was released under the old package name. Details are in <a href="../STATUS/">docs/STATUS.md</a>.</p>
-<h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
+<h3 id="added_1">Added<a class="headerlink" href="#added_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>FlatIndex</code>: exact scan with optional SQ8 or binary codes, compaction, <code>serialize</code> and <code>load</code>.</li>
 <li><code>GraphIndex</code>: a concurrent HNSW graph with delete, <code>consolidate</code>, and optional SQ8.</li>

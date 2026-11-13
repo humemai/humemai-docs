@@ -1161,10 +1161,17 @@
 </tr>
 <tr>
 <td>jvector, Lucene HNSW, hnswlib</td>
-<td>not read</td>
+<td>not read for the graph tier</td>
 <td>Apache-2.0 / MIT</td>
 <td>none</td>
 <td>no code or structure copied so far; the graph tier was written from the papers. If a piece is adapted later, add a row here and an attribution comment in that file.</td>
+</tr>
+<tr>
+<td>jvector (<code>io.github.jbellis:jvector</code>)</td>
+<td>4.0.2</td>
+<td>Apache-2.0</td>
+<td>the benchmark harness only (<code>src/bench/jvector</code>, profile <code>bench</code> of <code>pom.xml</code>)</td>
+<td>the comparison arm of <a href="../BENCHMARKS/">docs/BENCHMARKS.md</a>: the harness builds and searches a JVector graph through its public API. It is a dependency of the harness, not of the library, and no JVector code is copied.</td>
 </tr>
 <tr>
 <td>Sivic and Zisserman, inverted file (paper)</td>
