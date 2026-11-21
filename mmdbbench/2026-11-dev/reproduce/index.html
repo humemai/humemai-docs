@@ -542,6 +542,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproduce
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -558,6 +576,113 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-need" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What you need
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-the-cell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run the cell
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-writes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it writes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-the-latency-per-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the latency per start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-cells-and-engines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other cells and engines
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-issue-the-native-server-at-10-million-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known issue: the native server at 10 million vectors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions-about-a-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions about a result
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -718,6 +843,102 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-need" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What you need
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-the-cell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run the cell
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-writes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it writes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-the-latency-per-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the latency per start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-cells-and-engines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other cells and engines
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-issue-the-native-server-at-10-million-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known issue: the native server at 10 million vectors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions-about-a-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions about a result
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -745,15 +966,84 @@
 
 
 <h1 id="reproduce">Reproduce<a class="headerlink" href="#reproduce" title="Permanent link">&para;</a></h1>
-<p>Every published number can be repeated on your own hardware. The benchmark runs each engine in a container pinned by image digest (or an installed package pinned by version) and writes one result
-row per measurement; the tables on the results page are generated from those rows.</p>
-<div class="admonition note">
-<p class="admonition-title">Status</p>
-<p>The reproduction instructions move here with the benchmark code. Until then the code and its instructions are in
-<a href="https://github.com/humemai/arcadedb-embedded-python">humemai/arcadedb-embedded-python</a> under <code>benchmarks/</code>.</p>
-</div>
-<p>A reproduction is comparable when it keeps the memory cap, the durability class and the corpus the same, and compares engines on the same machine. Absolute times on different hardware will differ;
-the order of engines and the size of the gaps are what a reproduction should be compared on.</p>
+<p>Every published number can be repeated on your own hardware. The benchmark runs each engine in a container pinned by image digest (or an installed package pinned by version) and writes one result row per measurement; the tables on the results page are generated from those rows. This page shows how to run one cell on a clean checkout, using the filtered 3-hop read of the graph lane (<code>hop3f</code>) as the example. Nothing here needs a private file or the benchmark host.</p>
+<p>A reproduction is comparable when it keeps the memory cap, the durability class and the corpus the same, and compares engines on the same machine. Absolute times on different hardware differ; the order of engines and the size of the gaps are what a reproduction should be compared on. The rest of the protocol is in <a href="../methodology/">Methodology</a> and in <a href="https://github.com/humemai/mmdbbench/blob/main/experiments/PROTOCOL.md"><code>experiments/PROTOCOL.md</code></a>.</p>
+<h2 id="what-you-need">What you need<a class="headerlink" href="#what-you-need" title="Permanent link">&para;</a></h2>
+<ul>
+<li>A Linux machine on x86-64, <a href="https://docs.astral.sh/uv/"><code>uv</code></a>, and a clone of this repository. Python 3.11 to 3.14 is fetched by <code>uv</code>.</li>
+<li>No Java installation: the <code>arcadedb-jvm</code> package bundles its own runtime. Docker is needed only for the cells that run a server or a comparator engine, not for the command below.</li>
+<li>About 1.1 GB of disk for the SF1 data (a 211 MB download, 888 MB extracted) and a few GB of memory. The published rows used a 4 GB heap inside an 8 GB cap.</li>
+</ul>
+<h2 id="the-data">The data<a class="headerlink" href="#the-data" title="Permanent link">&para;</a></h2>
+<p>The graph lane reads the persons and <code>KNOWS</code> files of the pre-generated LDBC Social Network Benchmark, Interactive v1, scale factor 1, in the <code>CsvCompositeMergeForeign</code> layout with the <code>LongDateFormatter</code> serializer. It is published by the LDBC council.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source</td>
+<td><a href="https://datasets.ldbcouncil.org/snb-interactive-v1/social_network-sf1-CsvCompositeMergeForeign-LongDateFormatter.tar.zst">https://datasets.ldbcouncil.org/snb-interactive-v1/social_network-sf1-CsvCompositeMergeForeign-LongDateFormatter.tar.zst</a></td>
+</tr>
+<tr>
+<td>Size</td>
+<td>211,535,038 bytes</td>
+</tr>
+<tr>
+<td>SHA-256 of the file we used</td>
+<td><code>0b2e240061e51098bc19e9d5ee535cc16d01da522c8aab3d6dfde6350cbe5bf6</code></td>
+</tr>
+</tbody>
+</table>
+<div class="language-bash highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">BENCH_GRAPH_DATA</span><span class="o">=</span><span class="nv">$HOME</span>/bench-data/ldbc
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">"</span><span class="nv">$BENCH_GRAPH_DATA</span><span class="s2">/sf1"</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span><span class="s2">"</span><span class="nv">$BENCH_GRAPH_DATA</span><span class="s2">/sf1"</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>curl<span class="w"> </span>-LO<span class="w"> </span>https://datasets.ldbcouncil.org/snb-interactive-v1/social_network-sf1-CsvCompositeMergeForeign-LongDateFormatter.tar.zst
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">"0b2e240061e51098bc19e9d5ee535cc16d01da522c8aab3d6dfde6350cbe5bf6  social_network-sf1-CsvCompositeMergeForeign-LongDateFormatter.tar.zst"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sha256sum<span class="w"> </span>-c<span class="w"> </span>-
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>tar<span class="w"> </span>--zstd<span class="w"> </span>-xf<span class="w"> </span>social_network-sf1-CsvCompositeMergeForeign-LongDateFormatter.tar.zst
+</code></pre></div>
+<p>The cell finds the data as <code>$BENCH_GRAPH_DATA/sf1/social_network-*/dynamic</code>. It loads only the persons and the friendships: 9,892 persons and 180,623 friendships. Each friendship is stored once, and the questions treat it as undirected.</p>
+<p>The result rows carry <code>n_persons</code> 10,995 for this scale. That number is a constant of the harness that names the scale; it is not a count of what was loaded. The loaded counts are in the row itself (<code>n_persons_ingested</code>, <code>n_edges_ingested</code>) and in the header of the per-start file described below.</p>
+<h2 id="run-the-cell">Run the cell<a class="headerlink" href="#run-the-cell" title="Permanent link">&para;</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">cd</span><span class="w"> </span>experiments
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">BENCH_GRAPH_SOURCE</span><span class="o">=</span>ldbc<span class="w">        </span><span class="c1"># read the LDBC files; without it the synthetic generator runs</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">BENCH_GRAPH_DATA</span><span class="o">=</span><span class="nv">$HOME</span>/bench-data/ldbc
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ARCADEDB_HEAP</span><span class="o">=</span>4g<span class="w">               </span><span class="c1"># heap of the engine</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">BENCH_DURABILITY</span><span class="o">=</span>relaxed<span class="w">       </span><span class="c1"># the default class; strict also flushes the write-ahead log on every commit</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nb">export</span><span class="w"> </span><span class="nv">BENCH_GRAPH_SAMPLES_OUT</span><span class="o">=</span><span class="nv">$PWD</span>/samples.jsonl<span class="w">   </span><span class="c1"># optional: one record per timed read, see below</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>uv<span class="w"> </span>run<span class="w"> </span>--no-project<span class="w"> </span>--with<span class="w"> </span>arcadedb-jvm<span class="o">==</span><span class="m">26</span>.11.1<span class="w"> </span>python<span class="w"> </span>l2_graph.py<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">  </span>--backend<span class="w"> </span>arcadedb_graph_embedded<span class="w"> </span>--workload<span class="w"> </span>oltp<span class="w"> </span>--scale<span class="w"> </span>sf1<span class="w"> </span>--out<span class="w"> </span>hop3f_sf1.json
+</code></pre></div>
+<p>This is the command we ran from a clean checkout of this repository. It finished in about 12 minutes on the benchmark host, with exit code 0. There is no switch for one operation: the cell times the point read, the one-hop, two-hop and filtered three-hop reads in turn, and then the writes. The database is created fresh at <code>/tmp/l2_arcade</code> (about 11 MB) in every run; delete it when you are done.</p>
+<p>The query of the filtered 3-hop read is in <a href="https://github.com/humemai/mmdbbench/blob/main/experiments/graph_common.py"><code>graph_common.py</code></a>:</p>
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>MATCH (p:Person)-[:KNOWS]-(:Person)-[:KNOWS]-(:Person)-[:KNOWS]-(x:Person)
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>WHERE p.id = $id AND x.age &gt; 41 RETURN count(DISTINCT x) AS n
+</code></pre></div>
+<p>The 500 start persons are drawn with a fixed seed (777) from the persons file, so every run asks for the same starts. The timer covers planning, execution, the iteration of the result and its conversion to Python objects.</p>
+<h2 id="what-it-writes">What it writes<a class="headerlink" href="#what-it-writes" title="Permanent link">&para;</a></h2>
+<p><code>hop3f_sf1.json</code> is the result row of the cell. For each read it holds the median, the 95th and the 99th percentile in milliseconds (for example <code>hop3f_p50_ms</code>), the engine and wheel versions, the heap and the cores. <a href="../results-schema/">Result rows</a> lists the fields.</p>
+<p><code>samples.jsonl</code> exists only when <code>BENCH_GRAPH_SAMPLES_OUT</code> is set; it is written after the row, so it cannot change a measurement. The first line is a header with the run's identifying fields and the counts of persons and edges the cell loaded. Every further line is one timed read: <code>op</code>, <code>pass</code> (1 or 2), <code>position</code>, <code>start_id</code>, <code>latency_ms</code>, <code>answer</code> and <code>discarded</code> (the first reads of a pass are not counted in the percentiles). The percentiles in the row are over the reads that are not discarded.</p>
+<h2 id="reading-the-latency-per-start">Reading the latency per start<a class="headerlink" href="#reading-the-latency-per-start" title="Permanent link">&para;</a></h2>
+<p>The work of a filtered 3-hop read grows with the number of three-relationship paths that start at the person, and in a social graph that number differs by orders of magnitude between persons, so one median hides a long tail of heavy starts. <a href="https://github.com/humemai/mmdbbench/blob/main/experiments/tools/walks_per_start.py"><code>experiments/tools/walks_per_start.py</code></a> counts those paths for every person from the two CSV files alone, without any engine, and compares them with the latencies of a run:</p>
+<div class="language-bash highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>tools/walks_per_start.py<span class="w"> </span>--data<span class="w"> </span><span class="s2">"</span><span class="nv">$BENCH_GRAPH_DATA</span><span class="s2">"</span><span class="w"> </span>--samples<span class="w"> </span>samples.jsonl
+</code></pre></div>
+<p>It prints the walks per person for the whole corpus, the latency and walks of the timed starts, the rank correlation of the two, and the microseconds per walk. This is the output of the run above, on the benchmark host's efficiency cores at the lowest priority, so its absolute latencies are higher than the published rows:</p>
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>corpus: 9892 persons, 180623 friendships
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>3-hop walks per person: p50 331073  p95 1238493  p99 2219364  max 6577302
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>samples: 9892 persons and 180623 edges ingested by the cell, 824 timed hop3f reads
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>latency ms: p50 514.3  p95 1485.5  p99 2639.6
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>walks per timed start: p50 339781  p95 995687  p99 1792149
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>Spearman(latency, walks) = 1.000; microseconds per walk: median 1.51, p5 1.48, p95 1.54
+</code></pre></div>
+<p>In that run, the latency of every start was proportional to its walk count, at about 1.5 microseconds per walk. This shows how the latency spreads over the starts. It does not explain why a walk costs what it does. If your graph is smaller or less connected than the LDBC SF1 persons graph, the walks per start are fewer and the latencies are lower for that reason alone, so compare the walks per start before comparing the latencies.</p>
+<h2 id="other-cells-and-engines">Other cells and engines<a class="headerlink" href="#other-cells-and-engines" title="Permanent link">&para;</a></h2>
+<p>The cells of the other lanes, the comparator engines and the served and native arms are described in <a href="https://github.com/humemai/mmdbbench/blob/main/experiments/README.md"><code>experiments/README.md</code></a> and <a href="https://github.com/humemai/mmdbbench/blob/main/experiments/PROTOCOL.md"><code>experiments/PROTOCOL.md</code></a>. The runbook of the benchmark host, <a href="https://github.com/humemai/mmdbbench/blob/main/experiments/CAMPAIGN.md"><code>CAMPAIGN.md</code></a>, is in the same directory.</p>
+<h2 id="known-issue-the-native-server-at-10-million-vectors">Known issue: the native server at 10 million vectors<a class="headerlink" href="#known-issue-the-native-server-at-10-million-vectors" title="Permanent link">&para;</a></h2>
+<p>The two dense-vector cells with ten million vectors on the native ArcadeDB server end with an out-of-memory error during the index build, with the default settings. The published rows show that failure. A server flag made the same cells finish in our tests, but it is a workaround whose cause is not known, so the published rows do not use it. The report is <a href="https://github.com/ArcadeData/arcadedb/issues/12639">ArcadeData/arcadedb#12639</a> and the tracking issue is <a href="https://github.com/humemai/mmdbbench/issues/99">#99</a>.</p>
+<h2 id="questions-about-a-result">Questions about a result<a class="headerlink" href="#questions-about-a-result" title="Permanent link">&para;</a></h2>
+<p>If your numbers differ from a published row, or this page is wrong or unclear, open an issue in this repository with the command you ran, the engine version, and the row or samples file. The aim is that a reader never needs to ask anyone for the command, the data or the settings.</p>
 
 
 
