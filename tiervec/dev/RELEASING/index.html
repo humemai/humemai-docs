@@ -1458,7 +1458,7 @@
 <h2 id="steps">Steps<a class="headerlink" href="#steps" title="Permanent link">&para;</a></h2>
 <p>Only the maintainer tags and publishes a release.</p>
 <ol>
-<li>Check that the latest commit on <code>main</code> is green: every check of its run is <code>SUCCESS</code> (a skipped check is fine). Do not release from a red or running <code>main</code>.</li>
+<li>Check that the latest commit on <code>main</code> is green: every check of its run is <code>SUCCESS</code> (a skipped check is fine). Do not release from a red or running <code>main</code>. The slow tests (<code>slow tests (JDK 21)</code> and <code>slow tests (JDK 25)</code>, workflow <code>slow-tests.yml</code>) are among these checks: every push to <code>main</code> starts them.</li>
 <li>Create the branch <code>release/&lt;version&gt;</code> from that commit.</li>
 <li>In <code>pom.xml</code>, change <code>&lt;version&gt;</code> to the release version (no <code>-SNAPSHOT</code>).</li>
 <li>In <code>CHANGELOG.md</code>, rename <code>Unreleased</code> to <code>&lt;version&gt; - YYYY-MM-DD</code>, add an empty <code>Unreleased</code> above it, and read the entry once against <code>git log &lt;previous tag&gt;..HEAD</code>.</li>
@@ -1468,8 +1468,8 @@
 <div class="language-text highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>gh workflow run release-central.yml --ref release/&lt;version&gt; -f dry-run=true
 </code></pre></div>
 <ol>
-<li>Open a pull request named <code>Release &lt;version&gt;</code>, wait for green, and merge it.</li>
-<li>Tag the merge commit and push the tag. The tag is the bare version:</li>
+<li>Open a pull request named <code>Release &lt;version&gt;</code> and add the label <code>ci:slow</code> to it, so that the slow tests run on it (a pull request without the label skips them). Wait for green, the two slow jobs included, and merge it.</li>
+<li>The merge is a push to <code>main</code>, and it starts the slow tests on the merge commit, which is the commit of the release. Wait for that run to end green (<code>gh run list --workflow slow-tests.yml --commit &lt;merge-sha&gt;</code>). Then tag the merge commit and push the tag. The tag is the bare version:</li>
 </ol>
 <div class="language-text highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git tag &lt;version&gt; &lt;merge-sha&gt;
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>git push origin &lt;version&gt;

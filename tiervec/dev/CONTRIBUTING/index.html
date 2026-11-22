@@ -1056,6 +1056,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#what-ci-runs-and-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What CI runs, and when
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#workflow-files" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1293,6 +1304,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#what-ci-runs-and-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What CI runs, and when
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#workflow-files" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1418,7 +1440,7 @@
 <div class="language-text highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mvn -B -ntp verify            # fast tests: Vector API kernels, then the scalar twins
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>mvn -B -ntp verify -Pslow     # the long concurrency and stress tests (tag "slow")
 </code></pre></div>
-<p>The fast tests run on every pull request, on JDK 21 and 25. The slow tests also run on every pull request, on x86-64 Linux, and take about 45 minutes. You do not have to run them on your own machine.</p>
+<p>The fast tests run on every pull request, on JDK 21 and 25. The slow tests take about 40 minutes per JDK, so they do not run on an ordinary pull request: see <a href="#what-ci-runs-and-when">What CI runs, and when</a>. You do not have to run them on your own machine.</p>
 <h3 id="build-the-documentation">Build the documentation<a class="headerlink" href="#build-the-documentation" title="Permanent link">&para;</a></h3>
 <p>The site at <a href="https://docs.humem.ai/tiervec/dev/">https://docs.humem.ai/tiervec/dev/</a> is built with MkDocs Material from the README, the other Markdown files in the repository root, and <code>docs/</code>. The hook <code>docs-site/hooks.py</code> turns the root files into pages and rewrites relative links: a link to another page stays a link to that page, and a link to any other file in the repository becomes a link to it on GitHub. The design system in <code>docs/brand</code> is a vendored copy. Do not edit it: change it in <a href="https://github.com/humemai/design-system">humemai/design-system</a> and vendor it again. <code>bash docs/brand/verify.sh</code> checks the copy. To build the site as the check does:</p>
 <div class="language-text highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv run --no-project --python 3.12 --with-requirements docs-site/requirements.txt mkdocs build --strict
@@ -1436,13 +1458,44 @@
 <p>Commit messages start with the area, then a short summary and the issue number, for example <code>Tests: replace absolute throughput floors in concurrency tests with an overlap proof (#59)</code>.</p>
 <p>Pull requests are squash-merged into <code>main</code>, so the history is linear.</p>
 <h3 id="checks-that-must-pass">Checks that must pass<a class="headerlink" href="#checks-that-must-pass" title="Permanent link">&para;</a></h3>
-<p>Three checks are required before a merge:</p>
+<p>Four checks are required before a merge:</p>
 <ul>
 <li><code>fast tests (JDK 21)</code></li>
 <li><code>fast tests (JDK 25)</code></li>
 <li><code>Ensure SHA pinned actions</code></li>
+<li><code>docs build (strict)</code></li>
 </ul>
-<p>The other jobs (arm64, Windows, native image, slow tests, the documentation build) also run on a pull request. A failure there is read like any other failure, even where the check is not required.</p>
+<p>The other jobs of a pull request (arm64, Windows, the benchmark smoke, native image) are not required. A failure there is read like any other failure.</p>
+<h3 id="what-ci-runs-and-when">What CI runs, and when<a class="headerlink" href="#what-ci-runs-and-when" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>When</th>
+<th>What runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Every pull request</td>
+<td>The fast tests (x86-64 Linux on JDK 21 and 25, arm64 Linux, arm64 macOS, Windows x64), the benchmark smoke, the documentation build and the workflow check. The native image jobs and the Maven Central dry run start only when the files they cover change. It ends in about 12 minutes.</td>
+</tr>
+<tr>
+<td>A pull request with the label <code>ci:slow</code></td>
+<td>The same, and the slow tests on JDK 21 and 25 (about 40 minutes each).</td>
+</tr>
+<tr>
+<td>Every push to <code>main</code></td>
+<td>Everything above, the slow tests included.</td>
+</tr>
+<tr>
+<td>Every day at 19:17 UTC</td>
+<td>The slow tests, on the head of <code>main</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>To ask for the slow tests on a pull request, add the label <code>ci:slow</code>. If you cannot set labels, ask for it in the pull request and the maintainer adds it. The slow tests start when the label is added and run again on every later push to that pull request. Ask for them when a change touches what they cover: concurrent readers and writers, seals and merges, record-id reuse, or the batch paths. On a pull request without the label, the slow tests show as one skipped check, which is not a failure.</p>
+<p>The slow tests also run by hand on any branch: <code>gh workflow run slow-tests.yml --ref &lt;branch&gt;</code>.</p>
+<p>When a slow run on <code>main</code> is red, the workflow opens the issue "Slow tests are red on main", or comments on it when it is already open. The slow tests are in <code>.github/workflows/slow-tests.yml</code>; the other tests are in <code>ci.yml</code>.</p>
 <h3 id="workflow-files">Workflow files<a class="headerlink" href="#workflow-files" title="Permanent link">&para;</a></h3>
 <p>Every action in <code>.github/workflows/</code> is pinned to a full commit SHA, with the version as a comment. A floating tag fails the check <code>Ensure SHA pinned actions</code>.</p>
 <h3 id="measurements">Measurements<a class="headerlink" href="#measurements" title="Permanent link">&para;</a></h3>

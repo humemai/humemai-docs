@@ -1434,7 +1434,7 @@
 <li>Nothing else at run time. JUnit 5 is a test dependency.</li>
 </ul>
 <h2 id="platform-support">Platform support<a class="headerlink" href="#platform-support" title="Permanent link">&para;</a></h2>
-<p>There are three tiers. For tier 1, each row names the CI job that proves it. A job marked "required" must pass before a pull request can merge into <code>main</code>. The other jobs run on every pull request but do not block it. All jobs run on GitHub-hosted runners.</p>
+<p>There are three tiers. For tier 1, each row names the CI job that proves it. A job marked "required" must pass before a pull request can merge into <code>main</code>. The other jobs do not block it. They run on every pull request, except the slow tests: those run on every push to <code>main</code>, once a day on <code>main</code>, and on a pull request that carries the label <code>ci:slow</code> (<a href="CONTRIBUTING/#what-ci-runs-and-when">CONTRIBUTING.md</a>). All jobs run on GitHub-hosted runners.</p>
 <p><strong>Tier 1: tested in CI on every change</strong></p>
 <table>
 <thead>
