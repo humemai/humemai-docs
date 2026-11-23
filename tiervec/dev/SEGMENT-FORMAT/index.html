@@ -1833,12 +1833,13 @@
 <li>The section table is checked: offsets aligned, ascending, inside the file, element width times count equal to the length, the width and count of every known section as expected, all required sections present.</li>
 <li><code>SegmentReader.read(file, true)</code> also checks the CRC32C of every section and names the section that failed (<code>CorruptException.section()</code>). <code>SealedGraph.load</code> and <code>TieredIndex.open</code> always do. <code>read(file, false)</code> skips the section CRCs and is meant for inspection.</li>
 <li>The stored id order is checked while it is used (rows in range, ids strictly increasing), and the layer 0 offsets are checked against the edge count.</li>
+<li>A magic that is not <code>TVSEG001</code> is damage. The magic is the same in every version (the version is the major and minor fields after it), so a file that does not start with it is refused with <code>CorruptException</code> (section <code>HEADER</code>), and the message names the file and the field. <code>TieredIndex.open</code> treats such a segment like any other damaged one: see "Open".</li>
 <li>A CRC32C detects accidental damage. It is not protection against tampering.</li>
 </ul>
 <h2 id="versioning-and-compatibility">Versioning and compatibility<a class="headerlink" href="#versioning-and-compatibility" title="Permanent link">&para;</a></h2>
 <p>A segment file has a format version <code>major.minor</code>.</p>
 <ul>
-<li>A reader refuses a file with a larger major version (<code>UnsupportedException</code>).</li>
+<li>A reader refuses a file with a larger major version (<code>UnsupportedException</code>). The major version is read before the header CRC, so a flipped bit in the major version field is reported the same way.</li>
 <li>A reader opens a file with a larger minor version. It ignores a section whose id it does not know, unless the section is marked required, in which case it refuses.</li>
 <li>A newer minor may append header fields (the header length says where the header ends and where its CRC is) and footer metadata (the offset of the first section entry says where the table starts).</li>
 <li>A different byte order, an id width other than 8, a layer 0 layout other than CSR, and a row stride other than <code>dim</code> are refused in this version.</li>
@@ -1939,7 +1940,7 @@
 <h2 id="open">Open<a class="headerlink" href="#open" title="Permanent link">&para;</a></h2>
 <p><code>TieredIndex.open(dir, config)</code>:</p>
 <ol>
-<li><code>Manifest.readLatest</code>: list the manifests, newest first. For each, check magic, version, CRC, that every named file exists with the recorded length and a valid header, footer and locator, and that the tombstone file matches. The first that passes is current. A candidate that fails is skipped. If none passes it throws <code>CorruptException</code>; an empty directory throws <code>NoSuchFileException</code>; a manifest in a newer format throws <code>UnsupportedException</code> at once.</li>
+<li><code>Manifest.readLatest</code>: list the manifests, newest first. For each, check magic, version, CRC, that every named file exists with the recorded length and a valid header, footer and locator, and that the tombstone file matches. The first that passes is current. A candidate that fails is skipped; a segment whose first eight bytes are not the magic fails like one with a bad header CRC. If none passes it throws <code>CorruptException</code>; an empty directory throws <code>NoSuchFileException</code>; a manifest in a newer format throws <code>UnsupportedException</code> at once.</li>
 <li>Compare the fingerprint with the configuration (dimension, metric, <code>M</code>, <code>efConstruction</code>, SQ8). A difference throws <code>MismatchException</code>.</li>
 <li>Read every segment with every section checksummed, and compare it with its manifest entry.</li>
 <li>Delete the files that the manifest does not name (orphans of a crashed publish, older generations).</li>

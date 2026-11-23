@@ -1401,6 +1401,7 @@
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>The fp32 graph kernels of a JVM (<code>VKern</code>) sum the lanes in a fixed order, like the flat kernels. Before, the sum was <code>reduceLanes(ADD)</code>, whose order depends on the JIT tier, so the same search could return a score one ulp apart before and after compilation. This showed as a rare failure of <code>SegmentForgedFileTest</code> on arm64 (<a href="https://github.com/humemai/tiervec/issues/104">#104</a>). A score can differ from the one of 0.1.0 in the last bit.</li>
+<li>A segment file whose first eight bytes are damaged is refused with <code>CorruptException</code> (section <code>HEADER</code>) and not <code>UnsupportedException</code>, and the message names the file and the field. Before, one flipped bit in the magic of the newest segment made <code>TieredIndex.open</code> fail, where a flipped bit in the header, footer or locator made it fall back to the previous generation. A larger major version is still an <code>UnsupportedException</code> that is refused, not skipped (<a href="https://github.com/humemai/tiervec/issues/83">#83</a>).</li>
 </ul>
 <h2 id="011-2026-11-13">0.1.1 - 2026-11-13<a class="headerlink" href="#011-2026-11-13" title="Permanent link">&para;</a></h2>
 <p>The library code is unchanged from <code>0.1.0</code>: no source file changed. The changes are in the release workflow and the pom.</p>
