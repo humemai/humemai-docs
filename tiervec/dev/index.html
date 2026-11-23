@@ -1382,7 +1382,7 @@
 </tr>
 <tr>
 <td>Restart and recovery</td>
-<td>A settled tier can be checkpointed and reopened. Tests stop the publish after each step (a simulated process kill), flip bits in every byte that a CRC covers, and forge files with valid CRCs. Power loss is not tested.</td>
+<td>A settled tier can be checkpointed and reopened. Tests stop the publish after each step (a simulated process kill, and a child JVM that halts itself at each step), flip bits in every byte that a CRC covers, forge files with valid CRCs, and open the directories that a power cut could leave if the flushes keep the documented order. That order itself is not tested, so power loss is not claimed.</td>
 <td><a href="SEGMENT-FORMAT/">docs/SEGMENT-FORMAT.md</a>, <a href="STATUS/#id-epoch-and-replay">docs/STATUS.md</a></td>
 </tr>
 <tr>
