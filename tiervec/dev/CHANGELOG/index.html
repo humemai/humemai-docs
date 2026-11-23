@@ -977,6 +977,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1226,6 +1237,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1375,6 +1397,10 @@
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Benchmark harness: <code>--data</code> reads a real embedding set that <code>scripts/prep_real_dataset.py</code> converts from parquet (raw float32 files with exact answers), and <code>--engine jvector</code> builds and searches the same data with JVector at the same <code>M</code> and <code>efConstruction</code>, in the bench profile only (JVector is not a dependency of the library). A CI smoke runs both on a small generated set (<a href="../BENCHMARKS/">docs/BENCHMARKS.md</a>, <a href="https://github.com/humemai/tiervec/issues/108">issue #108</a>).</li>
+</ul>
+<h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The fp32 graph kernels of a JVM (<code>VKern</code>) sum the lanes in a fixed order, like the flat kernels. Before, the sum was <code>reduceLanes(ADD)</code>, whose order depends on the JIT tier, so the same search could return a score one ulp apart before and after compilation. This showed as a rare failure of <code>SegmentForgedFileTest</code> on arm64 (<a href="https://github.com/humemai/tiervec/issues/104">#104</a>). A score can differ from the one of 0.1.0 in the last bit.</li>
 </ul>
 <h2 id="011-2026-11-13">0.1.1 - 2026-11-13<a class="headerlink" href="#011-2026-11-13" title="Permanent link">&para;</a></h2>
 <p>The library code is unchanged from <code>0.1.0</code>: no source file changed. The changes are in the release workflow and the pom.</p>
