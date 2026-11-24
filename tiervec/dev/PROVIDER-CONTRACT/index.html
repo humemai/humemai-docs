@@ -1752,7 +1752,7 @@
 <li>The host mints ids. They are unique inside an epoch, and the ids of adds strictly increase inside an epoch. Gaps are allowed. <code>exists today</code>: ids are plain <code>long</code> values in <code>VecIndex.add</code>, <code>Hit</code>, and <code>TieredIndex.IdVector</code>. A check of the ordering rule is <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/7">#7</a>): the library relies on it for the high-water id and does not verify it.</li>
 <li>An update is a new id plus a delete of the old id, sent in one batch. The library needs nothing special for it: two ids, and the delete hides the old copy. <code>exists today</code> as one batch (<code>TieredIndex.apply</code>) and as two calls.</li>
 <li>The epoch names one numbering of ids. The host passes it to <code>open</code> and <code>rebuildFrom</code>. The manifest stores it. A different epoch means persisted state is discarded and the index starts cold. <code>exists today</code>: <code>EpochReplayTest.anEpochMismatchGivesAColdIndex</code> and <code>EpochReplayTest.theManifestStoresTheEpochAndTheHighWaterId</code>.</li>
-<li>A host that reuses ids anyway (a record id used directly as the key) is served in memory by the version floor: an id added after a delete is visible, and the old copies stay hidden. <code>partly</code>: <code>TieredIndex.add</code>, <code>TieredIndex.delete</code>, and the floor described in <a href="../DESIGN/">DESIGN.md</a> are built, and the tests cover replace, not delete followed by add of the same id. Tests for reuse across seal and merge are <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/5">#5</a>). Persisting such a tier is not covered by this contract.</li>
+<li>A host that reuses ids anyway (a record id used directly as the key) is served in memory by the version floor: an id added after a delete is visible, and the old copies stay hidden. <code>partly</code>: <code>TieredIndex.add</code>, <code>TieredIndex.delete</code>, and the floor described in <a href="../DESIGN/">DESIGN.md</a> are built, and the tests cover delete followed by add of the same id across seal and merge (<code>RidReuseTest</code> and the longer <code>RidReuse*</code> tests, <a href="https://github.com/humemai/tiervec/issues/5">#5</a>, <a href="../STATUS/#record-id-reuse-and-tombstones">STATUS.md</a>). Persisting such a tier is not covered by this contract.</li>
 </ul>
 <p>The id models, their consequences, and the open questions are in <a href="../ID-EPOCH-AND-REPLAY/">ID-EPOCH-AND-REPLAY.md</a>.</p>
 <h2 id="mutation-replay-and-ordering">Mutation, replay, and ordering<a class="headerlink" href="#mutation-replay-and-ordering" title="Permanent link">&para;</a></h2>
@@ -1796,7 +1796,7 @@
 <li>After a restart the host replays what the persisted state lacks, and the library reconciles what the host deleted or never made durable. The steps, the high-water id, the liveness check, and the durable-prefix rule are in <a href="../ID-EPOCH-AND-REPLAY/">ID-EPOCH-AND-REPLAY.md</a>. <code>exists today</code> for a process kill: <code>EpochReplayTest.aCrashAtEveryStepOfAPublishLeavesAnIndexThatMatchesTheHost</code> and <code>EpochReplayStressTest.crashAndReopenLoop</code>.</li>
 <li>Requirement on the host, write-ahead: the index is never ahead of the host's durable log. A <code>checkpoint</code> may cover only transactions that the host has already made durable. If the library persisted a delete (a compacted segment) that the host then forgot in a crash, the record is live again in the host with an id at or below the recovered maximum and no segment holds it, and no rule of the library repairs that. The library cannot check the requirement, so a host that calls <code>checkpoint</code> before its own flush has a host error; the host that flushes first never sees the case. A library-side refusal to persist an unconfirmed delete is not built. <code>exists today</code> as a requirement; the test host of <code>EpochReplayStressTest</code> follows it.</li>
 <li>Any integrity failure at open throws, and the host calls <code>rebuildFrom</code>. A second failure is a host error. <code>partly</code>: <code>TieredIndex.open</code> throws <code>SegmentFormat.CorruptException</code>, a checked <code>IOException</code> (and <code>UnsupportedException</code>, <code>MismatchException</code>, <code>NoSuchFileException</code>), and an overload that takes a rebuild source does the fallback. The unchecked <code>CorruptStateException</code> of the error classes is <a href="https://github.com/humemai/tiervec/issues/18">#18</a>.</li>
-<li>The claim: a process kill leaves the last published generation or the one before it. No claim is made about power loss until a test says otherwise. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/17">#17</a>).</li>
+<li>The claim: a process kill leaves the last published generation or the one before it. No claim is made about power loss until a test says otherwise. <code>exists today</code> for a process kill: <code>ManifestCrashTest</code>, <code>TierReopenTest</code>, and <code>TierHaltTest</code>, which halts a child JVM at each step of a publish (<a href="../SEGMENT-FORMAT/#what-a-crash-leaves-behind">SEGMENT-FORMAT.md</a>). Crashes at scale: <a href="https://github.com/humemai/tiervec/issues/17">#17</a>.</li>
 </ul>
 <h2 id="resources">Resources<a class="headerlink" href="#resources" title="Permanent link">&para;</a></h2>
 <ul>
@@ -1881,8 +1881,8 @@
 <td>Reused id visible, old copies hidden, in memory</td>
 <td><code>partly</code></td>
 <td>the version floor in <code>TieredIndex</code></td>
-<td><code>TierTests.testDeleteReplace</code> covers replace, not delete followed by add of the same id</td>
-<td>Reuse across seal and merge: <a href="https://github.com/humemai/tiervec/issues/5">#5</a></td>
+<td><code>TierTests.testDeleteReplace</code> covers replace; <code>RidReuseTest</code> and the longer <code>RidReuse*</code> tests cover delete followed by add of the same id across seal and merge</td>
+<td>Persisting such a tier is not covered by this contract</td>
 </tr>
 <tr>
 <td>Search arguments, result order</td>
@@ -2012,10 +2012,10 @@
 </tr>
 <tr>
 <td>Corruption and crash tests</td>
-<td><code>planned</code></td>
-<td></td>
-<td></td>
-<td><a href="https://github.com/humemai/tiervec/issues/17">#17</a></td>
+<td><code>partly</code></td>
+<td><code>TieredIndex.checkpoint</code>, <code>TieredIndex.open</code></td>
+<td><code>SegmentCorruptionTest</code>, <code>TierCorruptionTest</code>, <code>SegmentForgedFileTest</code>, <code>ManifestCrashTest</code>, <code>TierHaltTest</code>, <code>TierPowerCutTest</code></td>
+<td>Crashes and corruption at scale: <a href="https://github.com/humemai/tiervec/issues/17">#17</a>. Power loss is not claimed</td>
 </tr>
 <tr>
 <td>Configuration map, fingerprint, capabilities, contract version, error classes, health</td>
