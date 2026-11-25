@@ -1340,7 +1340,7 @@
 <ul>
 <li><a href="https://github.com/humemai/tiervec/issues/9">#9</a>: Serialize sealed segments with a manifest, and reopen without a full rebuild. First cut: <a href="../SEGMENT-FORMAT/">SEGMENT-FORMAT.md</a>. Memory-mapped readers, non-empty tombstones, and lazy verification are not in it; they are tracked in <a href="https://github.com/humemai/tiervec/issues/27">#27</a>. The host replays the tail through <code>open</code> with a record source (<a href="https://github.com/humemai/tiervec/issues/7">#7</a>).</li>
 <li><a href="https://github.com/humemai/tiervec/issues/10">#10</a>: Atomic apply(batch): adds and deletes become visible together. <code>TieredIndex.apply</code> and <code>TieredIndex.awaitCapacity</code> are built, see <a href="../STATUS/#atomic-batches">STATUS.md</a>.</li>
-<li><a href="https://github.com/humemai/tiervec/issues/11">#11</a>: Search context with a deadline and cancellation</li>
+<li><a href="https://github.com/humemai/tiervec/issues/11">#11</a>: Search context with a deadline and cancellation. <code>SearchContext</code> is built, see <a href="../STATUS/#deadline-and-cancellation">STATUS.md</a>.</li>
 <li><a href="https://github.com/humemai/tiervec/issues/12">#12</a>: Allowed-id filters: measure the selectivity range and add fast paths</li>
 <li><a href="https://github.com/humemai/tiervec/issues/13">#13</a>: Host-owned executor, build permits, and memory budget instead of own threads</li>
 <li><a href="https://github.com/humemai/tiervec/issues/18">#18</a>: Configuration map, fingerprint, capability bits, and contract version</li>

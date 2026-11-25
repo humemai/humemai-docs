@@ -1636,12 +1636,12 @@
 </tr>
 <tr>
 <td>Search context</td>
-<td>A deadline and a cancel flag, polled by the library during a search.</td>
-<td><code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/11">#11</a>)</td>
+<td>One method, <code>expired()</code>, that says whether the search has to stop (a deadline, a cancel flag, or both), polled by the library during a search.</td>
+<td><code>exists today</code>: <code>SearchContext</code>, taken by the <code>TieredIndex.search</code> overloads, tested by <code>SearchContextTest</code></td>
 </tr>
 </tbody>
 </table>
-<p>Today the library has none of the three. It runs one worker thread and, during a seal or a merge, a few build threads (<code>Config.buildThreads</code>), and it reads its records only through <code>add</code> and <code>rebuildFrom</code>.</p>
+<p>Of the three, the library has the record source and the search context. It has no environment yet: it runs one worker thread and, during a seal or a merge, a few build threads (<code>Config.buildThreads</code>).</p>
 <h2 id="operations">Operations<a class="headerlink" href="#operations" title="Permanent link">&para;</a></h2>
 <p>Each row names who does what. "Host" is the adapter on the host side, "library" is tiervec.</p>
 <table>
@@ -1676,7 +1676,7 @@
 <td><code>search(query, k, allowed, context)</code></td>
 <td>Passes the query, <code>k</code>, an allowed-id predicate (optionally with a size hint), and a search context.</td>
 <td>At most <code>k</code> hits, best first, no duplicate id, no deleted id, fewer than <code>k</code> only when fewer qualify. A search stops when the context says so.</td>
-<td><code>exists today</code> without the context: <code>TieredIndex.search</code>, three overloads. Context: <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/11">#11</a>). Size hint: <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/12">#12</a>)</td>
+<td><code>exists today</code>: <code>TieredIndex.search</code>, three overloads without a context and three with one (<code>SearchContextTest</code>). Size hint: <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/12">#12</a>)</td>
 </tr>
 <tr>
 <td><code>open(config, fingerprint, environment, record source, directory)</code></td>
@@ -1765,12 +1765,12 @@
 </ul>
 <h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Arguments: a query vector, <code>k</code>, an allowed-id predicate (or none), and a context. An optional effort knob sets the beam width of the segment search. A non-positive <code>k</code> returns an empty result. <code>exists today</code> without the context: <code>TieredIndex.search(float[], int, LongPredicate)</code>, <code>search(..., Freshness)</code>, <code>search(..., int ef)</code>.</li>
+<li>Arguments: a query vector, <code>k</code>, an allowed-id predicate (or none), and a context. An optional effort knob sets the beam width of the segment search. A non-positive <code>k</code> returns an empty result. <code>exists today</code>: <code>TieredIndex.search(float[], int, LongPredicate)</code>, <code>search(..., Freshness)</code>, <code>search(..., int ef)</code>, each also with a <code>SearchContext</code> as the last argument.</li>
 <li>Result: at most <code>k</code> hits, best first, each <code>Hit(id, score)</code>, no duplicate ids. Fewer than <code>k</code> only when fewer live vectors qualify. <code>exists today</code>: <code>VecIndex.search</code>, <code>Hit</code>.</li>
 <li>Score: higher is better for every metric. Cosine and dot are returned as they are, L2 as the negative squared distance. A host whose engine uses a distance where lower is better converts, and checks the conversion with a parity test on the same data. <code>exists today</code>: <code>Hit</code>. A public scorer for a single pair of vectors, which a host needs to score its own uncommitted rows with the same arithmetic, is <code>planned</code>, no issue filed yet.</li>
 <li>Exactness flag: <code>SearchResult.exact</code> tells the host that no segment was searched and the tail scan was exact. <code>exists today</code>: <code>TieredIndex.search(..., Freshness)</code>.</li>
 <li>Allowed-id predicate. The host supplies a <code>LongPredicate</code>. It must be cheap, side-effect free, safe to call more than once for the same id, and it must not call back into the index. The library applies it inside the segment search and the tail scan, so the top <code>k</code> of the qualifying set is correct, and a graph walk with few qualifying ids falls back to an exact scan after a visit budget. <code>exists today</code>: the predicate parameter of <code>TieredIndex.search</code>. Correctness of filtered search is checked by unit tests. How it behaves across the range of selectivities has not been measured. An optional size hint and a live count, so that a small allowed set is scanned exactly, are <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/12">#12</a>).</li>
-<li>Context. The library polls the context at a fixed, documented interval inside the tail scan and the segment search and between segments, and throws <code>SearchCancelledException</code> when it says stop. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/11">#11</a>, <a href="https://github.com/humemai/tiervec/issues/18">#18</a>).</li>
+<li>Context. The library calls <code>expired()</code> on the searching thread: when the search starts, before each tail and each segment, at least once every 1024 candidates inside a tail scan or a segment search (a candidate is a vector that the scan or the graph walk looks at, whether or not the predicate accepts it), and after each pause while it waits for a batch. When the answer is true the search throws <code>SearchCancelledException</code> and returns nothing, also no partial result. The time to stop is therefore up to one interval of candidates with their predicate calls, and a call of the predicate or of <code>expired()</code> is never interrupted. The method must be cheap, must not block, and must not call into the index. The standalone indexes take no context. <code>exists today</code>: <code>SearchContext</code>, <code>TieredIndex.search</code>. Tests: <code>SearchContextTest</code> (the bound in the tail scan, the graph walk and the exact scan of a segment, the poll before each part, equal answers while the context never expires, a flag set by another thread, a search that waits for a batch).</li>
 <li>Threads and locks. A search runs on the calling thread, takes no lock, and never waits for a seal, a merge, or the build of a rebuild. It can be delayed by a batch in progress, for the length of that batch (it waits until the batch is whole, and scans again when a batch overlapped its scan; see <code>apply(batch)</code>), and by the swap of a snapshot rebuild together with its catch-up. A stream of batches that follow each other faster than one scan takes can starve it. <code>partly</code>: built in <code>TieredIndex.search</code> and stated in its class documentation, and <code>ApplyBatchTest</code> checks the wait for a batch, but no dedicated test checks the rest.</li>
 <li>Freshness. By default a search sees the tails, so a write is visible at once. <code>Freshness.SEALED_ONLY</code> skips the tails and may lag. It never returns a deleted id, a stale vector, or an id that was never added. <code>exists today</code>: <code>TieredIndex.Freshness</code>.</li>
 </ul>
@@ -1823,7 +1823,7 @@
 </ul>
 <h2 id="errors">Errors<a class="headerlink" href="#errors" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Unchecked only. The base is a provider exception. Classes: <code>CorruptStateException</code> (the host falls back to <code>rebuildFrom</code>), <code>SearchCancelledException</code>, <code>ClosedException</code>, and <code>BuildRefusedException</code>. Programming errors stay <code>IllegalArgumentException</code> and <code>IllegalStateException</code>. <code>partly</code>: the two standard exceptions exist today (a dimension mismatch throws <code>IllegalArgumentException</code>). The classified family is <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>).</li>
+<li>Unchecked only. The base is a provider exception. Classes: <code>CorruptStateException</code> (the host falls back to <code>rebuildFrom</code>), <code>SearchCancelledException</code>, <code>ClosedException</code>, and <code>BuildRefusedException</code>. Programming errors stay <code>IllegalArgumentException</code> and <code>IllegalStateException</code>. <code>partly</code>: the two standard exceptions exist today (a dimension mismatch throws <code>IllegalArgumentException</code>), and so does <code>SearchCancelledException</code>, which extends <code>RuntimeException</code> directly while there is no base class. The rest of the classified family is <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>).</li>
 <li>A background failure never throws into <code>apply</code> or <code>search</code>. It is counted, kept as the last error, and retried. A health state reports ok, degraded (a task failing repeatedly), or failed (the worker is dead). <code>partly</code>: <code>TieredIndex.lastError()</code>, <code>TieredIndex.workerAlive()</code>, and the <code>failures</code> count in <code>Stats</code>. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/18">#18</a>).</li>
 </ul>
 <h2 id="versioning-and-capabilities">Versioning and capabilities<a class="headerlink" href="#versioning-and-capabilities" title="Permanent link">&para;</a></h2>
@@ -1970,10 +1970,10 @@
 </tr>
 <tr>
 <td>Search context, deadline, cancellation</td>
-<td><code>planned</code></td>
-<td></td>
-<td></td>
-<td><a href="https://github.com/humemai/tiervec/issues/11">#11</a></td>
+<td><code>exists today</code></td>
+<td><code>SearchContext</code>, <code>SearchCancelledException</code>, <code>TieredIndex.search</code></td>
+<td><code>SearchContextTest</code></td>
+<td>No partial result. The standalone indexes take no context</td>
 </tr>
 <tr>
 <td>Size hint and live count for the allowed-id predicate</td>

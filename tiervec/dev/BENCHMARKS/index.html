@@ -978,6 +978,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-cost-of-polling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The cost of polling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-ci-smoke" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1389,6 +1400,17 @@
     <span class="md-ellipsis">
       
         Rules for a run that is meant to be read
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-cost-of-polling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The cost of polling
       
     </span>
   </a>
@@ -1828,6 +1850,9 @@
 <li>Do not compare files from different machines or different JDK builds as if only the library changed.</li>
 <li>Compare the tier and JVector only from two runs on the same machine and the same JDK build, one after the other, on the same cores and with the same <code>--build-threads</code>, and say which JVector SIMD provider ran. The table in <a href="#the-jvector-arm">The JVector arm</a> says what the two arms do not have in common.</li>
 </ol>
+<h2 id="the-cost-of-polling">The cost of polling<a class="headerlink" href="#the-cost-of-polling" title="Permanent link">&para;</a></h2>
+<p><code>PollCost</code>, in <code>src/bench</code>, compares a search that has a <code>SearchContext</code> with the same search without one (<a href="https://github.com/humemai/tiervec/issues/11">issue #11</a>). The context never expires and does what a host does at each poll: it reads a cancel flag and <code>System.nanoTime()</code> against a deadline. One JVM builds a tier of 20,000 vectors of dimension 128 and times 200 queries in three cells: <code>tail</code> (the exact scan of a tail), <code>walk</code> (the graph walk of one segment) and <code>scan</code> (the exact scan of a segment under a filter that passes one id in ten). Each of 40 rounds times both arms, and the arm that goes first alternates. A cell reports the median over the rounds of the time with the context divided by the time without it. The run fails when the two arms answer differently.</p>
+<p>The workflow <code>poll-cost.yml</code> runs it in 10 fresh JVMs on JDK 21 and on JDK 25 and prints the median, the smallest and the largest ratio of the JVMs. It starts by hand, and on a pull request that changes the harness or the workflow. It has no speed bar: a study writes its bound down before the run, as <a href="../ROADMAP/#how-to-read-measurements">ROADMAP.md</a> asks. The cells compare the two paths of the same build. They do not compare it with a build that has no polling code.</p>
 <h2 id="the-ci-smoke">The CI smoke<a class="headerlink" href="#the-ci-smoke" title="Permanent link">&para;</a></h2>
 <p>The job <code>bench smoke (JDK 21)</code> and <code>(JDK 25)</code> compiles the harness with the library and runs it at n = 10,000 and dimension 768, with 100 queries, one extra beam width (32), shares 0.1 and 0.01, and 15 seconds of the concurrent phase. It is not a required check, and it runs beside the fast tests. It proves that the harness runs, that its answers agree with its own exact scan, and that the checks above hold on a small tier. It prints timings and has no speed bar: the runner is shared, so a timing is only a ratio inside one run.</p>
 <p>The recall floors of the smoke are 0.90 for the unfiltered and the walk cells and 0.99 for the cells that scan first. In the first runs (CI run 43133522549, JDK 21 and 25) recall was 1.0000 unfiltered, 0.997 to 1.0000 for the filtered walk and 1.0000 for every scan-first cell, and a run took 21 to 23 seconds (the job about 30 seconds). The floors leave room for a different structure of the segments from one run to the next, and they are far above what a broken index gives: a tier that returned only its tail would find at most the 20 percent of the data that the tail holds, and the scan-first path is exact apart from a swapped tie at the boundary of the top <code>k</code>. A control step of the job runs the harness with a floor that cannot be met (recall of at least 1.5) and requires exit code 1 and a <code>BENCH-FAILURE</code> line, so the failure path is not a path that never runs.</p>
