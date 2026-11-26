@@ -826,6 +826,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Tier configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration-as-a-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration as a map
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Statistics
+      
+    </span>
+  </a>
+  
 </li>
       
     </ul>
@@ -1482,6 +1510,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Tier configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration-as-a-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration as a map
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#statistics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Statistics
+      
+    </span>
+  </a>
+  
 </li>
       
     </ul>
@@ -1738,6 +1794,104 @@
 </table>
 <p>With <code>mergeTriggerRatio</code> X above 0, the segment with the most live rows is the big one. When the live rows of all the other segments together exceed X times the live rows of the big one, all segments are merged into one. Otherwise, if <code>maxSegments</code> is at least 2 and the count exceeds it, the count rule picks among the small segments only, so the big one is rewritten only by the ratio rule. With <code>maxSegments</code> 1 the count rule includes the big one and a merge happens at every seal. A merge into the big segment rewrites about (1 + X) / X vectors per inserted vector, on top of the small-segment merges.</p>
 <p>Other controls on the tier: <code>filterScanBelow(fraction)</code> (default 0, off) is the scan-first threshold of filtered searches, applied per segment (the tails are always scanned exactly), <code>sealNow()</code>, <code>mergeNow()</code> and <code>awaitIdle(timeoutMs)</code> run or wait for the worker, <code>search(q, k, allow, ef)</code> sets the beam per call, and <code>stats()</code> reports seals, merges, segment sizes, floor entries, write amplification, and a log of finished tasks.</p>
+<h3 id="configuration-as-a-map">Configuration as a map<a class="headerlink" href="#configuration-as-a-map" title="Permanent link">&para;</a></h3>
+<p><code>Config.toMap()</code> writes every setting as text, and <code>Config.fromMap</code> reads it back to an equal configuration. The keys are the component names of the table above, with the graph parameters one by one: <code>graph.M</code>, <code>graph.efConstruction</code>, <code>graph.efSearch</code>, <code>graph.alpha</code>, <code>graph.sq8</code>, and <code>graph.seed</code>, plus <code>mergeMode</code>. A key that a map does not have takes the default of the library that reads it, so a host stores the whole result of <code>toMap()</code>. The dimension and the metric belong to the index definition and are not keys.</p>
+<table>
+<thead>
+<tr>
+<th>Moment</th>
+<th>Method</th>
+<th>Unknown key</th>
+<th>Value that cannot be used</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>An index is created</td>
+<td><code>Config.fromMap(map)</code></td>
+<td>refused, the message names it</td>
+<td>refused, the message names the key</td>
+</tr>
+<tr>
+<td>A stored definition is loaded</td>
+<td><code>Config.fromStoredMap(map, warning)</code></td>
+<td>reported to <code>warning</code> and ignored, so a downgrade opens</td>
+<td>refused</td>
+</tr>
+<tr>
+<td>An open index changes</td>
+<td><code>reconfigure(changes)</code></td>
+<td>refused</td>
+<td>refused</td>
+</tr>
+</tbody>
+</table>
+<p><code>reconfigure</code> changes <code>graph.efSearch</code> and <code>splitBeam</code>, the search-time knobs. It refuses every other key whose value would change, and makes all changes of a call or none.</p>
+<p><code>Config.fingerprint(dim, metric)</code> returns a canonical text and its SHA-256 over what decides the data of the graphs and their files: the dimension, the metric, the id width, <code>graph.M</code>, <code>graph.efConstruction</code>, <code>graph.alpha</code>, <code>graph.sq8</code>, and the layer 0 layout. The search-time knobs, the tail settings (the tail is not persisted), the seal and merge policy, and <code>graph.seed</code> are not in it. The manifest records the same settings except <code>alpha</code>, and <code>open</code> compares those, so a host that wants a change of <code>alpha</code> to discard the persisted state compares fingerprints itself.</p>
+<h2 id="statistics">Statistics<a class="headerlink" href="#statistics" title="Permanent link">&para;</a></h2>
+<p><code>metrics()</code> returns a <code>Map&lt;String, Long&gt;</code>. <code>bindMetrics(sink)</code> pushes the same numbers to a <code>MetricSink</code>: the sink gets each increment of a counter from then on, and each gauge once, to read when it wants. The library depends on no metrics library, and a sink that throws is ignored.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Kind</th>
+<th>What it counts or reads</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tiervec.seals</code>, <code>tiervec.merges</code></td>
+<td>counter</td>
+<td>finished seals and merges</td>
+</tr>
+<tr>
+<td><code>tiervec.failures</code></td>
+<td>counter</td>
+<td>background tasks that failed</td>
+</tr>
+<tr>
+<td><code>tiervec.backpressureWaits</code></td>
+<td>counter</td>
+<td>waits of writers for room in the tail</td>
+</tr>
+<tr>
+<td><code>tiervec.sealedVectors</code>, <code>tiervec.mergedVectors</code></td>
+<td>counter</td>
+<td>rows that seals and merges put into graphs</td>
+</tr>
+<tr>
+<td><code>tiervec.bigMerges</code>, <code>tiervec.bigMergedVectors</code></td>
+<td>counter</td>
+<td>the part of the merges that rewrote the largest segment</td>
+</tr>
+<tr>
+<td><code>tiervec.adds</code></td>
+<td>gauge</td>
+<td>calls of <code>add</code>, batches included</td>
+</tr>
+<tr>
+<td><code>tiervec.live</code>, <code>tiervec.tailSize</code>, <code>tiervec.segments</code>, <code>tiervec.bytesHeld</code>, <code>tiervec.floorEntries</code></td>
+<td>gauge</td>
+<td>live vectors, vectors in the tails, segments, resident bytes, floor entries</td>
+</tr>
+<tr>
+<td><code>tiervec.sealMillis</code>, <code>tiervec.mergeMillis</code>, <code>tiervec.maxSealMillis</code>, <code>tiervec.maxMergeMillis</code></td>
+<td>gauge</td>
+<td>time in seals and merges, and the longest one</td>
+</tr>
+<tr>
+<td><code>tiervec.mergeWriteAmpThousandths</code>, <code>tiervec.totalWriteAmpThousandths</code></td>
+<td>gauge</td>
+<td>rows built per add, in thousandths: by merges, and by seals and merges</td>
+</tr>
+<tr>
+<td><code>tiervec.health</code></td>
+<td>gauge</td>
+<td>0 OK, 1 DEGRADED, 2 FAILED</td>
+</tr>
+</tbody>
+</table>
+<p><code>health()</code> is DEGRADED after a seal or a merge has failed three times in a row, until one of that kind works, and FAILED when the worker has ended while the tier is open.</p>
 
 
 
