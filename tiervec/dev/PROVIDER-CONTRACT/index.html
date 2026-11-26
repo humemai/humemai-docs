@@ -1627,7 +1627,7 @@
 <tr>
 <td>Environment</td>
 <td>An executor for every seal, merge, and build task. A build permit: ask with a kind and an estimate of peak bytes, receive a permit or a refusal. A memory budget in bytes, read at each decision. A metric sink with counters and gauges.</td>
-<td><code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>)</td>
+<td><code>exists today</code>: <code>HostEnv</code>, taken by the <code>TieredIndex</code> constructor and the <code>open</code> overloads, tested by <code>HostEnvTest</code></td>
 </tr>
 <tr>
 <td>Record source</td>
@@ -1641,7 +1641,7 @@
 </tr>
 </tbody>
 </table>
-<p>Of the three, the library has the record source and the search context. It has no environment yet: it runs one worker thread and, during a seal or a merge, a few build threads (<code>Config.buildThreads</code>).</p>
+<p>The library has all three. A tier made without an environment runs one worker thread and, during a seal or a merge, a few build threads (<code>Config.buildThreads</code>).</p>
 <h2 id="operations">Operations<a class="headerlink" href="#operations" title="Permanent link">&para;</a></h2>
 <p>Each row names who does what. "Host" is the adapter on the host side, "library" is tiervec.</p>
 <table>
@@ -1682,7 +1682,7 @@
 <td><code>open(config, fingerprint, environment, record source, directory)</code></td>
 <td>Passes the index definition (dimension, metric), the configuration, its fingerprint, the interfaces above, and a directory that only this node uses (or none, for memory only).</td>
 <td>Returns ready or cold. A mismatch of fingerprint, dimension, metric, or epoch discards persisted state and returns cold, never a wrong answer.</td>
-<td><code>partly</code>: <code>TieredIndex.open(dir, dim, metric, config, RecordSource)</code> checks the epoch, drops ids above the recovered maximum, hides ids that are not live, and replays the live records above the high-water id (<code>EpochReplayTest</code>). It takes no environment (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>) and no fingerprint: the host compares <code>Config.fingerprint</code> with the one it stored before it calls <code>open</code>, and <code>open</code> itself compares the dimension, the metric, <code>M</code>, <code>efConstruction</code>, and SQ8. It needs a directory, and a cold index is built on the calling thread (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>)</td>
+<td><code>partly</code>: <code>TieredIndex.open(dir, dim, metric, config, RecordSource)</code> checks the epoch, drops ids above the recovered maximum, hides ids that are not live, and replays the live records above the high-water id (<code>EpochReplayTest</code>). An overload takes a <code>HostEnv</code> too. It takes no fingerprint: the host compares <code>Config.fingerprint</code> with the one it stored before it calls <code>open</code>, and <code>open</code> itself compares the dimension, the metric, <code>M</code>, <code>efConstruction</code>, and SQ8. It needs a directory, and a cold index is built on the calling thread (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>)</td>
 </tr>
 <tr>
 <td><code>awaitReady(deadline)</code></td>
@@ -1706,7 +1706,7 @@
 <td><code>close()</code></td>
 <td>Calls it when the host closes the index.</td>
 <td>Stops accepting work, waits for or cancels the tasks it submitted, releases files, idempotent, never creates a thread.</td>
-<td><code>partly</code>: <code>TieredIndex.close()</code> stops the worker thread and a second call is harmless. Later calls that read or change vectors or files throw <code>ClosedException</code>, and a search that was running finishes or throws it (<code>HostContractTest</code>). Tasks that it submitted to a host: <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>)</td>
+<td><code>exists today</code>: <code>TieredIndex.close()</code> stops the worker thread, or with a <code>HostEnv</code> waits (up to 30 s) for a build that runs while a task that has not started does nothing, and a second call is harmless. Later calls that read or change vectors or files throw <code>ClosedException</code>, and a search that was running finishes or throws it (<code>HostContractTest</code>, <code>HostEnvTest</code>)</td>
 </tr>
 <tr>
 <td><code>drop()</code> and <code>clear()</code></td>
@@ -1800,9 +1800,9 @@
 </ul>
 <h2 id="resources">Resources<a class="headerlink" href="#resources" title="Permanent link">&para;</a></h2>
 <ul>
-<li>No thread of the library's own. Every seal, merge, and build task, including the parallel part of a build, goes to the host executor. <code>partly</code>: today <code>TieredIndex</code> starts one worker thread and, per build, a few threads (<code>Config.buildThreads</code>). <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>).</li>
-<li>Build permit. Before each seal, merge, and rebuild the library asks for a permit with an estimate of peak bytes, computed from the sizes of the segments involved. On refusal it defers and retries with back-off, and never builds without a permit. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>).</li>
-<li>Memory budget. The library keeps its resident bytes below the budget by deferring merges and shrinking its tail limit. <code>partly</code>: <code>TieredIndex.bytesHeld()</code> reports resident bytes, and nothing reads a budget yet. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>).</li>
+<li>No thread of the library's own. Every seal, merge, and build task, including the parallel part of a build, goes to the host executor. <code>exists today</code> with a <code>HostEnv</code>: <code>HostEnvTest.aHostedTierCreatesNoThreadAndAsksForAPermitBeforeEveryBuild</code> compares the live threads before and after a workload that seals and merges. A tier without one starts its own threads. A rebuild still runs on the calling thread.</li>
+<li>Build permit. Before each seal, merge, and rebuild the library asks for a permit with an estimate of peak bytes, computed from the sizes involved. On refusal it defers and retries with back-off, and never builds without a permit; a call that builds on its own thread throws <code>BuildRefusedException</code>. The retry needs the timer of the host (<code>HostEnv.schedule</code>) or its call of <code>maintain()</code> when no write comes. <code>exists today</code>: <code>HostEnvTest</code>. <code>partly</code> for the estimate: it is arithmetic and has not been compared with a measured peak (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>).</li>
+<li>Memory budget. The library defers merges and shrinks its tail limit to stay below the budget. <code>partly</code>: <code>HostEnvTest.aSmallMemoryBudgetShrinksTheTailDefersMergesAndKeepsTheBytesBelowIt</code> holds the resident bytes below the budget for data that fits in it. The budget cannot shrink what the vectors need, and it does not hold writes back.</li>
 <li>Throttle. The insert rate of a merge build is capped (<code>Config.mergeRatePerSec</code>). It is a politeness limit for the threads that serve queries, not a substitute for a permit. <code>partly</code>: built, and no dedicated test checks the cap.</li>
 <li>Back pressure is a pre-check (<code>awaitCapacity</code>), and the tail is bounded. <code>partly</code>: <code>TieredIndex.awaitCapacity</code> is built and tested. The bound is soft: <code>apply</code> does not look at it, so one batch can take the tail above the hard limit, and <code>TieredIndex.add</code> adds after its own wait of up to 10 s.</li>
 <li>No search-time thread creation, and no allocation proportional to the collection size on the query path. <code>partly</code>: built in <code>TieredIndex.search</code>, and no dedicated test checks it.</li>
@@ -1823,14 +1823,14 @@
 </ul>
 <h2 id="errors">Errors<a class="headerlink" href="#errors" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Errors for the state of an index are unchecked. The base is <code>TiervecException</code>. Classes: <code>CorruptStateException</code> (the host falls back to <code>rebuildFrom</code>), <code>SearchCancelledException</code>, <code>ClosedException</code>, and <code>BuildRefusedException</code>. Programming errors stay <code>IllegalArgumentException</code> and <code>IllegalStateException</code>, and a failure of the file system stays an <code>IOException</code>. <code>exists today</code> for the first three. <code>BuildRefusedException</code> exists as a class and nothing throws it until the library takes build permits (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>).</li>
+<li>Errors for the state of an index are unchecked. The base is <code>TiervecException</code>. Classes: <code>CorruptStateException</code> (the host falls back to <code>rebuildFrom</code>), <code>SearchCancelledException</code>, <code>ClosedException</code>, and <code>BuildRefusedException</code>. Programming errors stay <code>IllegalArgumentException</code> and <code>IllegalStateException</code>, and a failure of the file system stays an <code>IOException</code>. <code>exists today</code>; <code>BuildRefusedException</code> comes from a tier with a <code>HostEnv</code> only.</li>
 <li>A background failure never throws into <code>apply</code> or <code>search</code>. It is counted, kept as the last error, and retried. A health state reports ok, degraded (a seal or a merge that failed three times in a row), or failed (the worker is dead). <code>exists today</code>: <code>TieredIndex.health</code>, <code>TieredIndex.lastError</code>, <code>Stats.failures</code> (<code>HostContractTest</code>).</li>
 </ul>
 <h2 id="versioning-and-capabilities">Versioning and capabilities<a class="headerlink" href="#versioning-and-capabilities" title="Permanent link">&para;</a></h2>
 <ul>
 <li>The contract has a major and a minor number, 1.0 today. The host refuses a library with a larger major. A larger minor is accepted, and capabilities it does not know are ignored. New operations are added as default methods. <code>exists today</code>: <code>TieredIndex.contractVersion</code>, <code>ContractVersion.accepts</code> (<code>HostContractTest</code>).</li>
 <li>The segment file and the manifest have their own version numbers, under the same rule. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/6">#6</a>, <a href="https://github.com/humemai/tiervec/issues/9">#9</a>).</li>
-<li>Capabilities are a set (<code>EnumSet</code>, a bit set): atomic batch, deferred apply, search context, persistence, and snapshot rebuild, with more as they appear. The host checks them at creation. A selective filter plan is not in the set yet (<a href="https://github.com/humemai/tiervec/issues/12">#12</a>). <code>exists today</code>: <code>TieredIndex.capabilities</code>, <code>Capability</code>.</li>
+<li>Capabilities are a set (<code>EnumSet</code>, a bit set): atomic batch, deferred apply, search context, persistence, snapshot rebuild, and host environment, with more as they appear. The host checks them at creation. A selective filter plan is not in the set yet (<a href="https://github.com/humemai/tiervec/issues/12">#12</a>). <code>exists today</code>: <code>TieredIndex.capabilities</code>, <code>Capability</code>.</li>
 <li>What the tier does not offer, so a host can refuse such an index definition at creation and not at query time: grouped (per-group top <code>k</code>) search, approximate scores from compressed codes without an exact rescoring pass (returned scores are exact fp32 scores), a retract of an applied write other than the opposite write, transactions or uncommitted rows, a persisted tail, memory-mapped segment readers, and more than one process on one index directory. <code>exists today</code> as a fact about the code.</li>
 </ul>
 <h2 id="what-a-host-adapter-typically-does">What a host adapter typically does<a class="headerlink" href="#what-a-host-adapter-typically-does" title="Permanent link">&para;</a></h2>
@@ -1934,11 +1934,11 @@
 <td>Streaming instead of a map, host executor: <a href="https://github.com/humemai/tiervec/issues/13">#13</a></td>
 </tr>
 <tr>
-<td>Close stops the worker, second call harmless, <code>ClosedException</code> afterwards</td>
-<td><code>partly</code></td>
+<td>Close stops the worker or waits for its tasks, second call harmless, <code>ClosedException</code> afterwards</td>
+<td><code>exists today</code></td>
 <td><code>TieredIndex.close</code></td>
-<td><code>TierTests.testClose</code>, <code>HostContractTest</code></td>
-<td>Tasks it submitted to a host: <a href="https://github.com/humemai/tiervec/issues/13">#13</a></td>
+<td><code>TierTests.testClose</code>, <code>HostContractTest</code>, <code>HostEnvTest</code></td>
+<td></td>
 </tr>
 <tr>
 <td>Statistics as a record, a map, and a push sink</td>
@@ -1984,10 +1984,10 @@
 </tr>
 <tr>
 <td>Host executor, build permit, memory budget, no own threads</td>
-<td><code>planned</code></td>
-<td></td>
-<td></td>
-<td><a href="https://github.com/humemai/tiervec/issues/13">#13</a></td>
+<td><code>partly</code></td>
+<td><code>HostEnv</code>, <code>TieredIndex.maintain</code></td>
+<td><code>HostEnvTest</code></td>
+<td>The peak estimate has not been compared with measurements: <a href="https://github.com/humemai/tiervec/issues/13">#13</a></td>
 </tr>
 <tr>
 <td>Epoch, high-water id, replay, liveness check, durable prefix</td>
@@ -2033,10 +2033,10 @@
 </tr>
 <tr>
 <td>Unchecked errors for the state of an index</td>
-<td><code>partly</code></td>
+<td><code>exists today</code></td>
 <td><code>TiervecException</code>, <code>CorruptStateException</code>, <code>ClosedException</code>, <code>SearchCancelledException</code>, <code>BuildRefusedException</code></td>
-<td><code>HostContractTest</code>, <code>SearchContextTest</code>, <code>TierCorruptionTest</code></td>
-<td>Nothing throws <code>BuildRefusedException</code> yet: <a href="https://github.com/humemai/tiervec/issues/13">#13</a></td>
+<td><code>HostContractTest</code>, <code>HostEnvTest</code>, <code>SearchContextTest</code>, <code>TierCorruptionTest</code></td>
+<td></td>
 </tr>
 <tr>
 <td>Scalar twin of the graph kernel</td>

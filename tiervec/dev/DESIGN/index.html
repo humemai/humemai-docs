@@ -1708,6 +1708,42 @@
 <p>A merge builds one graph from the valid vectors of its inputs. With <code>mergeMode</code> <code>INSERT</code> (off by default), a merge that takes the largest segment and at least one other copies the graph of the largest, deletes its hidden rows from the copy, inserts the valid vectors of the others, and seals it. It rebuilds instead when the hidden share of the largest segment is above <code>deadFraction</code>. The time and the peak memory of the two modes have not been compared, and <code>INSERT</code> becomes the default only if a study meets bounds written before it (<a href="https://github.com/humemai/tiervec/issues/16">#16</a>).</p>
 <h3 id="bounds-and-threads">Bounds and threads<a class="headerlink" href="#bounds-and-threads" title="Permanent link">&para;</a></h3>
 <p>One worker thread runs one task at a time (a seal or a merge). There is a cap on segments. No allocation proportional to <code>n</code> happens on the query path. Back pressure: when the active tail holds <code>hardTailFactor * max(tailLimit, smallLimit)</code> vectors, <code>add</code> waits for the worker, bounded to 10 s. <code>awaitCapacity(deadline)</code> is the same wait as a pre-check for <code>apply</code>: it waits for room in the tail and returns <code>false</code> at the deadline. <code>apply</code> never waits for the worker and does not look at the limit, so one batch can take the tail above it. <code>add</code> and <code>delete</code> take one write lock for a short time, and <code>apply</code> takes it once for the whole batch. Searches take no lock.</p>
+<p>The paragraph above is the standalone tier. A tier made with a <code>HostEnv</code> (<code>new TieredIndex(dim, metric, config, env)</code>, and the <code>open</code> overloads that take one) creates no thread, pool, or timer:</p>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>How it runs with a host environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Seals and merges</td>
+<td>One task at a time on <code>env.executor()</code>, submitted after a write when something is due. A seal by age and a retry need <code>env.schedule</code>, or a call of <code>maintain()</code> from the host's timer.</td>
+</tr>
+<tr>
+<td>Parallel part of a build</td>
+<td><code>buildThreads</code> ranges, claimed by the calling thread and by helper tasks, so an executor with one thread is enough.</td>
+</tr>
+<tr>
+<td>Permits</td>
+<td>Every seal, merge, and rebuild asks <code>env.acquireBuild(kind, estimatedPeakBytes)</code> first and closes the permit afterwards. A refused background build waits 50 ms, then twice as long each time, up to 5 s. <code>sealNow</code>, <code>mergeNow</code>, and <code>rebuildFrom</code> throw <code>BuildRefusedException</code>.</td>
+</tr>
+<tr>
+<td>Memory budget</td>
+<td>A background merge waits while <code>bytesHeld()</code> plus its estimate is above <code>env.memoryBudgetBytes()</code>. The seal threshold becomes the smaller of <code>tailLimit</code> and about an eighth of the budget in tail rows, at least 64, and the hard tail limit follows. A call of <code>mergeNow</code> asks for a permit only.</td>
+</tr>
+<tr>
+<td><code>close</code></td>
+<td>Waits up to 30 s for a build that runs. A task that has not started does nothing.</td>
+</tr>
+<tr>
+<td>Health</td>
+<td>FAILED while the executor refuses the tasks.</td>
+</tr>
+</tbody>
+</table>
+<p>The estimate is arithmetic: for each row, twice the vector (with its SQ8 code) plus 12 times <code>M</code> bytes of links, and 200 bytes. It has not been compared with a measured peak (<a href="https://github.com/humemai/tiervec/issues/13">#13</a>). The budget cannot shrink what the vectors themselves need, and it does not hold <code>add</code> back.</p>
 <h2 id="kernels-and-the-scalar-twin">Kernels and the scalar twin<a class="headerlink" href="#kernels-and-the-scalar-twin" title="Permanent link">&para;</a></h2>
 <p><code>Kernels</code> holds the flat-tier distance kernels: float dot and L2, int8 dot, and Hamming. Each has a Vector API version in <code>VKernels</code> and a scalar twin. The choice is made once, when <code>Kernels</code> is initialized: scalar when <code>-Dai.humem.tiervec.scalar=true</code>, scalar when <code>VKernels</code> cannot load (for example without the <code>jdk.incubator.vector</code> module), vector otherwise. <code>Kernels.VECTOR</code> says which one is in use. <code>IvfIndex</code> uses the same kernels.</p>
 <p>On a JVM whose preferred float species has fewer than 8 lanes (128 bits: NEON on aarch64), <code>VKernels</code> has no fast form of the int8 dot, the SQ8 dots, and block16: its int8 dot is built on 256-bit species, which the JVM cannot map to NEON (138 times slower than the scalar twin in CI, <a href="https://github.com/humemai/tiervec/issues/52">#52</a>), and the other three need 8 float lanes. There <code>Kernels</code> uses the 128-bit forms of <code>NKernels</code> on aarch64 (<code>Kernels.JVM_NARROW</code>) and the scalar twins on any other host (<code>Kernels.JVM_QUANT_SCALAR</code>), and <code>Kernels.quantReason</code> says which and why. If <code>NKernels</code> cannot initialize on an aarch64 JVM, the scalar twins are used, never an exception. The fp32 dot and squared L2 stay in <code>VKernels</code> on every JVM, hamming stays scalar, and a JVM with 8 or more float lanes is unchanged. <code>Kern.dotQ8</code> follows the same rule, so one run uses one SQ8 dot in the flat and in the graph tier. AVX-512 and SVE are not used.</p>
@@ -1863,6 +1899,11 @@
 <td><code>tiervec.bigMerges</code>, <code>tiervec.bigMergedVectors</code></td>
 <td>counter</td>
 <td>the part of the merges that rewrote the largest segment</td>
+</tr>
+<tr>
+<td><code>tiervec.deferredBuilds</code></td>
+<td>counter</td>
+<td>background builds that waited for a permit or for the memory budget (a refused call that builds on its own thread counts too)</td>
 </tr>
 <tr>
 <td><code>tiervec.adds</code></td>
