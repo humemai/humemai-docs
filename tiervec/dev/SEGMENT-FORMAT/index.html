@@ -708,6 +708,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#one-process-per-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One process per directory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#segment-file" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1286,6 +1297,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#one-process-per-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One process per directory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#segment-file" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1540,9 +1562,16 @@
 <td><code>*.tmp</code></td>
 <td>A file being written. Never named by a manifest. Removed at open.</td>
 </tr>
+<tr>
+<td><code>LOCK</code></td>
+<td>An empty file whose operating system lock says which process owns the directory (see "One process per directory"). Never deleted.</td>
+</tr>
 </tbody>
 </table>
 <p>Nothing that a manifest names is ever modified. A new state is a new manifest and, when needed, new segment files.</p>
+<h2 id="one-process-per-directory">One process per directory<a class="headerlink" href="#one-process-per-directory" title="Permanent link">&para;</a></h2>
+<p><code>checkpoint</code> and every <code>open</code> take an exclusive lock on <code>LOCK</code> before they read or write anything else in the directory, and the tier keeps it until <code>close</code>, or until a <code>checkpoint</code> into another directory has succeeded. A second process gets <code>DirectoryLockedException</code>, which names the directory, and nothing there changes. This includes the <code>open</code> overloads with a rebuild source: they do not rebuild, because two owners of one directory would delete each other's files. The tiers of one process share the lock, and it is released when the last of them lets go.</p>
+<p>The lock is the operating system's, so it ends with the process, however the process ends, and there is no stale lock to remove. Do not delete the file while a process uses the directory. No lock is taken on a file system other than the default one, or in a directory that the process cannot write to. Whether the lock holds between machines on a network file system depends on that file system, and nothing here tests it. A version before this one neither takes nor checks the lock.</p>
 <h2 id="segment-file">Segment file<a class="headerlink" href="#segment-file" title="Permanent link">&para;</a></h2>
 <p>All numbers are little-endian. The file is, in order:</p>
 <div class="language-text highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>[0, 4096)                 header block
@@ -1964,7 +1993,7 @@
 <li>Lazy and chunked CRC verification. Every section is verified at open.</li>
 <li>The fixed-stride layer 0 layout and padded rows.</li>
 <li>Formats for the flat tail and for IVF.</li>
-<li>A lock file and a marker for an unclean shutdown. One process must own a directory.</li>
+<li>A marker for an unclean shutdown.</li>
 <li>A claim about power loss. The order of the flushes is tested on a simulated file system only.</li>
 <li>Per-segment repair: any integrity failure rebuilds the whole tier.</li>
 </ul>

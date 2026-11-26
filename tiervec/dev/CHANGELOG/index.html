@@ -1424,6 +1424,7 @@
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
+<li>One process owns an index directory, and the library now enforces it: <code>checkpoint</code> and <code>open</code> lock the file <code>LOCK</code> in the directory, keep the lock until <code>close</code>, and throw the new <code>DirectoryLockedException</code> when another process holds it. The <code>open</code> overloads with a rebuild source throw it too and do not rebuild (<a href="https://github.com/humemai/tiervec/issues/27">issue #27</a>).</li>
 <li><code>checkpoint</code> accepts a tier with deleted, replaced and re-added ids. It writes the hidden rows into the tombstone file, and <code>open</code> rebuilds the floor map from them. Before, it threw <code>IllegalStateException</code> until a merge had rewritten every segment with a hidden row. Version 0.1.x refuses a directory with a hidden row (<code>UnsupportedException</code>) and does not overwrite it. <code>RecordSource.isLive</code> is not called for an id whose copies were all hidden at the checkpoint (<a href="https://github.com/humemai/tiervec/issues/27">issue #27</a>).</li>
 </ul>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
