@@ -1789,7 +1789,7 @@
 <li>Rebuild from records: always available, and always correct, because the vectors in the host's records are the truth. It is the answer to every integrity failure.</li>
 <li>Flush, close, drop, clear, and verify: as in the operations table.</li>
 <li>Files: a host may keep the library's files outside its own storage. The library never registers a file with the host's storage manager, writes only inside the directory it is given, and treats a restored or replicated copy that has no files as a cold index. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/9">#9</a>).</li>
-<li>Persistence: the format, as the first cut writes it, is in <a href="../SEGMENT-FORMAT/">SEGMENT-FORMAT.md</a>. A settled tier is written by <code>TieredIndex.checkpoint</code> and read by <code>TieredIndex.open</code>. The tests for damaged files and crashes at scale are <a href="https://github.com/humemai/tiervec/issues/17">#17</a>.</li>
+<li>Persistence: the format, as the first cut writes it, is in <a href="../SEGMENT-FORMAT/">SEGMENT-FORMAT.md</a>. A tier with an empty tail is written by <code>TieredIndex.checkpoint</code> and read by <code>TieredIndex.open</code>, with the rows that deletes and replaces have hidden. The tests for damaged files and crashes at scale are <a href="https://github.com/humemai/tiervec/issues/17">#17</a>.</li>
 </ul>
 <h2 id="recovery">Recovery<a class="headerlink" href="#recovery" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2007,8 +2007,8 @@
 <td>Persistence, open, flush, drop, clear, verify</td>
 <td><code>partly</code></td>
 <td><code>TieredIndex.checkpoint</code>, <code>TieredIndex.open</code>, <code>SealedGraph.serialize</code>, <code>SealedGraph.load</code></td>
-<td><code>TierReopenTest</code>, <code>ManifestCrashTest</code>, <code>SegmentFormatTest</code></td>
-<td>A settled tier only (the host replays the tail through <code>RecordSource</code>), no non-empty tombstones, no memory mapping. <code>flush</code>, <code>drop</code>, <code>clear</code>, <code>verify</code>: <a href="https://github.com/humemai/tiervec/issues/9">#9</a> follow-ups</td>
+<td><code>TierReopenTest</code>, <code>TierTombstoneTest</code>, <code>ManifestCrashTest</code>, <code>SegmentFormatTest</code></td>
+<td>An empty tail only (the host replays the tail through <code>RecordSource</code>), no memory mapping. <code>flush</code>, <code>drop</code>, <code>clear</code>, <code>verify</code>: <a href="https://github.com/humemai/tiervec/issues/9">#9</a> follow-ups</td>
 </tr>
 <tr>
 <td>Corruption and crash tests</td>

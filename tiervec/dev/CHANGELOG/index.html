@@ -978,6 +978,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#fixed" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1006,7 +1017,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#changed" class="md-nav__link">
+  <a href="#changed_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Changed
@@ -1045,7 +1056,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#changed_1" class="md-nav__link">
+  <a href="#changed_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         Changed
@@ -1238,6 +1249,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#fixed" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1266,7 +1288,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#changed" class="md-nav__link">
+  <a href="#changed_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Changed
@@ -1305,7 +1327,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#changed_1" class="md-nav__link">
+  <a href="#changed_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         Changed
@@ -1400,6 +1422,10 @@
 <li>Benchmark harness: <code>--data</code> reads a real embedding set that <code>scripts/prep_real_dataset.py</code> converts from parquet (raw float32 files with exact answers), and <code>--engine jvector</code> builds and searches the same data with JVector at the same <code>M</code> and <code>efConstruction</code>, in the bench profile only (JVector is not a dependency of the library). A CI smoke runs both on a small generated set (<a href="../BENCHMARKS/">docs/BENCHMARKS.md</a>, <a href="https://github.com/humemai/tiervec/issues/108">issue #108</a>).</li>
 <li>Benchmark harness: <code>--quant int8</code> runs JVector on int8 vectors, with and without a float32 rerank, and <code>--quant sq8</code> builds the tier with SQ8 codes. <code>--targets</code> reports latency at matched recall, <code>--disk</code> the size of the written index, <code>--props</code> checks that a write is found by the next search and that a reused id never answers with its old vector, and <code>--shares</code> now works with the JVector arm. The bench profile moves to JVector 4.1.0-rc.1 (<a href="https://github.com/humemai/tiervec/issues/118">issue #118</a>).</li>
 </ul>
+<h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>checkpoint</code> accepts a tier with deleted, replaced and re-added ids. It writes the hidden rows into the tombstone file, and <code>open</code> rebuilds the floor map from them. Before, it threw <code>IllegalStateException</code> until a merge had rewritten every segment with a hidden row. Version 0.1.x refuses a directory with a hidden row (<code>UnsupportedException</code>) and does not overwrite it. <code>RecordSource.isLive</code> is not called for an id whose copies were all hidden at the checkpoint (<a href="https://github.com/humemai/tiervec/issues/27">issue #27</a>).</li>
+</ul>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>The fp32 graph kernels of a JVM (<code>VKern</code>) sum the lanes in a fixed order, like the flat kernels. Before, the sum was <code>reduceLanes(ADD)</code>, whose order depends on the JIT tier, so the same search could return a score one ulp apart before and after compilation. This showed as a rare failure of <code>SegmentForgedFileTest</code> on arm64 (<a href="https://github.com/humemai/tiervec/issues/104">#104</a>). A score can differ from the one of 0.1.0 in the last bit.</li>
@@ -1411,7 +1437,7 @@
 </ul>
 <h2 id="011-2026-11-13">0.1.1 - 2026-11-13<a class="headerlink" href="#011-2026-11-13" title="Permanent link">&para;</a></h2>
 <p>The library code is unchanged from <code>0.1.0</code>: no source file changed. The changes are in the release workflow and the pom.</p>
-<h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
+<h3 id="changed_1">Changed<a class="headerlink" href="#changed_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Creating the GitHub release now publishes to Maven Central by itself and verifies the result (checksums, signatures, the built jars, a resolution from a fresh local repository), so the Publish click in the Central Portal is gone (<a href="../RELEASING/#the-publish-run">docs/RELEASING.md</a>).</li>
 </ul>
@@ -1433,7 +1459,7 @@
 <li>Maven Central publishing for <code>ai.humem:tiervec</code>: the metadata Central requires in <code>pom.xml</code>, a <code>release</code> profile (sources jar, javadoc jar, GnuPG signatures, upload to the Central Portal), and the workflow <code>release-central.yml</code> with a dry run (<a href="../RELEASING/#maven-central">docs/RELEASING.md</a>).</li>
 <li>The documentation is published as a release version with the alias <code>latest</code> when a version tag is pushed, and <code>dev</code> stays the label of <code>main</code>.</li>
 </ul>
-<h3 id="changed_1">Changed<a class="headerlink" href="#changed_1" title="Permanent link">&para;</a></h3>
+<h3 id="changed_2">Changed<a class="headerlink" href="#changed_2" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Package renamed from <code>com.humemai.vec</code> to <code>ai.humem.tiervec</code> (no other change). The system property that forces the scalar twins was renamed with it, from <code>humemai.vec.scalar</code> to <code>ai.humem.tiervec.scalar</code>.</li>
 </ul>

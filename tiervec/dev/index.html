@@ -1382,7 +1382,7 @@
 </tr>
 <tr>
 <td>Restart and recovery</td>
-<td>A settled tier can be checkpointed and reopened. Tests stop the publish after each step (a simulated process kill, and a child JVM that halts itself at each step), flip bits in every byte that a CRC covers, forge files with valid CRCs, and open the directories that a power cut could leave if the flushes keep the documented order. The order itself is tested on a simulated file system that drops what was not flushed; that is a model, so power loss is not claimed.</td>
+<td>A tier with an empty tail can be checkpointed and reopened, deleted and replaced ids included. Tests stop the publish after each step (a simulated process kill, and a child JVM that halts itself at each step), flip bits in every byte that a CRC covers, forge files with valid CRCs, and open the directories that a power cut could leave if the flushes keep the documented order. The order itself is tested on a simulated file system that drops what was not flushed; that is a model, so power loss is not claimed.</td>
 <td><a href="SEGMENT-FORMAT/">docs/SEGMENT-FORMAT.md</a>, <a href="STATUS/#id-epoch-and-replay">docs/STATUS.md</a></td>
 </tr>
 <tr>
@@ -1406,7 +1406,7 @@
 <ul>
 <li>Graph search is approximate. At the default <code>ef</code> (100), a query equal to an inserted vector is missed at about 1.2e-4 to 4.0e-4 per probe at 100,000 to 200,000 vectors, and the rate rises with the size of the index. A search at <code>ef</code> 1000 found 1,254 of the 1,260 misses that were diagnosed. The hardware of this measurement is not recorded. (<a href="STATUS/#graph-self-search-recall">details</a>)</li>
 <li>A filtered search with a small allowed share (about 0.01) spends most of its cost on a walk that falls back to an exact scan. The opt-in <code>filterScanBelow</code> skips the walk, it is off by default, and the range of shares where it pays is not measured yet (<a href="https://github.com/humemai/tiervec/issues/12">#12</a>, <a href="DESIGN/#graph-index">docs/DESIGN.md</a>).</li>
-<li><code>checkpoint</code> writes a settled tier only: no tail, no tombstones. Reads copy the file into memory, with no memory mapping (<a href="SEGMENT-FORMAT/#what-the-first-cut-leaves-out">docs/SEGMENT-FORMAT.md</a>).</li>
+<li><code>checkpoint</code> needs an empty tail (<code>sealNow</code>): the tail is not persisted. Reads copy the file into memory, with no memory mapping (<a href="SEGMENT-FORMAT/#what-the-first-cut-leaves-out">docs/SEGMENT-FORMAT.md</a>).</li>
 <li>A search that meets a batch waits for it, and a stream of batches that follow each other faster than one scan takes can starve a search (<a href="STATUS/#atomic-batches">docs/STATUS.md</a>).</li>
 <li>In a native image a result can differ from the JVM by rounding. AVX-512 and SVE are not used (<a href="https://github.com/humemai/tiervec/issues/52">#52</a>).</li>
 </ul>
