@@ -836,6 +836,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#guarantees-per-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guarantees per platform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#what-a-crash-leaves-behind" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1425,6 +1436,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#guarantees-per-platform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guarantees per platform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#what-a-crash-leaves-behind" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1571,7 +1593,7 @@
 <p>Nothing that a manifest names is ever modified. A new state is a new manifest and, when needed, new segment files.</p>
 <h2 id="one-process-per-directory">One process per directory<a class="headerlink" href="#one-process-per-directory" title="Permanent link">&para;</a></h2>
 <p><code>checkpoint</code> and every <code>open</code> take an exclusive lock on <code>LOCK</code> before they read or write anything else in the directory, and the tier keeps it until <code>close</code>, or until a <code>checkpoint</code> into another directory has succeeded. A second process gets <code>DirectoryLockedException</code>, which names the directory, and nothing there changes. This includes the <code>open</code> overloads with a rebuild source: they do not rebuild, because two owners of one directory would delete each other's files. The tiers of one process share the lock, and it is released when the last of them lets go.</p>
-<p>The lock is the operating system's, so it ends with the process, however the process ends, and there is no stale lock to remove. Do not delete the file while a process uses the directory. No lock is taken on a file system other than the default one, or in a directory that the process cannot write to. Whether the lock holds between machines on a network file system depends on that file system, and nothing here tests it. A version before this one neither takes nor checks the lock.</p>
+<p>The lock is the operating system's, so it ends with the process, however the process ends, and there is no stale lock to remove. On Windows it can end a moment after the process has: an <code>open</code> right after a process was killed can throw <code>DirectoryLockedException</code>, and a host that restarts at once tries again (seen in <code>TierKillLongTest</code> on the Windows runner; the documentation of <code>LockFileEx</code> gives no bound for the release). Do not delete the file while a process uses the directory. No lock is taken on a file system other than the default one, or in a directory that the process cannot write to. Whether the lock holds between machines on a network file system depends on that file system, and nothing here tests it. A version before this one neither takes nor checks the lock.</p>
 <h2 id="segment-file">Segment file<a class="headerlink" href="#segment-file" title="Permanent link">&para;</a></h2>
 <p>All numbers are little-endian. The file is, in order:</p>
 <div class="language-text highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>[0, 4096)                 header block
@@ -1932,6 +1954,71 @@
 </table>
 <p>The rename is the only moment a generation becomes visible, and by then every byte it names was already flushed. Generation N is deleted only in step 8, after step 7, so an unfinished N+1 can exist only while N and all its files still exist. The cleanup (step 8, and the one at the end of <code>open</code>) flushes the directory before its first delete: an open that finds an N+1 whose process was killed between steps 6 and 7 makes that rename durable before it removes N. A manifest is never overwritten: publishing a generation that exists is an error.</p>
 <p>On Windows the directory flush of steps 3 and 7 does nothing, because Java cannot open a directory there (<code>FileChannel.open</code> is refused). File contents are still forced with <code>FileChannel.force</code>, so the bytes of every file are flushed before the rename. The directory entry (the new name, the rename) is not flushed by the library, so a power loss right after a rename can lose the rename on Windows. A process kill is covered on Windows as on Linux, because the claim above is about process kills only.</p>
+<h3 id="guarantees-per-platform">Guarantees per platform<a class="headerlink" href="#guarantees-per-platform" title="Permanent link">&para;</a></h3>
+<p>These are the platforms that CI runs. "N or N+1" means that the directory opens as the generation before the publish or the new one, never a mixture.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Linux x86-64</th>
+<th>Linux arm64</th>
+<th>macOS arm64</th>
+<th>Windows x64</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File contents flushed before the rename (<code>FileChannel.force</code>)</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>The rename itself flushed (directory flush)</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+<tr>
+<td>A process kill during a publish leaves N or N+1</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes, and the lock of the killed process can be released a moment later</td>
+</tr>
+<tr>
+<td>A power loss</td>
+<td>no claim</td>
+<td>no claim</td>
+<td>no claim</td>
+<td>no claim, and a rename that has returned can be lost</td>
+</tr>
+<tr>
+<td>Tested by a child process halted at each publish step, and from the directories a power cut can leave (fast: <code>TierHaltTest</code>, <code>TierPowerCutTest</code>, <code>ManifestCrashTest</code>, <code>TierReopenTest</code>)</td>
+<td>every change</td>
+<td>every change</td>
+<td>every change</td>
+<td>every change</td>
+</tr>
+<tr>
+<td>Tested by many seeds and random process kills (slow: <code>TierHaltLongTest</code>, <code>TierKillLongTest</code>)</td>
+<td>slow runs</td>
+<td>no</td>
+<td>no</td>
+<td>slow runs</td>
+</tr>
+<tr>
+<td>Flush order tested on a simulated file system (<code>SimulatedFsCrashTest</code>)</td>
+<td>every change</td>
+<td>every change</td>
+<td>every change</td>
+<td>no, there is no directory flush to order</td>
+</tr>
+</tbody>
+</table>
+<p>"Every change" is the fast tests of a pull request. "Slow runs" is a push to <code>main</code>, the daily run, and a pull request with the label <code>ci:slow</code>. None of these tests cuts the power. The library has no memory-mapped reader, so no file is mapped while a merge replaces it; what a mapped reader changes on Windows belongs to <a href="https://github.com/humemai/tiervec/issues/27">#27</a>.</p>
 <h3 id="what-a-crash-leaves-behind">What a crash leaves behind<a class="headerlink" href="#what-a-crash-leaves-behind" title="Permanent link">&para;</a></h3>
 <p>The table is for a process kill (the page cache survives). A crash after a step leaves:</p>
 <table>
