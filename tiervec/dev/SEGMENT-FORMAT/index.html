@@ -874,6 +874,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#mapped-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mapped vectors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-the-first-cut-leaves-out" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1502,6 +1513,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#mapped-vectors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mapped vectors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#what-the-first-cut-leaves-out" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1905,7 +1927,7 @@
 <h3 id="locator">Locator<a class="headerlink" href="#locator" title="Permanent link">&para;</a></h3>
 <p>The last 32 bytes: magic <code>TVSEGEND</code> (8), footer offset u64, footer length u32, footer CRC32C u32, total file length u64. The locator is the last thing written. A file that was cut short, or that has bytes appended, does not end in a locator that agrees with its own length, and fails after reading 32 bytes.</p>
 <h3 id="sizes">Sizes<a class="headerlink" href="#sizes" title="Permanent link">&para;</a></h3>
-<p>The file holds the arrays of the in-memory graph, with <code>VERS</code> and <code>BYID</code> in place of the two sorted-id arrays the graph keeps, and no deletion bitmap. So, with <code>VERS</code> present, the sum of the section lengths equals <code>SealedGraph.bytesHeld()</code> minus <code>8 * ceil(n / 64)</code> (the bitmap). The file length is <code>4096</code>, plus the sections each rounded up to the alignment, plus <code>64 + 40 * sections</code>, plus 32. <code>SegmentFormatTest</code> checks both for two dimensions, with and without SQ8.</p>
+<p>The file holds the arrays of the in-memory graph, with <code>VERS</code> and <code>BYID</code> in place of the two sorted-id arrays the graph keeps, and no deletion bitmap. So, with <code>VERS</code> present and the vectors on the heap, the sum of the section lengths equals <code>SealedGraph.bytesHeld()</code> minus <code>8 * ceil(n / 64)</code> (the bitmap). The file length is <code>4096</code>, plus the sections each rounded up to the alignment, plus <code>64 + 40 * sections</code>, plus 32. <code>SegmentFormatTest</code> checks both for two dimensions, with and without SQ8.</p>
 <h2 id="integrity-rules">Integrity rules<a class="headerlink" href="#integrity-rules" title="Permanent link">&para;</a></h2>
 <ul>
 <li>A reader reads the header block, the locator and the footer first, and checks the magic, the header CRC, the version, the byte-order probe, the locator against the real file length, and the footer CRC. This costs the same for a file of any size and happens before any section is read.</li>
@@ -2046,7 +2068,7 @@
 </tr>
 </tbody>
 </table>
-<p>"Every change" is the fast tests of a pull request. "Slow runs" is a push to <code>main</code>, the daily run, and a pull request with the label <code>ci:slow</code>. None of these tests cuts the power. The library has no memory-mapped reader, so no file is mapped while a merge replaces it; what a mapped reader changes on Windows belongs to <a href="https://github.com/humemai/tiervec/issues/27">#27</a>.</p>
+<p>"Every change" is the fast tests of a pull request. "Slow runs" is a push to <code>main</code>, the daily run, and a pull request with the label <code>ci:slow</code>. None of these tests cuts the power. With the default heap reader no file is mapped while a merge replaces it; what the mapped reader changes, on Windows above all, is in <a href="#mapped-vectors">Mapped vectors</a>.</p>
 <h3 id="what-a-crash-leaves-behind">What a crash leaves behind<a class="headerlink" href="#what-a-crash-leaves-behind" title="Permanent link">&para;</a></h3>
 <p>The table is for a process kill (the page cache survives). A crash after a step leaves:</p>
 <table>
@@ -2093,15 +2115,69 @@
 <ol>
 <li><code>Manifest.readLatest</code>: list the manifests, newest first. For each, check magic, version, CRC, that every named file exists with the recorded length and a valid header, footer and locator, and that the tombstone file matches. The first that passes is current. A candidate that fails is skipped; a segment whose first eight bytes are not the magic fails like one with a bad header CRC. If none passes it throws <code>CorruptException</code>; an empty directory throws <code>NoSuchFileException</code>; a manifest in a newer format throws <code>UnsupportedException</code> at once.</li>
 <li>Compare the fingerprint with the configuration (dimension, metric, <code>M</code>, <code>efConstruction</code>, SQ8). A difference throws <code>MismatchException</code>.</li>
-<li>Read every segment with every section checksummed, and compare it with its manifest entry.</li>
+<li>Read every segment with every section checksummed, and compare it with its manifest entry. With <code>vectorStorage</code> set to <code>MAPPED</code> the <code>VEC</code> section is checksummed and then mapped instead of copied (<a href="#mapped-vectors">Mapped vectors</a>).</li>
 <li>Delete the files that the manifest does not name (orphans of a crashed publish, older generations).</li>
 <li>Restore the version counter, the epoch and the floor map (for each id with a marked row, one more than the largest marked version, which hides exactly the marked rows), and start the tier with the segments and an empty tail.</li>
 </ol>
 <p>Any failure throws. The overload <code>open(dir, dim, metric, config, rebuildSource)</code> catches it and builds the tier from the records with <code>rebuildFrom</code>; <code>openFallbackCause()</code> tells why. The directory is left as it was in that case. The next <code>checkpoint</code> replaces its contents, with one exception: when <code>open</code> failed with <code>UnsupportedException</code>, <code>checkpoint</code> into that directory throws the same exception and changes nothing, so that an older reader does not destroy files of a newer format. A host that wants to give those files up deletes the directory.</p>
 <p><code>open(dir, dim, metric, config, recordSource)</code> adds, after step 5, the epoch comparison (another epoch gives a cold index), the drop of ids above the host's recovered maximum (rebuilt segments and a new generation before it returns), the liveness check, and the replay of the host's live records above the high-water id: see <a href="../ID-EPOCH-AND-REPLAY/">ID-EPOCH-AND-REPLAY.md</a>.</p>
+<h2 id="mapped-vectors">Mapped vectors<a class="headerlink" href="#mapped-vectors" title="Permanent link">&para;</a></h2>
+<p>By default <code>TieredIndex.open</code> copies every section into heap arrays. With <code>Config.vectorStorage</code> set to <code>MAPPED</code> it leaves the fp32 vectors (section <code>VEC</code>) in the segment file and maps them read-only (<a href="https://github.com/humemai/tiervec/issues/27">#27</a>). The file format does not change.</p>
+<div class="language-java highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">TieredIndex</span><span class="p">.</span><span class="na">Config</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TieredIndex</span><span class="p">.</span><span class="na">Config</span><span class="p">.</span><span class="na">defaults</span><span class="p">().</span><span class="na">withVectorStorage</span><span class="p">(</span><span class="n">TieredIndex</span><span class="p">.</span><span class="na">VectorStorage</span><span class="p">.</span><span class="na">MAPPED</span><span class="p">);</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">TieredIndex</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TieredIndex</span><span class="p">.</span><span class="na">open</span><span class="p">(</span><span class="n">dir</span><span class="p">,</span><span class="w"> </span><span class="n">config</span><span class="p">);</span>
+</code></pre></div>
+<p>The key of the configuration map is <code>vectorStorage</code>. It is not in the fingerprint, and <code>reconfigure</code> does not change it.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>HEAP</code> (default)</th>
+<th><code>MAPPED</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fp32 vectors of a segment that <code>open</code> reads</td>
+<td>a heap array of <code>4 * n * dim</code> bytes</td>
+<td>the mapped file</td>
+</tr>
+<tr>
+<td>Ids, versions, graph, SQ8 codes and parameters</td>
+<td>heap</td>
+<td>heap</td>
+</tr>
+<tr>
+<td>Checks at <code>open</code></td>
+<td>every section CRC32C</td>
+<td>the same, <code>VEC</code> included</td>
+</tr>
+<tr>
+<td>Hits and scores</td>
+<td></td>
+<td>the same</td>
+</tr>
+<tr>
+<td>A distance to a vector</td>
+<td>reads the array</td>
+<td>first copies the row into a <code>float[]</code> of the searching thread</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What it saves and costs.</strong> On shared CI runners the used heap after opening one segment fell from 153.8 to 55.8 MiB for 200,000 vectors of dimension 128 (vector section 97.7 MiB), and from 194.2 to 46.3 MiB for 50,000 of dimension 768 (146.5 MiB). On JDK 21 without preview features the kernels read a <code>float[]</code>, so every distance on a mapped row copies it first. In that run a walk of fp32 vectors took 0.92 to 1.40 times as long as on the heap, a walk of SQ8 codes, which reads fp32 vectors only to rescore, 0.99 to 1.03 times, and the exact scan 1.10 to 1.54 times. An earlier run measured 1.13 to 1.37 for the fp32 walk. Heap stays the default for that cost. The method, the tables, and the commands are in <a href="../BENCHMARKS/#the-cost-of-a-row-copy">BENCHMARKS.md</a>.</p>
+<p><strong>What it covers.</strong> Only the segments that <code>open</code> reads. A segment that a seal, a merge, or a rebuild builds in a running tier has its vectors on the heap, also after a <code>checkpoint</code> has written it; a later <code>open</code> maps it. So a mapped tier saves less heap the longer it seals and merges. <code>bytesHeld</code>, which <code>HostEnv.memoryBudgetBytes</code> is compared with, leaves the mapped vectors out. The pages in use are in the page cache of the operating system.</p>
+<p><strong>Checks.</strong> <code>open</code> reads the <code>VEC</code> section once through the file channel to check its CRC32C, so the open still reads every byte. It maps the section only after every check of the segment has passed: a segment that is refused is not mapped. The first searches can have to fault the pages of the mapping in.</p>
+<p><strong>Sections above 2 GiB.</strong> One mapping holds at most 2^31 - 1 bytes. A larger section is mapped in several pieces, each a power of two of whole rows, so no row crosses a piece. The tests lower the limit of a piece to cover this with small files; no test writes a section above 2 GiB. The limit of the format, <code>n * dim</code> at most 2^31 - 9, holds for both readers.</p>
+<p><strong>Unmapping.</strong> The library never unmaps. A search can still be reading a segment that a merge has replaced, or one of a tier that was closed meanwhile, and a read of an unmapped page ends the JVM. The JVM unmaps a piece after the garbage collector has found it unreachable, and nothing bounds when that happens. <code>close</code> releases the directory lock and not the mappings, so drop the references to a closed tier.</p>
+<p><strong>Deleting a mapped file.</strong> A <code>checkpoint</code> or an <code>open</code> can retire a segment whose file is still mapped.</p>
+<ul>
+<li>Linux and macOS delete the file as usual, and free its disk space only when the mapping is gone.</li>
+<li>Windows: on the CI runner (Windows Server 2025, Temurin 21) the retired file was deleted while it was still mapped, and the mapping went on serving its bytes (<code>MappedVectorsTest</code>, the line <code>MAPPED-DELETE</code>). Windows is also known to refuse such a delete. When it does, <code>checkpoint</code> and <code>open</code> leave the file and go on, and a later one tries again. No test reaches that path, because the runner allows the delete, and nothing here says which Windows versions or file systems refuse it.</li>
+</ul>
+<p><strong>The files must not change.</strong> Nothing may modify, truncate, or overwrite a file that is mapped; the library itself never modifies a segment file. The CRC32C is checked at <code>open</code> only, so a later change reaches searches unnoticed, and a page that cannot be loaded (a file that was cut short, a read error of the device) can throw an <code>InternalError</code> out of a search or end the JVM. A heap tier does not depend on its segment files after <code>open</code>. Use <code>HEAP</code> for a directory on a network file system.</p>
+<p><strong>Tests.</strong> The round-trip and corruption tests run with both readers: <code>MappedSegmentFormatTest</code>, <code>MappedSegmentCorruptionTest</code>, <code>MappedSegmentForgedFileTest</code>, <code>MappedManifestCrashTest</code>, <code>MappedTierReopenTest</code>, and <code>MappedTierCorruptionTest</code> run the tests of their parent classes with the mapped reader. They do not run on Windows: they rewrite and delete segment files right after a load, while a file can still be mapped, and that was not checked there. <code>MappedVectorsTest</code> runs on every platform: rows over several mappings, one scratch array per thread, a mapped tier that goes on writing and merging, a refused file, and a retired file that is still mapped.</p>
 <h2 id="what-the-first-cut-leaves-out">What the first cut leaves out<a class="headerlink" href="#what-the-first-cut-leaves-out" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Memory mapping. A segment is read into the heap arrays of <code>SealedGraph</code>. The graph, the writer, the merge, and <code>GraphIndex.fromSealed</code> reach the vectors (section <code>VEC</code>) through one internal interface, <code>SealedVectors</code>, whose only implementation is a heap array, so a mapped reader can replace that one section (<a href="https://github.com/humemai/tiervec/issues/27">#27</a>). The other sections are used as arrays.</li>
+<li>Memory mapping of anything but the vectors. Only <code>VEC</code> can be mapped (<a href="#mapped-vectors">Mapped vectors</a>); the other sections are read into heap arrays, and so is every segment that a running tier builds.</li>
 <li>Replay of the tail by the library itself. The host replays what the segments lack through <code>RecordSource</code>.</li>
 <li>The tail. <code>checkpoint</code> refuses a tier with a non-empty tail (an <code>IllegalStateException</code>).</li>
 <li>Soft-deleted rows inside a segment file: <code>SegmentWriter</code> refuses a graph that has them. The tier does not make such graphs; it records hidden rows in the tombstone file.</li>

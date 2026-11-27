@@ -1855,6 +1855,11 @@
 <td>0.0</td>
 <td>Size-ratio merge trigger, off at 0. See below.</td>
 </tr>
+<tr>
+<td><code>vectorStorage</code></td>
+<td><code>HEAP</code></td>
+<td>Where a segment that <code>open</code> reads keeps its fp32 vectors. <code>HEAP</code> copies them into the heap. <code>MAPPED</code> leaves them in the mapped segment file: less heap, slower fp32 distances as measured (<a href="../SEGMENT-FORMAT/#mapped-vectors">SEGMENT-FORMAT.md</a>).</td>
+</tr>
 </tbody>
 </table>
 <p>With <code>mergeTriggerRatio</code> X above 0, the segment with the most live rows is the big one. When the live rows of all the other segments together exceed X times the live rows of the big one, all segments are merged into one. Otherwise, if <code>maxSegments</code> is at least 2 and the count exceeds it, the count rule picks among the small segments only, so the big one is rewritten only by the ratio rule. With <code>maxSegments</code> 1 the count rule includes the big one and a merge happens at every seal. A merge into the big segment rewrites about (1 + X) / X vectors per inserted vector, on top of the small-segment merges.</p>
@@ -1892,7 +1897,7 @@
 </tbody>
 </table>
 <p><code>reconfigure</code> changes <code>graph.efSearch</code> and <code>splitBeam</code>, the search-time knobs. It refuses every other key whose value would change, and makes all changes of a call or none.</p>
-<p><code>Config.fingerprint(dim, metric)</code> returns a canonical text and its SHA-256 over what decides the data of the graphs and their files: the dimension, the metric, the id width, <code>graph.M</code>, <code>graph.efConstruction</code>, <code>graph.alpha</code>, <code>graph.sq8</code>, and the layer 0 layout. The search-time knobs, the tail settings (the tail is not persisted), the seal and merge policy, and <code>graph.seed</code> are not in it. The manifest records the same settings except <code>alpha</code>, and <code>open</code> compares those, so a host that wants a change of <code>alpha</code> to discard the persisted state compares fingerprints itself.</p>
+<p><code>Config.fingerprint(dim, metric)</code> returns a canonical text and its SHA-256 over what decides the data of the graphs and their files: the dimension, the metric, the id width, <code>graph.M</code>, <code>graph.efConstruction</code>, <code>graph.alpha</code>, <code>graph.sq8</code>, and the layer 0 layout. The search-time knobs, the tail settings (the tail is not persisted), the seal and merge policy, <code>vectorStorage</code>, and <code>graph.seed</code> are not in it. The manifest records the same settings except <code>alpha</code>, and <code>open</code> compares those, so a host that wants a change of <code>alpha</code> to discard the persisted state compares fingerprints itself.</p>
 <h2 id="statistics">Statistics<a class="headerlink" href="#statistics" title="Permanent link">&para;</a></h2>
 <p><code>metrics()</code> returns a <code>Map&lt;String, Long&gt;</code>. <code>bindMetrics(sink)</code> pushes the same numbers to a <code>MetricSink</code>: the sink gets each increment of a counter from then on, and each gauge once, to read when it wants. The library depends on no metrics library, and a sink that throws is ignored.</p>
 <table>
