@@ -1270,6 +1270,11 @@
 <td>All</td>
 </tr>
 <tr>
+<td><code>SizedIdFilter</code></td>
+<td>An allowed-id filter that also says how many ids it allows, so that a search can scan a small set exactly</td>
+<td>All</td>
+</tr>
+<tr>
 <td><code>SearchContext</code></td>
 <td>What a host gives a search so that it can stop it: a deadline, a cancel flag, or both</td>
 <td>All</td>
@@ -1312,7 +1317,7 @@
 <tr>
 <td><code>TieredIndex</code></td>
 <td>The index a host database uses: exact tail, sealed segments, merges, batches, checkpoint and reopen</td>
-<td>The constructors, <code>add</code>, <code>delete</code>, <code>search</code> (all overloads), <code>apply</code>, <code>awaitCapacity</code>, <code>filterScanBelow</code>, <code>sealNow</code>, <code>mergeNow</code>, <code>awaitIdle</code>, <code>rebuildFrom</code> (all overloads), <code>epoch</code>, <code>checkpoint</code>, <code>open</code> (all overloads), <code>openFallbackCause</code>, <code>config</code>, <code>reconfigure</code>, <code>contractVersion</code>, <code>capabilities</code>, <code>health</code>, <code>metrics</code>, <code>bindMetrics</code>, <code>maintain</code>, <code>stats</code>, <code>segmentSizes</code>, <code>lastError</code>, <code>size</code>, <code>dim</code>, <code>metric</code>, <code>bytesHeld</code>, <code>close</code></td>
+<td>The constructors, <code>add</code>, <code>delete</code>, <code>search</code> (all overloads), <code>apply</code>, <code>awaitCapacity</code>, <code>filterScanBelow</code>, <code>sealNow</code>, <code>mergeNow</code>, <code>awaitIdle</code>, <code>rebuildFrom</code> (all overloads), <code>epoch</code>, <code>checkpoint</code>, <code>open</code> (all overloads), <code>openFallbackCause</code>, <code>config</code>, <code>reconfigure</code>, <code>contractVersion</code>, <code>capabilities</code>, <code>health</code>, <code>metrics</code>, <code>bindMetrics</code>, <code>maintain</code>, <code>stats</code>, <code>segmentSizes</code>, <code>lastError</code>, <code>size</code>, <code>liveCount</code>, <code>dim</code>, <code>metric</code>, <code>bytesHeld</code>, <code>close</code></td>
 </tr>
 <tr>
 <td><code>TieredIndex.Config</code>, <code>TieredIndex.Stats</code>, <code>TieredIndex.Batch</code>, <code>TieredIndex.IdVector</code>, <code>TieredIndex.Snapshot</code>, <code>TieredIndex.SearchResult</code>, <code>TieredIndex.Fingerprint</code>, <code>TieredIndex.Freshness</code>, <code>TieredIndex.MergeMode</code>, <code>TieredIndex.Health</code></td>

@@ -1676,7 +1676,7 @@
 <td><code>search(query, k, allowed, context)</code></td>
 <td>Passes the query, <code>k</code>, an allowed-id predicate (optionally with a size hint), and a search context.</td>
 <td>At most <code>k</code> hits, best first, no duplicate id, no deleted id, fewer than <code>k</code> only when fewer qualify. A search stops when the context says so.</td>
-<td><code>exists today</code>: <code>TieredIndex.search</code>, three overloads without a context and three with one (<code>SearchContextTest</code>). Size hint: <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/12">#12</a>)</td>
+<td><code>exists today</code>: <code>TieredIndex.search</code>, three overloads without a context and three with one (<code>SearchContextTest</code>). Size hint: <code>SizedIdFilter</code> (<code>SizedIdFilterTest</code>)</td>
 </tr>
 <tr>
 <td><code>open(config, fingerprint, environment, record source, directory)</code></td>
@@ -1769,7 +1769,7 @@
 <li>Result: at most <code>k</code> hits, best first, each <code>Hit(id, score)</code>, no duplicate ids. Fewer than <code>k</code> only when fewer live vectors qualify. <code>exists today</code>: <code>VecIndex.search</code>, <code>Hit</code>.</li>
 <li>Score: higher is better for every metric. Cosine and dot are returned as they are, L2 as the negative squared distance. A host whose engine uses a distance where lower is better converts, and checks the conversion with a parity test on the same data. <code>exists today</code>: <code>Hit</code>. A public scorer for a single pair of vectors, which a host needs to score its own uncommitted rows with the same arithmetic, is <code>planned</code>, no issue filed yet.</li>
 <li>Exactness flag: <code>SearchResult.exact</code> tells the host that no segment was searched and the tail scan was exact. <code>exists today</code>: <code>TieredIndex.search(..., Freshness)</code>.</li>
-<li>Allowed-id predicate. The host supplies a <code>LongPredicate</code>. It must be cheap, side-effect free, safe to call more than once for the same id, and it must not call back into the index. The library applies it inside the segment search and the tail scan, so the top <code>k</code> of the qualifying set is correct, and a graph walk with few qualifying ids falls back to an exact scan after a visit budget. <code>exists today</code>: the predicate parameter of <code>TieredIndex.search</code>. Correctness of filtered search is checked by unit tests. How it behaves across the range of selectivities has not been measured. An optional size hint and a live count, so that a small allowed set is scanned exactly, are <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/12">#12</a>).</li>
+<li>Allowed-id predicate. The host supplies a <code>LongPredicate</code>. It must be cheap, side-effect free, safe to call more than once for the same id, and it must not call back into the index. The library applies it inside the segment search and the tail scan, so the top <code>k</code> of the qualifying set is correct, and a graph walk with few qualifying ids falls back to an exact scan after a visit budget. <code>exists today</code>: the predicate parameter of <code>TieredIndex.search</code>. Correctness of filtered search is checked by unit tests. How it behaves across the range of selectivities has not been measured. A predicate that implements <code>SizedIdFilter</code> also says how many ids it allows: when that count is at most <code>ef</code>, the tier scans the allowed ids exactly and does not walk, and <code>TieredIndex.liveCount</code> is the number to compare the count with. A wrong count never lets a rejected id through. <code>exists today</code>: <code>SizedIdFilterTest</code>. The threshold is not set from a study (<a href="https://github.com/humemai/tiervec/issues/12">#12</a>).</li>
 <li>Context. The library calls <code>expired()</code> on the searching thread: when the search starts, before each tail and each segment, at least once every 1024 candidates inside a tail scan or a segment search (a candidate is a vector that the scan or the graph walk looks at, whether or not the predicate accepts it), and after each pause while it waits for a batch. When the answer is true the search throws <code>SearchCancelledException</code> and returns nothing, also no partial result. The time to stop is therefore up to one interval of candidates with their predicate calls, and a call of the predicate or of <code>expired()</code> is never interrupted. The method must be cheap, must not block, and must not call into the index. The standalone indexes take no context. <code>exists today</code>: <code>SearchContext</code>, <code>TieredIndex.search</code>. Tests: <code>SearchContextTest</code> (the bound in the tail scan, the graph walk and the exact scan of a segment, the poll before each part, equal answers while the context never expires, a flag set by another thread, a search that waits for a batch).</li>
 <li>Threads and locks. A search runs on the calling thread, takes no lock, and never waits for a seal, a merge, or the build of a rebuild. It can be delayed by a batch in progress, for the length of that batch (it waits until the batch is whole, and scans again when a batch overlapped its scan; see <code>apply(batch)</code>), and by the swap of a snapshot rebuild together with its catch-up. A stream of batches that follow each other faster than one scan takes can starve it. <code>partly</code>: built in <code>TieredIndex.search</code> and stated in its class documentation, and <code>ApplyBatchTest</code> checks the wait for a batch, but no dedicated test checks the rest.</li>
 <li>Freshness. By default a search sees the tails, so a write is visible at once. <code>Freshness.SEALED_ONLY</code> skips the tails and may lag. It never returns a deleted id, a stale vector, or an id that was never added. <code>exists today</code>: <code>TieredIndex.Freshness</code>.</li>
@@ -1830,7 +1830,7 @@
 <ul>
 <li>The contract has a major and a minor number, 1.0 today. The host refuses a library with a larger major. A larger minor is accepted, and capabilities it does not know are ignored. New operations are added as default methods. <code>exists today</code>: <code>TieredIndex.contractVersion</code>, <code>ContractVersion.accepts</code> (<code>HostContractTest</code>).</li>
 <li>The segment file and the manifest have their own version numbers, under the same rule. <code>planned</code> (<a href="https://github.com/humemai/tiervec/issues/6">#6</a>, <a href="https://github.com/humemai/tiervec/issues/9">#9</a>).</li>
-<li>Capabilities are a set (<code>EnumSet</code>, a bit set): atomic batch, deferred apply, search context, persistence, snapshot rebuild, and host environment, with more as they appear. The host checks them at creation. A selective filter plan is not in the set yet (<a href="https://github.com/humemai/tiervec/issues/12">#12</a>). <code>exists today</code>: <code>TieredIndex.capabilities</code>, <code>Capability</code>.</li>
+<li>Capabilities are a set (<code>EnumSet</code>, a bit set): atomic batch, deferred apply, search context, persistence, snapshot rebuild, host environment, and selective filter plan, with more as they appear. The host checks them at creation. <code>exists today</code>: <code>TieredIndex.capabilities</code>, <code>Capability</code>.</li>
 <li>What the tier does not offer, so a host can refuse such an index definition at creation and not at query time: grouped (per-group top <code>k</code>) search, approximate scores from compressed codes without an exact rescoring pass (returned scores are exact fp32 scores), a retract of an applied write other than the opposite write, transactions or uncommitted rows, a persisted tail, memory-mapped segment readers, and more than one process on one index directory. <code>exists today</code> as a fact about the code.</li>
 </ul>
 <h2 id="what-a-host-adapter-typically-does">What a host adapter typically does<a class="headerlink" href="#what-a-host-adapter-typically-does" title="Permanent link">&para;</a></h2>
@@ -1903,7 +1903,7 @@
 <td><code>exists today</code></td>
 <td><code>TieredIndex.search</code></td>
 <td><code>TierTests.testTailOnly</code> (equals brute force), <code>TierTests.testSegmentsRecall</code> (filtered recall bound)</td>
-<td>Selectivity study and size hint: <a href="https://github.com/humemai/tiervec/issues/12">#12</a></td>
+<td>Selectivity study: <a href="https://github.com/humemai/tiervec/issues/12">#12</a></td>
 </tr>
 <tr>
 <td>Atomic publish of the segment list</td>
@@ -1977,10 +1977,10 @@
 </tr>
 <tr>
 <td>Size hint and live count for the allowed-id predicate</td>
-<td><code>planned</code></td>
-<td></td>
-<td></td>
-<td><a href="https://github.com/humemai/tiervec/issues/12">#12</a></td>
+<td><code>exists today</code></td>
+<td><code>SizedIdFilter</code>, <code>TieredIndex.liveCount</code>, <code>Capability.SELECTIVE_PLAN</code></td>
+<td><code>SizedIdFilterTest</code></td>
+<td>The scan starts at a count of at most <code>ef</code>, a threshold that no study has set: <a href="https://github.com/humemai/tiervec/issues/12">#12</a></td>
 </tr>
 <tr>
 <td>Host executor, build permit, memory budget, no own threads</td>
