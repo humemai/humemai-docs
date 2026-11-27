@@ -932,6 +932,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="The data of the screen">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-dimensions-that-the-noise-spans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: dimensions that the noise spans
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-clusters-written-before-any-run-of-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: clusters, written before any run of it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1262,6 +1290,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="The data of the screen">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-dimensions-that-the-noise-spans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: dimensions that the noise spans
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-clusters-written-before-any-run-of-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: clusters, written before any run of it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1367,6 +1423,69 @@
 <li>The candidates are 768 dimensions with <code>--latent</code> 32, 64, 128, 256, and 768, in this order (<a href="../AGENT-MEMORY-BENCHMARK/#the-runbook">the two kinds of data</a>).</li>
 <li>The choice is the first candidate at which, on <code>a10k</code> with seed 1 and the write mix, <code>recallLowest</code> of both <code>tier</code> and <code>graph-a10</code> is at most 0.97. If none is, the choice is 768.</li>
 <li>The chosen data, its difficulty (the <code>DATA</code> lines), and the runs of every candidate that was tried are recorded here.</li>
+</ul>
+<h3 id="step-1-dimensions-that-the-noise-spans">Step 1: dimensions that the noise spans<a class="headerlink" href="#step-1-dimensions-that-the-noise-spans" title="Permanent link">&para;</a></h3>
+<p>All five candidates ran on <code>a10k</code>, seed 1, on commit <code>d84f2c6</code> (<a href="https://github.com/humemai/tiervec/pull/175">#175</a>), with 0 violations. Intrinsic dimension and contrast are the <code>DATA</code> line.</p>
+<table>
+<thead>
+<tr>
+<th><code>--latent</code></th>
+<th>Intrinsic dimension</th>
+<th>Contrast</th>
+<th><code>recallLowest</code> of <code>tier</code></th>
+<th><code>recallLowest</code> of <code>graph-a10</code></th>
+<th>Run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>32</td>
+<td>16.5</td>
+<td>2.036</td>
+<td>1.0000</td>
+<td>0.9990</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46042784692">46042784692</a></td>
+</tr>
+<tr>
+<td>64</td>
+<td>24.3</td>
+<td>1.868</td>
+<td>1.0000</td>
+<td>0.9980</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46042789843">46042789843</a></td>
+</tr>
+<tr>
+<td>128</td>
+<td>34.6</td>
+<td>1.766</td>
+<td>0.9990</td>
+<td>0.9960</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46042794754">46042794754</a></td>
+</tr>
+<tr>
+<td>256</td>
+<td>47.2</td>
+<td>1.710</td>
+<td>0.9980</td>
+<td>0.9870</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46042798887">46042798887</a></td>
+</tr>
+<tr>
+<td>768</td>
+<td>91.3</td>
+<td>1.631</td>
+<td>0.9970</td>
+<td>0.9850</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46042803864">46042803864</a></td>
+</tr>
+</tbody>
+</table>
+<p>No candidate reached the threshold, so by the rule <code>--latent</code> is 768. That still leaves the baselines little room, so a second step follows.</p>
+<h3 id="step-2-clusters-written-before-any-run-of-it">Step 2: clusters, written before any run of it<a class="headerlink" href="#step-2-clusters-written-before-any-run-of-it" title="Permanent link">&para;</a></h3>
+<ul>
+<li>At 768 dimensions with <code>--latent</code> 768, the clusters of a collection (<code>--clusters</code>, 16 on <code>a10k</code> so far) take 8, 4, and 2, in this order: with fewer clusters, more rows are near each query. 2 is the least that lets the distribution move.</li>
+<li>Only baselines run: <code>exact</code>, <code>tier</code>, <code>graph-a10</code>, and <code>tier-m1</code> (<code>tier maxSegments=1</code>, where every seal rebuilds all rows into one graph segment: the arm that idea S2 will be compared with).</li>
+<li>The choice is the first candidate at which, on <code>a10k</code> with seed 1 and the write mix, <code>recallLowest</code> of both <code>graph-a10</code> and <code>tier-m1</code> is at most 0.97. If none is, the choice is 2. The default tier is reported and does not decide: it searches several segments with a full beam each, and in step 1 at <code>--latent</code> 768 it computed 6.3 times the distances per search of <code>graph-a10</code>.</li>
 </ul>
 <h2 id="how-to-add-an-idea">How to add an idea<a class="headerlink" href="#how-to-add-an-idea" title="Permanent link">&para;</a></h2>
 <ol>
