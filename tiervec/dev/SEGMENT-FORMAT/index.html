@@ -2101,7 +2101,7 @@
 <p><code>open(dir, dim, metric, config, recordSource)</code> adds, after step 5, the epoch comparison (another epoch gives a cold index), the drop of ids above the host's recovered maximum (rebuilt segments and a new generation before it returns), the liveness check, and the replay of the host's live records above the high-water id: see <a href="../ID-EPOCH-AND-REPLAY/">ID-EPOCH-AND-REPLAY.md</a>.</p>
 <h2 id="what-the-first-cut-leaves-out">What the first cut leaves out<a class="headerlink" href="#what-the-first-cut-leaves-out" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Memory mapping. A segment is read into the heap arrays of <code>SealedGraph</code>.</li>
+<li>Memory mapping. A segment is read into the heap arrays of <code>SealedGraph</code>. The graph, the writer, the merge, and <code>GraphIndex.fromSealed</code> reach the vectors (section <code>VEC</code>) through one internal interface, <code>SealedVectors</code>, whose only implementation is a heap array, so a mapped reader can replace that one section (<a href="https://github.com/humemai/tiervec/issues/27">#27</a>). The other sections are used as arrays.</li>
 <li>Replay of the tail by the library itself. The host replays what the segments lack through <code>RecordSource</code>.</li>
 <li>The tail. <code>checkpoint</code> refuses a tier with a non-empty tail (an <code>IllegalStateException</code>).</li>
 <li>Soft-deleted rows inside a segment file: <code>SegmentWriter</code> refuses a graph that has them. The tier does not make such graphs; it records hidden rows in the tombstone file.</li>
