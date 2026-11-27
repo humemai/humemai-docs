@@ -1530,19 +1530,19 @@
 <tr>
 <td>Reuse of a record handle</td>
 <td>Impossible inside an epoch: a record that reuses its handle gets a new id.</td>
-<td>Possible. A freed handle can come back for another vector, so a delete and a later add carry the same key. Correct only through the version floor.</td>
+<td>Possible. A freed handle can come back for another vector, so a delete and a later add carry the same key. Correct only because the library hides every older copy of a key when the key is added again.</td>
 <td>Not an issue between compactions.</td>
 </tr>
 <tr>
 <td>Update</td>
-<td>An add of the new id plus a delete of the old id, in one batch. The floor degenerates to a set of dead ids.</td>
-<td>An add of the same key replaces the old copy, and the old copy is hidden by a floor raise.</td>
+<td>An add of the new id plus a delete of the old id, in one batch. Hidden rows are rows of dead ids only.</td>
+<td>An add of the same key replaces the old copy, and the old copy is hidden.</td>
 <td>As the stable id, between compactions.</td>
 </tr>
 <tr>
 <td>Delete on disk</td>
 <td><code>delete(id)</code>. Tombstones on disk are an optimization, because open checks liveness.</td>
-<td>A floor raise per key. After a reopen the floor must be rebuilt from durable delete events in order, which needs a position in the host's log and an ordered iterator over it.</td>
+<td>A hidden row per old copy. After a reopen the hidden rows must be rebuilt from durable delete events in order, which needs a position in the host's log and an ordered iterator over it.</td>
 <td>As the stable id.</td>
 </tr>
 <tr>
@@ -1560,7 +1560,7 @@
 <tr>
 <td>What the library changes</td>
 <td>An epoch parameter on open and rebuild, and an epoch and a high-water id in the manifest. The in-memory tier is unchanged.</td>
-<td>A persisted floor, the key packing, and an optional section that carries the host's handle for each row, which can go stale.</td>
+<td>Persisted delete events with their order, the key packing, and an optional section that carries the host's handle for each row, which can go stale.</td>
 <td>Nothing, and that is the problem.</td>
 </tr>
 <tr>
@@ -1571,8 +1571,8 @@
 </tr>
 </tbody>
 </table>
-<p>The recommended model is the first. Reasons, all from the table: no reuse hazard inside an epoch, no width problem, no reconstruction of a floor from events the host may not store, a host mapping that usually exists already (the host finds a record from an id with a table it keeps), and no change to the in-memory tier.</p>
-<p><code>exists today</code>: the in-memory tier works with all three models, because the version floor hides old copies of a reused id (<code>TieredIndex.add</code>, <code>TieredIndex.delete</code>, <a href="../DESIGN/">DESIGN.md</a>). Tests for reuse across seal and merge exist: <code>RidReuseTest</code> and the longer <code>RidReuse*</code> tests (<a href="https://github.com/humemai/tiervec/issues/5">#5</a>, <a href="../STATUS/#record-id-reuse-and-tombstones">STATUS.md</a>). The epoch and the high-water id are stored in the manifest and used at open (see the sections below).</p>
+<p>The recommended model is the first. Reasons, all from the table: no reuse hazard inside an epoch, no width problem, no reconstruction of hidden rows from events the host may not store, a host mapping that usually exists already (the host finds a record from an id with a table it keeps), and no change to the in-memory tier.</p>
+<p><code>exists today</code>: the in-memory tier works with all three models, because an add or a delete marks every older copy of a reused id as hidden (<code>TieredIndex.add</code>, <code>TieredIndex.delete</code>, <a href="../DESIGN/">DESIGN.md</a>). Tests for reuse across seal and merge exist: <code>RidReuseTest</code> and the longer <code>RidReuse*</code> tests (<a href="https://github.com/humemai/tiervec/issues/5">#5</a>, <a href="../STATUS/#record-id-reuse-and-tombstones">STATUS.md</a>). The epoch and the high-water id are stored in the manifest and used at open (see the sections below).</p>
 <p>With persistence on, one more rule follows from the high-water id. A host does not add a held id again with a different vector. In memory, the tier would replace it. After a reopen, the replay rule would miss a replaced vector whose id is at or below the high-water id, and the old copy could come back. A new vector version gets a new id. Adding a held id with the same vector is the replay case, and it is allowed.</p>
 <h2 id="the-epoch-rule">The epoch rule<a class="headerlink" href="#the-epoch-rule" title="Permanent link">&para;</a></h2>
 <ol>
