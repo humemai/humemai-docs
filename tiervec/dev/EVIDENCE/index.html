@@ -2312,7 +2312,7 @@
 </tr>
 <tr>
 <td>Preparing the data</td>
-<td><code>scripts/prep_real_dataset.py</code> of the pinned commit converts the set at its full dimension (<a href="../BENCHMARKS/#real-data">Real data</a>). The cut to 768 coordinates and the subset were made by a study script that imports it and is not in the repository. The <code>DATASET</code> line of each file records both rules and the checksum of the imported script. So no command in the repository rebuilds these data files yet.</td>
+<td><code>scripts/prep_real_dataset.py</code> of the pinned commit converts the set at its full dimension (<a href="../BENCHMARKS/#real-data">Real data</a>). The cut to 768 coordinates and the subset were made by a study script that imports it, <a href="https://github.com/humemai/tiervec/blob/main/research/106-real-embeddings/prep_set.py"><code>prep_set.py</code></a>; its usage is at the top of the file. The <code>DATASET</code> line of each file records both rules and the checksum of the imported script. I published the script as a record and have not run it from the repository, so I do not claim that it rebuilds these data files from a fresh checkout.</td>
 </tr>
 <tr>
 <td>Command</td>
