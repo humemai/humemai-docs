@@ -1724,7 +1724,7 @@
 <div class="language-text highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>gh workflow run screen.yml --ref &lt;branch&gt;
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>gh workflow run screen.yml --ref &lt;branch&gt; -f shapes=p20,a10k -f variants='tier tier; mine tier tailLimit=500' -f seed=2
 </code></pre></div>
-<p><code>--preset screen</code> runs <code>p20</code>, <code>p200</code>, <code>p2000</code>, and <code>a10k</code> (add <code>a100k</code> with <code>--shapes</code>), 128 dimensions, the write-heavy mix, and the variants of <code>src/bench/agent-memory-screen.variants</code>. It reports violations, recall at every checkpoint, distance computations per search and per written row, rows built per row written, and memory per row.</p>
+<p><code>--preset screen</code> runs <code>p20</code>, <code>p200</code>, <code>p2000</code>, and <code>a10k</code> (add <code>a100k</code> with <code>--shapes</code>), 768 dimensions with <code>--latent</code> 768 and <code>--clusters</code> 8 (<a href="../SCREEN-IDEAS/#the-data-of-the-screen">how that data was chosen</a>), the write-heavy mix, and the variants of <code>src/bench/agent-memory-screen.variants</code>. It reports violations, recall at every checkpoint and its mean over the checkpoints after the load (<code>recallChurnMean</code>), distance computations per search and per written row, rows built per row written, and memory per row.</p>
 <ul>
 <li><strong>Distance computations</strong> are counted by a copy of the library in which <code>scripts/instrument_distances.py</code> adds one line to every distance kernel; the library that ships is unchanged, and the screen refuses a build that does not count. Compile <code>target/agent-memory/src</code> (the copy) instead of <code>src/main/java</code>. A computation on quantized codes counts as one, and <code>quantizedPerSearch</code> says how many of them there were. Per search they are counted over the queries of the checkpoints, the same queries that recall is scored on; per written row over the writes and their maintenance. Probes are in neither.</li>
 <li><strong>The same numbers again.</strong> On one machine, two runs of one seed on one commit give the same results apart from the heap column, and the CI smoke checks that. Another CPU can have other vector lanes, which can move a float32 score in its last digits.</li>
@@ -1752,7 +1752,7 @@
 </tr>
 <tr>
 <td>Recall under churn</td>
-<td>Recall@10 at each checkpoint, as a curve, with its minimum</td>
+<td>Recall@10 at each checkpoint, as a curve, with its minimum, and its mean over the checkpoints after the load</td>
 <td>share</td>
 </tr>
 <tr>

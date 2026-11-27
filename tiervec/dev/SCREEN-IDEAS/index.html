@@ -1487,6 +1487,51 @@
 <li>Only baselines run: <code>exact</code>, <code>tier</code>, <code>graph-a10</code>, and <code>tier-m1</code> (<code>tier maxSegments=1</code>, where every seal rebuilds all rows into one graph segment: the arm that idea S2 will be compared with).</li>
 <li>The choice is the first candidate at which, on <code>a10k</code> with seed 1 and the write mix, <code>recallLowest</code> of both <code>graph-a10</code> and <code>tier-m1</code> is at most 0.97. If none is, the choice is 2. The default tier is reported and does not decide: it searches several segments with a full beam each, and in step 1 at <code>--latent</code> 768 it computed 6.3 times the distances per search of <code>graph-a10</code>.</li>
 </ul>
+<p>All three ran on <code>a10k</code>, seed 1, on commit <code>d342987</code> (<a href="https://github.com/humemai/tiervec/pull/176">#176</a>), with 0 violations.</p>
+<table>
+<thead>
+<tr>
+<th><code>--clusters</code></th>
+<th>Intrinsic dimension</th>
+<th>Contrast</th>
+<th><code>recallLowest</code> of <code>graph-a10</code></th>
+<th><code>recallLowest</code> of <code>tier-m1</code></th>
+<th><code>recallLowest</code> of <code>tier</code></th>
+<th>Run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8</td>
+<td>103.4</td>
+<td>1.599</td>
+<td>0.9530</td>
+<td>0.9530</td>
+<td>0.9980</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46045542559">46045542559</a></td>
+</tr>
+<tr>
+<td>4</td>
+<td>114.1</td>
+<td>1.507</td>
+<td>0.8560</td>
+<td>0.8560</td>
+<td>0.9950</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46045546229">46045546229</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>124.0</td>
+<td>1.315</td>
+<td>0.7750</td>
+<td>0.7750</td>
+<td>0.9850</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46045549908">46045549908</a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>The data of the screen from now on: 768 dimensions, <code>--latent</code> 768, <code>--clusters</code> 8</strong>, the first candidate of step 2 that met the threshold. On <code>a10k</code> with seed 1 its queries have an intrinsic dimension of 103.4 and a relative contrast of 1.599. It is harder than real text embeddings are likely to be, so it stretches the designs and says little about the recall a host would see. The default tier stays close to 1 on it.</p>
+<p>The lowest recall of <code>graph-a10</code> and <code>tier-m1</code> is at the first checkpoint, right after the load, which puts all rows into half of the clusters. A bar on <code>recallLowest</code> would so judge the load and not the churn. <code>results.tsv</code> has a new column, <code>recallChurnMean</code>, the mean recall of the ten checkpoints after the load, and the bars below use it.</p>
 <h2 id="how-to-add-an-idea">How to add an idea<a class="headerlink" href="#how-to-add-an-idea" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Add a row below with its source, hypothesis, and pass bar, and the status <code>not run</code>. The bar names a shape, a column of <code>results.tsv</code>, and a number.</li>
@@ -1510,18 +1555,26 @@
 <td>S1</td>
 <td>A live graph with <code>alpha</code> 1.2. <a href="https://arxiv.org/abs/2105.09613">FreshDiskANN</a> reports stable recall under churn with its repair rules for the values of <code>alpha</code> it tried except 1; <a href="https://github.com/humemai/tiervec/issues/161">#161</a></td>
 <td>Over three replacements of the live rows, <code>alpha</code> 1.2 keeps recall better than <code>alpha</code> 1.0</td>
-<td>On <code>a10k</code>, <code>recallLowest</code> of <code>graph-a12</code> is at least 0.005 above that of <code>graph-a10</code>, with at most 1.25 times its <code>distancesPerSearch</code></td>
+<td>On <code>a10k</code>, with each of the seeds 1, 2, and 3: <code>recallChurnMean</code> of <code>graph-a12</code> is at least 0.005 above that of <code>graph-a10</code>, with at most 1.25 times its <code>distancesPerSearch</code></td>
 <td>not run</td>
 </tr>
 <tr>
 <td>S2</td>
 <td>Merge by insertion into the largest segment, <code>MergeMode.INSERT</code> (<a href="https://github.com/humemai/tiervec/issues/16">#16</a>, <a href="https://github.com/humemai/tiervec/issues/161">#161</a>)</td>
 <td>It keeps the recall of a rebuild and writes cost less graph work</td>
-<td>On <code>a10k</code>, <code>recallLowest</code> of <code>tier-insert</code> is at most 0.005 below that of <code>tier</code>, with at most 0.7 times its <code>distancesPerRowWritten</code></td>
+<td>On <code>a10k</code>, with each of the seeds 1, 2, and 3: <code>recallChurnMean</code> of <code>tier-m1-insert</code> is at most 0.005 below that of <code>tier-m1</code>, with at most 0.7 times its <code>distancesPerRowWritten</code></td>
+<td>not run</td>
+</tr>
+<tr>
+<td>S3</td>
+<td>A live graph with chunks of 64 slots. On the first data, at 20 rows, the graph held about four times the bytes per row of the tier. The cause in the code: <code>GraphIndex</code> allocates a whole chunk of 1,024 slots (<code>CHUNK_SHIFT</code> 10) for its first node, with vectors, ids, link references, states, and in-degrees for every slot, and <code>bytesHeld</code> counts it all. At 768 dimensions one chunk is 3,166,224 bytes, or 158,311 bytes for each of 20 rows before any link list</td>
+<td>The chunk is why a small live graph takes so much memory, and chunks of 64 slots remove most of it without changing the graph</td>
+<td>With seed 1: <code>bytesHeldPerRow</code> of <code>graph-a10</code> with <code>CHUNK_SHIFT</code> 6 is at most 1.5 times that of <code>tier</code> on <code>p20</code> and on <code>p200</code>, and on every shape of the screen its <code>recallChurnMean</code>, <code>distancesPerSearch</code>, and <code>distancesPerRowWritten</code> equal those of a run with <code>CHUNK_SHIFT</code> 10 that reports the same vector lanes</td>
 <td>not run</td>
 </tr>
 </tbody>
 </table>
+<p>The bars of S1 and S2 were changed on 2026-11-28, before their first run on <code>a10k</code>. They named <code>recallLowest</code> (see <a href="#the-data-of-the-screen">above</a>), one seed, and for S2 the default tier. At the default <code>maxSegments</code> of 8 the count rule merges the smallest segments, so by the code the largest one, which <code>MergeMode.INSERT</code> needs, is not among them under churn. S2 is so judged with <code>maxSegments</code> 1, where every merge takes the largest segment; <code>tier</code> and <code>tier-insert</code> still run, to show what the default layout does.</p>
 
 
 
