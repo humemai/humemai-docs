@@ -1434,7 +1434,7 @@
 <li>Nothing else at run time. JUnit 5 is a test dependency.</li>
 </ul>
 <h2 id="platform-support">Platform support<a class="headerlink" href="#platform-support" title="Permanent link">&para;</a></h2>
-<p>There are three tiers. For tier 1, each row names the CI job that proves it. A job marked "required" must pass before a pull request can merge into <code>main</code>. The other jobs do not block it. They run on every pull request, except the slow tests: those run on every push to <code>main</code>, once a day on <code>main</code>, and on a pull request that carries the label <code>ci:slow</code> (<a href="CONTRIBUTING/#what-ci-runs-and-when">CONTRIBUTING.md</a>). All jobs run on GitHub-hosted runners.</p>
+<p>There are three tiers. For tier 1, each row names the CI job that proves it. A job marked "required" must pass before a pull request can merge into <code>main</code>. The other jobs do not block it. The arm64 fast tests, the native image jobs and the slow tests do not run on an ordinary pull request: they run on <code>main</code> after the merge, and the slow tests also once a day and on a pull request that carries the label <code>ci:slow</code> (<a href="CONTRIBUTING/#what-ci-runs-and-when">CONTRIBUTING.md</a>). All jobs run on GitHub-hosted runners.</p>
 <p><strong>Tier 1: tested in CI on every change</strong></p>
 <table>
 <thead>
@@ -1538,7 +1538,7 @@
 </tr>
 </tbody>
 </table>
-<p>The full slow tests run on Linux x86-64 only; Windows x64 runs the two slow crash tests. There is no scalar-kernel native image job on Windows. The native image jobs run only when <code>src/main</code>, <code>src/smoke</code> or their workflow file change.</p>
+<p>The full slow tests run on Linux x86-64 only; Windows x64 runs the two slow crash tests. There is no scalar-kernel native image job on Windows. The native image jobs run on a push to <code>main</code> that changes <code>src/main</code>, <code>src/smoke</code> or their workflow file. On a pull request they run only when it changes <code>src/smoke</code>, <code>META-INF/native-image</code>, <code>Kern.java</code>, <code>Kernels.java</code>, <code>NKernels.java</code> or their workflow file.</p>
 <p><strong>Tier 2: measured.</strong> None yet. No benchmark numbers are published in this repository. The harness is described in <a href="BENCHMARKS/">docs/BENCHMARKS.md</a>; a row moves here when a result file with its hardware, JDK and commit is committed under <code>results/</code>. The <code>SPEED</code> lines that the native image jobs print are informational, and the one measurement in the repository (the graph self-search recall in <a href="STATUS/#graph-self-search-recall">docs/STATUS.md</a>) does not record its hardware. The shared GitHub runners are not a benchmark machine: a timing from them is a ratio between two things measured in the same run, not an absolute speed. A row moves here when its numbers and its hardware are published.</p>
 <p><strong>Tier 3: best effort.</strong> The code is plain Java 21 and has no native dependency, so it is expected to work, but nothing checks it and a problem there is fixed when it is cheap to do.</p>
 <ul>
