@@ -984,6 +984,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s1-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1 results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s2-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2 results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s3-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3 results
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1342,6 +1392,56 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s1-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1 results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s2-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2 results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s3-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3 results
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1530,7 +1630,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>The data of the screen from now on: 768 dimensions, <code>--latent</code> 768, <code>--clusters</code> 8</strong>, the first candidate of step 2 that met the threshold. On <code>a10k</code> with seed 1 its queries have an intrinsic dimension of 103.4 and a relative contrast of 1.599. It is harder than real text embeddings are likely to be, so it stretches the designs and says little about the recall a host would see. The default tier stays close to 1 on it.</p>
+<p><strong>The data of the screen from now on: 768 dimensions, <code>--latent</code> 768, <code>--clusters</code> 8</strong>, the first candidate of step 2 that met the threshold. On <code>a10k</code> with seed 1 its queries have an intrinsic dimension of 103.4 and a relative contrast of 1.599. It is harder than real text embeddings are likely to be, so it stretches the designs and says little about the recall a host would see. The default tier stays close to 1 on it. The other shapes, with seed 1 on the same data settings: intrinsic dimension 9.8 and contrast 0.935 on <code>p20</code> (from 19 neighbours), 7.4 and 1.517 on <code>p200</code>, and 68.1 and 1.571 on <code>p2000</code>.</p>
 <p>The lowest recall of <code>graph-a10</code> and <code>tier-m1</code> is at the first checkpoint, right after the load, which puts all rows into half of the clusters. A bar on <code>recallLowest</code> would so judge the load and not the churn. <code>results.tsv</code> has a new column, <code>recallChurnMean</code>, the mean recall of the ten checkpoints after the load, and the bars below use it.</p>
 <h2 id="how-to-add-an-idea">How to add an idea<a class="headerlink" href="#how-to-add-an-idea" title="Permanent link">&para;</a></h2>
 <ol>
@@ -1556,25 +1656,177 @@
 <td>A live graph with <code>alpha</code> 1.2. <a href="https://arxiv.org/abs/2105.09613">FreshDiskANN</a> reports stable recall under churn with its repair rules for the values of <code>alpha</code> it tried except 1; <a href="https://github.com/humemai/tiervec/issues/161">#161</a></td>
 <td>Over three replacements of the live rows, <code>alpha</code> 1.2 keeps recall better than <code>alpha</code> 1.0</td>
 <td>On <code>a10k</code>, with each of the seeds 1, 2, and 3: <code>recallChurnMean</code> of <code>graph-a12</code> is at least 0.005 above that of <code>graph-a10</code>, with at most 1.25 times its <code>distancesPerSearch</code></td>
-<td>not run</td>
+<td>failed: <code>recallChurnMean</code> 0.023 to 0.059 lower with <code>alpha</code> 1.2 (<a href="#s1-results">results</a>)</td>
 </tr>
 <tr>
 <td>S2</td>
 <td>Merge by insertion into the largest segment, <code>MergeMode.INSERT</code> (<a href="https://github.com/humemai/tiervec/issues/16">#16</a>, <a href="https://github.com/humemai/tiervec/issues/161">#161</a>)</td>
 <td>It keeps the recall of a rebuild and writes cost less graph work</td>
 <td>On <code>a10k</code>, with each of the seeds 1, 2, and 3: <code>recallChurnMean</code> of <code>tier-m1-insert</code> is at most 0.005 below that of <code>tier-m1</code>, with at most 0.7 times its <code>distancesPerRowWritten</code></td>
-<td>not run</td>
+<td>failed: the recall bar was missed with seed 1 (0.0103 lower); the cost bar held with every seed (<a href="#s2-results">results</a>)</td>
 </tr>
 <tr>
 <td>S3</td>
 <td>A live graph with chunks of 64 slots. On the first data, at 20 rows, the graph held about four times the bytes per row of the tier. The cause in the code: <code>GraphIndex</code> allocates a whole chunk of 1,024 slots (<code>CHUNK_SHIFT</code> 10) for its first node, with vectors, ids, link references, states, and in-degrees for every slot, and <code>bytesHeld</code> counts it all. At 768 dimensions one chunk is 3,166,224 bytes, or 158,311 bytes for each of 20 rows before any link list</td>
 <td>The chunk is why a small live graph takes so much memory, and chunks of 64 slots remove most of it without changing the graph</td>
 <td>With seed 1: <code>bytesHeldPerRow</code> of <code>graph-a10</code> with <code>CHUNK_SHIFT</code> 6 is at most 1.5 times that of <code>tier</code> on <code>p20</code> and on <code>p200</code>, and on every shape of the screen its <code>recallChurnMean</code>, <code>distancesPerSearch</code>, and <code>distancesPerRowWritten</code> equal those of a run with <code>CHUNK_SHIFT</code> 10 that reports the same vector lanes</td>
-<td>not run</td>
+<td>passed: 0.30 and 0.23 times the tier on <code>p20</code> and <code>p200</code>, the other columns equal (<a href="#s3-results">results</a>); not merged</td>
 </tr>
 </tbody>
 </table>
 <p>The bars of S1 and S2 were changed on 2026-11-28, before their first run on <code>a10k</code>. They named <code>recallLowest</code> (see <a href="#the-data-of-the-screen">above</a>), one seed, and for S2 the default tier. At the default <code>maxSegments</code> of 8 the count rule merges the smallest segments, so by the code the largest one, which <code>MergeMode.INSERT</code> needs, is not among them under churn. S2 is so judged with <code>maxSegments</code> 1, where every merge takes the largest segment; <code>tier</code> and <code>tier-insert</code> still run, to show what the default layout does.</p>
+<h2 id="results">Results<a class="headerlink" href="#results" title="Permanent link">&para;</a></h2>
+<p>All runs are the screen preset on its data above, and none has a violation. Nothing is timed. Every variant and shape ran on commit <code>9754ef8</code> (<a href="https://github.com/humemai/tiervec/pull/177">#177</a>), the commit with the bars, once for each of the seeds 1, 2, and 3.</p>
+<h3 id="s1-results">S1 results<a class="headerlink" href="#s1-results" title="Permanent link">&para;</a></h3>
+<p><code>alpha</code> 1.2 failed: with every seed it lost recall. On <code>a10k</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Seed</th>
+<th><code>recallChurnMean</code> <code>graph-a10</code></th>
+<th><code>recallChurnMean</code> <code>graph-a12</code></th>
+<th>Difference (needs +0.005 or more)</th>
+<th><code>distancesPerSearch</code> ratio (at most 1.25)</th>
+<th>Holds</th>
+<th>Run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0.9747</td>
+<td>0.9176</td>
+<td>-0.0571</td>
+<td>0.828</td>
+<td>no</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46047276298">46047276298</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>0.9741</td>
+<td>0.9508</td>
+<td>-0.0233</td>
+<td>0.839</td>
+<td>no</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46047279946">46047279946</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td>0.9733</td>
+<td>0.9140</td>
+<td>-0.0593</td>
+<td>0.820</td>
+<td>no</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46047284166">46047284166</a></td>
+</tr>
+</tbody>
+</table>
+<p>It also computed 2.0 to 2.1 times the distances per written row. The gap was larger on <code>p2000</code>: <code>recallChurnMean</code> 0.7694, 0.7565, and 0.7653 for <code>graph-a12</code> against 0.9994, 0.9994, and 0.9997 for <code>graph-a10</code> with the seeds 1, 2, and 3.</p>
+<p>A possible cause, read from the code and not measured: <code>GraphIndex</code> drops a candidate neighbour only when <code>alpha</code> times its distance to a kept neighbour is at most its distance to the node. If most candidates are about as far from each other as from the node, <code>alpha</code> 1.2 drops few of them, and a list fills with the nearest candidates, without the spread that leads a search across the graph. No data with a lower intrinsic dimension at these sizes was run. The result is about <code>alpha</code> in this graph, which does not have the repair rules of FreshDiskANN. It belongs to <a href="https://github.com/humemai/tiervec/issues/161">#161</a>.</p>
+<h3 id="s2-results">S2 results<a class="headerlink" href="#s2-results" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Seed</th>
+<th><code>recallChurnMean</code> <code>tier-m1</code></th>
+<th><code>recallChurnMean</code> <code>tier-m1-insert</code></th>
+<th>Difference (needs -0.005 or more)</th>
+<th><code>distancesPerRowWritten</code> ratio (at most 0.7)</th>
+<th>Holds</th>
+<th>Run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0.9851</td>
+<td>0.9748</td>
+<td>-0.0103</td>
+<td>0.528</td>
+<td>no</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46047276298">46047276298</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>0.9837</td>
+<td>0.9796</td>
+<td>-0.0041</td>
+<td>0.529</td>
+<td>yes</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46047279946">46047279946</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td>0.9821</td>
+<td>0.9788</td>
+<td>-0.0033</td>
+<td>0.523</td>
+<td>yes</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46047284166">46047284166</a></td>
+</tr>
+</tbody>
+</table>
+<p>Insertion cost 0.52 to 0.53 times the distances of a rebuild per written row, so the cost bar held. The recall bar failed with seed 1, so the idea failed. With all three seeds insertion ended below the rebuild, by 0.0033 to 0.0103.</p>
+<p>At the default <code>maxSegments</code> of 8, <code>tier-insert</code> gave the same number as <code>tier</code> in every column but the heap, and the same curve, on every shape and seed: <code>MergeMode.INSERT</code> changed nothing there.</p>
+<h3 id="s3-results">S3 results<a class="headerlink" href="#s3-results" title="Permanent link">&para;</a></h3>
+<p>The change is <code>CHUNK_SHIFT</code> from 10 to 6 in <code>GraphIndex.java</code> (commit <code>570cfcc</code>, on a branch that is not merged). <code>tier</code> and <code>graph-a10</code> ran with seed 1 on two runners with 8 lanes: with 1,024 slots on <code>9754ef8</code> (<a href="https://github.com/humemai/tiervec/actions/runs/46048690710">46048690710</a>), with 64 slots on <code>570cfcc</code> (<a href="https://github.com/humemai/tiervec/actions/runs/46048694959">46048694959</a>). An earlier run of <code>570cfcc</code> landed on 16 lanes (<a href="https://github.com/humemai/tiervec/actions/runs/46047308966">46047308966</a>) and is not used for the bar; it held the same bytes per row.</p>
+<table>
+<thead>
+<tr>
+<th>Shape</th>
+<th><code>bytesHeldPerRow</code> <code>tier</code></th>
+<th><code>graph-a10</code>, 1,024 slots</th>
+<th><code>graph-a10</code>, 64 slots</th>
+<th>64 slots over <code>tier</code></th>
+<th><code>heapBytesPerRow</code> <code>tier</code></th>
+<th>1,024 slots</th>
+<th>64 slots</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>p20</code></td>
+<td>33,621</td>
+<td>158,512</td>
+<td>10,096</td>
+<td>0.30</td>
+<td>39149</td>
+<td>159526</td>
+<td>11110</td>
+</tr>
+<tr>
+<td><code>p200</code></td>
+<td>18,049</td>
+<td>16,079</td>
+<td>4,206</td>
+<td>0.23</td>
+<td>18744</td>
+<td>16183</td>
+<td>4311</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td>6,510</td>
+<td>5,009</td>
+<td>4,020</td>
+<td>0.62</td>
+<td>6578</td>
+<td>5022</td>
+<td>4066</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td>4,403</td>
+<td>4,067</td>
+<td>3,988</td>
+<td>0.91</td>
+<td>5670</td>
+<td>4071</td>
+<td>3994</td>
+</tr>
+</tbody>
+</table>
+<p>On every shape <code>recallChurnMean</code>, <code>distancesPerSearch</code>, <code>distancesPerRowWritten</code>, and the recall curve of <code>graph-a10</code> were equal in the two runs, so the bar was passed. The factor of about four is a matter of small collections: at 200 rows the graph with 1,024 slots already held less than the tier. A pass here changes no default. The screen runs none of the library's tests and times nothing, so the change needs both before it can ship.</p>
 
 
 
