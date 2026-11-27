@@ -748,6 +748,34 @@
   
   
     <li class="md-nav__item">
+      <a href="RELATED-WORK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Related work
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="ID-EPOCH-AND-REPLAY/" class="md-nav__link">
         
   
@@ -927,6 +955,34 @@
     
   
     Benchmark harness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="AGENT-MEMORY-BENCHMARK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent-memory benchmark
   
 
     
@@ -1363,7 +1419,7 @@
 <p><strong>Status: experimental.</strong> The API is not stable, the first release is <code>0.1.0</code>, and nothing is wired into a database engine yet. No speed result is claimed: the measurements published so far are about recall (<a href="EVIDENCE/">docs/EVIDENCE.md</a>). <a href="#what-is-proven">What is proven</a> says what the repository shows today, and <a href="STATUS/">docs/STATUS.md</a> has the detail.</p>
 <h2 id="what-it-is">What it is<a class="headerlink" href="#what-it-is" title="Permanent link">&para;</a></h2>
 <p>A library of vector-index algorithms meant to live inside a database engine, in the same process, with no network between the engine and the index. The first host is <a href="https://github.com/ArcadeData/arcadedb">ArcadeDB</a>.</p>
-<p>The design follows the workload of an agent's memory: many small and medium collections, a steady stream of small writes, deletes and updates, and queries that must see a write right away.</p>
+<p>The design aims at the workload of an agent's memory: many small and medium collections, a steady stream of small writes, deletes and updates, and queries that must see a write right away. Whether it is the best choice for that workload is not shown. <a href="RELATED-WORK/">docs/RELATED-WORK.md</a> compares each design choice with published research and current systems and says where tiervec is behind or unproven, and <a href="AGENT-MEMORY-BENCHMARK/">docs/AGENT-MEMORY-BENCHMARK.md</a> defines the benchmark that would settle it, which is not built yet.</p>
 <ul>
 <li><strong>Exact tail.</strong> Recent writes sit in a bounded buffer that is scanned exactly, so a write is visible to the next query without waiting for an index build.</li>
 <li><strong>Sealed segments.</strong> Older vectors live in immutable HNSW graph segments. Below a size threshold no graph is built and every search is an exact scan. Segments are merged in the background and swapped in atomically.</li>
