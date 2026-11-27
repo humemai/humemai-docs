@@ -18,7 +18,7 @@
         <link rel="prev" href="../BENCHMARKS/">
       
       
-        <link rel="next" href="../EVIDENCE/">
+        <link rel="next" href="../SCREEN-IDEAS/">
       
       
         
@@ -962,6 +962,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-screen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The screen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#metrics" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1020,6 +1031,34 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SCREEN-IDEAS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Screen ideas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1380,6 +1419,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-screen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The screen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#metrics" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1537,7 +1587,7 @@
 </tr>
 <tr>
 <td><code>AgentMemory</code>, the first step of <a href="https://github.com/humemai/tiervec/issues/159">#159</a>: <a href="#the-runbook">the runbook</a> replayed into the exact, tier, and live graph arms (<a href="#how-the-program-replays-a-runbook">how</a>)</td>
-<td>Creates, updates, deletes, reuses, batches, searches, and checkpoints from a seed; violation counts; recall at every checkpoint; rows built per row written; bytes held per row</td>
+<td>Creates, updates, deletes, reuses, batches, searches, and checkpoints from a seed; violation counts; recall at every checkpoint; distance computations; rows built per row written; memory per row; the <a href="#the-screen">screen</a>, started by hand</td>
 <td>Restarts, filtered searches, many collections as its own study, the JVector and Lucene arms, real embeddings, every timing</td>
 </tr>
 </tbody>
@@ -1638,13 +1688,25 @@
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>java -Xmx2g --add-modules jdk.incubator.vector -cp target/bench/classes ai.humem.tiervec.AgentMemory \
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  --shapes smoke,p20 --variants 'exact exact; tier tier; graph-a12 graph graph.alpha=1.2' --mix read --out target/agent-memory/out
 </code></pre></div>
-<p>The program writes one runbook per shape into <code>--out</code>, reads it back, replays it into each variant, and writes <code>result.txt</code> there. A variant is <code>name arm key=value ...</code>. The arm <code>tier</code> takes every key of <code>TieredIndex.Config</code> (see <code>Config.toMap</code>) except <code>buildThreads</code>, <code>tailAgeMs</code>, and <code>mergeRatePerSec</code>; the arm <code>graph</code> takes <code>graph.M</code>, <code>graph.efConstruction</code>, <code>graph.efSearch</code>, <code>graph.alpha</code>, <code>graph.sq8</code>, and <code>consolidateAt</code> (default 0.2: <code>consolidate()</code> runs when the deleted nodes are more than that share of the live ones); the arm <code>exact</code> takes none. The shapes are <code>smoke</code> (3,000 rows), <code>p20</code>, <code>p200</code>, and <code>p2000</code> (50, 20, and 5 collections of that many rows), and <code>a10k</code> and <code>a100k</code>.</p>
+<p>The program writes one runbook per shape into <code>--out</code>, reads it back, replays it into each variant, and writes there <code>result.txt</code> (one line per fact), <code>results.tsv</code> (one row per shape and variant), <code>curve.tsv</code> (recall at every checkpoint), and <code>summary.md</code>. A variant is <code>name arm key=value ...</code>. The arm <code>tier</code> takes every key of <code>TieredIndex.Config</code> (see <code>Config.toMap</code>) except <code>buildThreads</code>, <code>tailAgeMs</code>, and <code>mergeRatePerSec</code>; the arm <code>graph</code> takes <code>graph.M</code>, <code>graph.efConstruction</code>, <code>graph.efSearch</code>, <code>graph.alpha</code>, <code>graph.sq8</code>, and <code>consolidateAt</code> (default 0.2: <code>consolidate()</code> runs when the deleted nodes are more than that share of the live ones); the arm <code>exact</code> takes none. The shapes are <code>smoke</code> (3,000 rows), <code>p20</code>, <code>p200</code>, and <code>p2000</code> (50, 20, and 5 collections of that many rows), and <code>a10k</code> and <code>a100k</code>.</p>
 <ul>
 <li><strong>Nothing depends on timing.</strong> The tier runs with one build thread, no seal by age, and no merge throttle, and with a host environment that runs each seal and merge inside the write that made it due. So one runbook gives the same segments on every run.</li>
 <li><strong>Every search is checked</strong> against the live rows: a deleted or never-added id, a score of another vector, and fewer than <code>k</code> ids when <code>k</code> rows are live.</li>
 <li><strong>Writes are probed.</strong> After a write, a search that allows only the written ids must see all of them. A filter of that size takes the exact path of every arm. The large shapes probe every 10th or 100th single write, and every batch.</li>
 <li><strong>Batches are watched.</strong> On the tier a second thread searches while the batch is applied. On the arms without atomic batches the replay applies one write at a time and searches in between, so their <code>partOfBatch</code> count is expected and does not fail the run.</li>
-<li><strong>Rows built per row written</strong> counts the rows put into a graph (for the tier by seals and merges, for the live graph once per added row) over the rows created, updated, or reused. <strong>Bytes held per row</strong> is what <code>bytesHeld()</code> reports, over the live rows at the end.</li>
+<li><strong>Rows built per row written</strong> counts the rows put into a graph (for the tier by seals and merges, for the live graph once per added row) over the rows created, updated, or reused. <strong>Bytes held per row</strong> is what <code>bytesHeld()</code> reports, over the live rows at the end. <strong>Heap bytes per row</strong> is what the heap gives back when the arms are closed and dropped, after full collections; for small collections the noise of the runtime is as large as the figure.</li>
+</ul>
+<h2 id="the-screen">The screen<a class="headerlink" href="#the-screen" title="Permanent link">&para;</a></h2>
+<p>The screen is the quick round for one idea: small shapes, many named variants over the same runbooks, and only measures that do not depend on timing. The ideas, with the bar each one has to pass, are in <a href="../SCREEN-IDEAS/">SCREEN-IDEAS.md</a>. Its results pick what is worth a confirmation run at larger sizes; they change no default by themselves.</p>
+<p>Start it by hand on any branch that has it. The result files are the artifact <code>screen-results</code> of the run, and the summary table is on the run page.</p>
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>gh workflow run screen.yml --ref &lt;branch&gt;
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>gh workflow run screen.yml --ref &lt;branch&gt; -f shapes=p20,a10k -f variants='tier tier; mine tier tailLimit=500' -f seed=2
+</code></pre></div>
+<p><code>--preset screen</code> runs <code>p20</code>, <code>p200</code>, <code>p2000</code>, and <code>a10k</code> (add <code>a100k</code> with <code>--shapes</code>), 128 dimensions, the write-heavy mix, and the variants of <code>src/bench/agent-memory-screen.variants</code>. It reports violations, recall at every checkpoint, distance computations per search and per written row, rows built per row written, and memory per row.</p>
+<ul>
+<li><strong>Distance computations</strong> are counted by a copy of the library in which <code>scripts/instrument_distances.py</code> adds one line to every distance kernel; the library that ships is unchanged, and the screen refuses a build that does not count. Compile <code>target/agent-memory/src</code> (the copy) instead of <code>src/main/java</code>. A computation on quantized codes counts as one, and <code>quantizedPerSearch</code> says how many of them there were. Per search they are counted over the queries of the checkpoints, the same queries that recall is scored on; per written row over the writes and their maintenance. Probes are in neither.</li>
+<li><strong>The same numbers again.</strong> On one machine, two runs of one seed on one commit give the same results apart from the heap column, and the CI smoke checks that. Another CPU can have other vector lanes, which can move a float32 score in its last digits.</li>
+<li><strong>What a screen cannot say.</strong> The data is generated, the sizes are small, and nothing is timed. Recall is usually higher on small sets, and the size at which a graph beats a scan depends on the dimension and the machine.</li>
 </ul>
 <h2 id="metrics">Metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
 <table>
@@ -1849,13 +1911,13 @@
         
         
           
-          <a href="../EVIDENCE/" class="md-footer__link md-footer__link--next" aria-label="Next: Evidence">
+          <a href="../SCREEN-IDEAS/" class="md-footer__link md-footer__link--next" aria-label="Next: Screen ideas">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Evidence
+                Screen ideas
               </div>
             </div>
             <div class="md-footer__button md-icon">
