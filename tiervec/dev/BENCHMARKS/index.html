@@ -989,6 +989,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#paced-writes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paced writes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-cost-of-polling" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1429,6 +1440,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#paced-writes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paced writes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-cost-of-polling" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1706,6 +1728,7 @@
 </tbody>
 </table>
 <p>The data is normalised: the script scales every vector to length 1 (in float64, then stores float32), so the dot product is the cosine and the tier (<code>Metric.COSINE</code>) and JVector (the dot product) score the same thing. The header keeps the range of the lengths before scaling in <code>source-norm-min</code> and <code>source-norm-max</code>, so the file says whether the scaling changed anything. A tie at the boundary of the top 10 can swap an id (duplicate rows do this), so a recall of exactly 1 is not expected, as for generated data.</p>
+<p>A Euclidean set in the HDF5 layout of ann-benchmarks (such as <code>sift-128-euclidean.hdf5</code>) is converted by <code>scripts/prep_ann_hdf5.py HDF5 DATA_DIR</code>. It keeps the vectors as they are, writes <code>metric=l2</code>, takes the first test vectors as queries with their neighbors from the file, and checks some of them against its own exact scan. Only <a href="#paced-writes"><code>PacedWrites</code></a> reads such a set. The other programs score by the cosine and refuse it.</p>
 <h3 id="what-the-harness-does-with-the-files">What the harness does with the files<a class="headerlink" href="#what-the-harness-does-with-the-files" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>n</code> and <code>dim</code> come from the header. <code>--n</code> or <code>--dim</code> with another value is refused (exit code 2), because the exact answers are for the whole index. <code>--queries</code> is at most the number of queries in the file, and <code>--k</code> at most <code>truth-k</code>.</li>
@@ -1878,6 +1901,38 @@
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  ai.humem.tiervec.MergeGenerations --data DATA_DIR --base 100000 --add-pct 10 --delete-pct 10 --merge-mode insert --queries 1000 --out result.txt
 </code></pre></div>
 <p>A <code>GEN</code> line per generation has the seconds of the seal and of the merge, the uptime of the JVM around the merge and around the collection forced before and after it (to match the lines of the GC log), the rows the merge built, and recall at <code>--ef</code> against exact search over the live rows. The exact answers are kept up to date with the harness's own scalar dot product, and the <code>TRUTH-CHECK</code> line compares them with a full scan at the end. The <code>SEARCH-FINAL</code> line has p50, p99 and the mean of one search thread after the last generation. The vectors are held outside the heap, so the heap holds the tier, the queries and the exact answers. The run fails when a merge did not take the path of its mode (an insert merge builds the added rows only, a rebuild builds every live row), when a count is wrong, when an answer is malformed or holds a deleted id, or when recall is below <code>--min-recall</code>. The options and their defaults are the method <code>MergeGenerations.defaults()</code>.</p>
+<h2 id="paced-writes">Paced writes<a class="headerlink" href="#paced-writes" title="Permanent link">&para;</a></h2>
+<p><code>PacedWrites</code>, in <code>src/bench</code>, writes into one tier at a fixed rate while searches run at a fixed rate, to compare merge policies (<a href="https://github.com/humemai/tiervec/issues/4">issue #4</a>). It reads a <a href="#real-data">real data set</a>, cosine or l2, builds the first <code>--base</code> rows with one <code>rebuildFrom</code>, searches the idle index for <code>--idle-seconds</code>, adds the next <code>--inserts</code> rows at <code>--rate</code> per second, waits until no seal or merge is due, searches the idle index again, and then measures the layout that the policy left against exact answers that it computes itself. The policy is set with <code>--max-segments</code>, <code>--merge-fan</code>, <code>--merge-trigger-ratio</code>, and <code>--tail-limit</code>. The tail is not sealed by age. <code>--split-beam both</code> alternates the full and the split beam during the paced searches and measures both at the end. <code>--sealed true</code> builds all <code>base + inserts</code> rows into one graph with no stream, the reference a policy is compared with.</p>
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>java -Xmx6g --add-modules jdk.incubator.vector -cp target/bench/classes ai.humem.tiervec.PacedWrites --data DATA_DIR \
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>  --rate 400 --max-segments 2 --merge-fan 2 --merge-trigger-ratio 0.1 --out result.txt
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Line</th>
+<th>What it holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>STREAM</code></td>
+<td>The stream: its seconds and achieved rate, the longest delay of an add, back-pressure waits, seals, merges and merges into the largest segment, and the busy share (the part of the stream during which a seal or a merge ran)</td>
+</tr>
+<tr>
+<td><code>BIG</code>, <code>WINDOW</code></td>
+<td>The end of every merge into the largest segment while the writer ran, and the write amplification between the first and the last of them: rows built by merges divided by adds. It is <code>NA</code> with fewer than 5 such merges</td>
+</tr>
+<tr>
+<td><code>LAT</code></td>
+<td>Latency of the paced searches by phase (idle before, stream searches during which no task, a seal, or a merge ran, idle after) and by split beam setting</td>
+</tr>
+<tr>
+<td><code>FINAL</code>, <code>SEARCH</code>, <code>MATCHED</code></td>
+<td>The layout at the end, recall and latency at <code>--ef</code>, and latency at matched recall (<code>--targets</code>, as in <a href="#latency-at-matched-recall">Latency at matched recall</a>). A returned row counts when its exact score is at least the k-th exact score, so a tie counts</td>
+</tr>
+</tbody>
+</table>
+<p>The run fails when a count is wrong, the worker failed, an answer is malformed, the tier did not become idle, or recall at <code>--ef</code> is below <code>--min-recall</code>. The options and their defaults are the method <code>PacedWrites.defaults()</code>.</p>
 <h2 id="the-cost-of-polling">The cost of polling<a class="headerlink" href="#the-cost-of-polling" title="Permanent link">&para;</a></h2>
 <p><code>PollCost</code>, in <code>src/bench</code>, compares a search that has a <code>SearchContext</code> with the same search without one (<a href="https://github.com/humemai/tiervec/issues/11">issue #11</a>). The context never expires and does what a host does at each poll: it reads a cancel flag and <code>System.nanoTime()</code> against a deadline. One JVM builds a tier of 20,000 vectors of dimension 128 and times 200 queries in three cells: <code>tail</code> (the exact scan of a tail), <code>walk</code> (the graph walk of one segment) and <code>scan</code> (the exact scan of a segment under a filter that passes one id in ten). Each of 40 rounds times both arms, and the arm that goes first alternates. A cell reports the median over the rounds of the time with the context divided by the time without it. The run fails when the two arms answer differently.</p>
 <p>The workflow <code>poll-cost.yml</code> runs it in 10 fresh JVMs on JDK 21 and on JDK 25 and prints the median, the smallest and the largest ratio of the JVMs. It starts by hand, and on a pull request that changes the harness or the workflow. It has no speed bar: a study writes its bound down before the run, as <a href="../ROADMAP/#how-to-read-measurements">ROADMAP.md</a> asks. The cells compare the two paths of the same build. They do not compare it with a build that has no polling code.</p>
@@ -1885,6 +1940,7 @@
 <p>The job <code>bench smoke (JDK 21)</code> and <code>(JDK 25)</code> compiles the harness with the library and runs it at n = 10,000 and dimension 768, with 100 queries, one extra beam width (32), shares 0.1 and 0.01, and 15 seconds of the concurrent phase. It is not a required check, and it runs beside the fast tests. It proves that the harness runs, that its answers agree with its own exact scan, and that the checks above hold on a small tier. It prints timings and has no speed bar: the runner is shared, so a timing is only a ratio inside one run.</p>
 <p>The recall floors of the smoke are 0.90 for the unfiltered and the walk cells and 0.99 for the cells that scan first. In the first runs (CI run 43133522549, JDK 21 and 25) recall was 1.0000 unfiltered, 0.997 to 1.0000 for the filtered walk and 1.0000 for every scan-first cell, and a run took 21 to 23 seconds (the job about 30 seconds). The floors leave room for a different structure of the segments from one run to the next, and they are far above what a broken index gives: a tier that returned only its tail would find at most the 20 percent of the data that the tail holds, and the scan-first path is exact apart from a swapped tie at the boundary of the top <code>k</code>. A control step of the job runs the harness with a floor that cannot be met (recall of at least 1.5) and requires exit code 1 and a <code>BENCH-FAILURE</code> line, so the failure path is not a path that never runs.</p>
 <p>The same job also runs the two paths of issue #108 on a small data set that it generates (not committed). It writes 5,100 rows of dimension 64 as parquet files in the layout of the DBpedia shards (<code>.github/scripts/make-smoke-parquet.py</code>), converts them with <code>scripts/prep_real_dataset.py</code> (5,000 vectors, 100 held-out queries, vector lengths that the script has to scale), fetches JVector with the profile <code>bench</code>, compiles the arm, and runs the tier and then JVector on the files with <code>--data</code>, with a recall floor of 0.85. It checks that both runs end with <code>status=OK</code>, that they ran the same unfiltered cells and the same vectors (the checksum of the <code>DATA</code> line), that the tier's run compared the exact answers of the file with its own scan, and that the <code>JVECTOR</code> line names the jar. Controls run both paths with a floor that cannot be met and require exit code 1, and they require exit code 2 for <code>--n</code> that does not match the file, for <code>--engine jvector</code> with a concurrent phase, and for <code>--engine jvector</code> without the JVector jars. A last check lists the default runtime dependencies of the library (<code>mvn dependency:list</code>) and fails when JVector is among them.</p>
+<p>It also runs <a href="#successive-merges"><code>MergeGenerations</code></a> in both merge modes on the same files, and <a href="#paced-writes"><code>PacedWrites</code></a>, with its sealed reference, on those files and on a small Euclidean set that it generates (<code>.github/scripts/make-smoke-hdf5.py</code>, converted by <code>scripts/prep_ann_hdf5.py</code>), each with controls.</p>
 <p>The options of issue #118 run on the same files: the tier rebuilt in float32 and in SQ8 (with <code>--targets</code>, <code>--disk</code> and <code>--props</code>), and JVector in float32 and in int8. The job requires <code>status=OK</code>, a <code>MATCHED</code> line for the lower target, a non-empty index on disk, no written vector missed by the next search, both search modes of the int8 arm, and exit code 2 for <code>--quant sq8</code> with JVector. One more int8 run forces the Vector API provider and checks the provider name.</p>
 
 
