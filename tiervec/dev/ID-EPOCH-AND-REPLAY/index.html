@@ -1471,7 +1471,7 @@
 <ul>
 <li>Id: the <code>long</code> that the host passes to <code>add</code> and <code>delete</code> and receives back in <code>Hit</code>.</li>
 <li>Epoch: a <code>long</code> that names one numbering of ids. The library compares epochs only for equality and never orders them.</li>
-<li>High-water id: the largest id held by any sealed segment of the persisted state. Every id in the tail is above it. This holds because a seal takes the whole frozen tail, and because add ids increase inside an epoch.</li>
+<li>High-water id: the largest id held by the persisted state, in a sealed segment or in the persisted tail. Every write that the host applied after the checkpoint has a larger id, because add ids increase inside an epoch.</li>
 <li>Recovered maximum: the highest id the host itself found after its own recovery.</li>
 <li>Cold: an index with no usable persisted state. It is built from the host's records.</li>
 </ul>
@@ -1564,8 +1564,8 @@
 <li>Library: find the newest valid manifest. A damaged or truncated manifest falls back to the previous generation, and when none is usable the library throws <code>CorruptStateException</code>, so that the host calls <code>rebuildFrom</code>.</li>
 <li>Library: compare the manifest's fingerprint, dimension, metric, and epoch with the host's. Any mismatch gives a cold index and ends the sequence here.</li>
 <li>Library: apply the durable-prefix rule. Every held id above the recovered maximum is dropped (see below).</li>
-<li>Library: for every id still held in a segment, ask the record source whether the id is live. A record that is not live marks the row dead. This is a check per held id, not a scan of the host's pages.</li>
-<li>Library: ask the record source for every live record above the high-water id, in increasing id order, and append the vectors to the tail. Segments are not touched.</li>
+<li>Library: for every id still held, in a segment or in the persisted tail, ask the record source whether the id is live. A record that is not live marks the row dead, or removes it from the tail. This is a check per held id, not a scan of the host's pages.</li>
+<li>Library: ask the record source for every live record above the high-water id, in increasing id order, and append the vectors to the tail. Segments are not touched. After a checkpoint with nothing applied since, there is none.</li>
 <li>Library: report ready. The host resumes normal traffic: one <code>apply</code> per committed transaction.</li>
 </ol>
 <p>If the persisted state is cold, the host calls <code>rebuildFrom</code> over its live records, with its epoch and a snapshot position, and the library reports ready when the build is swapped in.</p>
@@ -1584,7 +1584,7 @@
 <li>The high-water id is lowered to the recovered maximum when rows are dropped. The host may mint the dropped ids again for new records, and those records must lie above the high-water id, so that a later replay finds them.</li>
 <li>The drop must be durable before the library reports ready, or the library discards the persisted state and goes cold. The library may always choose cold. The first implementation may do so whenever the rule drops a row.</li>
 </ul>
-<p><code>exists today</code>, without the shortcut: <code>TieredIndex.open(dir, dim, metric, config, RecordSource)</code> drops every held id above <code>recoveredMax()</code>, rebuilds the segments without those rows (<code>mergeNow</code>), and publishes a new generation (<code>checkpoint</code>) before it returns; when that fails the tier goes cold. The high-water id of the new generation is the largest id that the remaining segments hold, which is at most the recovered maximum. Dead is sticky because a dropped row is in no later generation. A row that the liveness check hides stays in the older files only, and every open asks again, which is safe because an id is not reused inside an epoch. The recovered maximum is the highest id that the host found when it recovered, not the highest id it holds when it calls <code>open</code>: a host that minted new records in between passes the older value, and the tier then drops the persisted copies of those ids and replays the new records (a host that passes its current maximum keeps the old vectors under the re-minted ids, which is a host error that the library cannot see). Tests: <code>EpochReplayTest.idsAboveTheRecoveredMaximumAreDroppedBeforeTheIndexIsReady</code> (the host forgets 40 adds and mints the same ids again for other vectors: this open and a later one return the new vectors only, and a reader that knows nothing about the host finds none of the lost rows), <code>EpochReplayStressTest.crashAndReopenLoop</code>, and its long variant in <code>EpochReplayLongTest</code>.</p>
+<p><code>exists today</code>, without the shortcut: <code>TieredIndex.open(dir, dim, metric, config, RecordSource)</code> drops every held id above <code>recoveredMax()</code>, from the segments and from the persisted tail, rebuilds the segments (<code>mergeNow</code>) when one of them holds such a row, and publishes a new generation (<code>checkpoint</code>) before it returns; when that fails the tier goes cold. The high-water id of the new generation is the largest id that its segments and its tail hold, which is at most the recovered maximum (<code>TierTailTest.idsOfTheTailAboveTheRecoveredMaximumAreDroppedForGood</code>). Dead is sticky because a dropped row is in no later generation. A row that the liveness check hides stays in the older files only, and every open asks again, which is safe because an id is not reused inside an epoch. The recovered maximum is the highest id that the host found when it recovered, not the highest id it holds when it calls <code>open</code>: a host that minted new records in between passes the older value, and the tier then drops the persisted copies of those ids and replays the new records (a host that passes its current maximum keeps the old vectors under the re-minted ids, which is a host error that the library cannot see). Tests: <code>EpochReplayTest.idsAboveTheRecoveredMaximumAreDroppedBeforeTheIndexIsReady</code> (the host forgets 40 adds and mints the same ids again for other vectors: this open and a later one return the new vectors only, and a reader that knows nothing about the host finds none of the lost rows), <code>EpochReplayStressTest.crashAndReopenLoop</code>, and its long variant in <code>EpochReplayLongTest</code>.</p>
 <p>The rule covers adds. It does not say what happens to a delete that the library persisted (a compacted segment) and the host then forgot: the record is live again in the host, with an id at or below the recovered maximum, and no segment holds it any more, so nothing replays it. The tests keep to the safer reading: the host makes its deletes durable before it lets the library checkpoint (<code>FakeHost.flushDeletes</code>). The contract needs a sentence on this from the host's side, or a decision that the library refuses to persist a delete that the host has not confirmed.</p>
 <h2 id="what-a-crash-leaves-at-each-point">What a crash leaves, at each point<a class="headerlink" href="#what-a-crash-leaves-at-each-point" title="Permanent link">&para;</a></h2>
 <p>A process kill is assumed. No claim is made about power loss until a test says otherwise (<a href="https://github.com/humemai/tiervec/issues/17">#17</a>).</p>
@@ -1608,9 +1608,9 @@
 <td>Step 7 of the replay: the live records above the high-water id come back into the tail.</td>
 </tr>
 <tr>
-<td>After <code>apply</code>, before any seal</td>
-<td>The host's records. The tail was in memory only.</td>
-<td>As above.</td>
+<td>After <code>apply</code>, before the next checkpoint</td>
+<td>The host's records. The writes since the last checkpoint were in memory only.</td>
+<td>The tail of the last checkpoint comes back from its file, and the live records above the high-water id are replayed.</td>
 </tr>
 <tr>
 <td>During a seal or merge, before the new manifest is durable</td>

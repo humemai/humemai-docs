@@ -1684,7 +1684,7 @@
 <p>tiervec cannot claim to be the best vector index for agent memory, and it cannot claim that its whole design follows the state of the art.</p>
 <ul>
 <li>Its overall shape is established practice: an exact buffer for new rows, immutable index segments, delete markers, background merges, and the host's rows as the source of truth.</li>
-<li>It is behind on filtered search, on memory per vector, on the update rules of graphs that live through deletes, on batch visibility under a steady stream of commits, and on restart with unsealed rows.</li>
+<li>It is behind on filtered search, on memory per vector, on the update rules of graphs that live through deletes, and on batch visibility under a steady stream of commits.</li>
 <li>Nothing is measured under churn: no recall over a long stream of updates and deletes, no latency under writes against another library, and nothing about thousands of small collections.</li>
 <li>The largest open design question is whether segments beat one graph that is updated in place. Published work argues both ways, and no measurement here compares them.</li>
 </ul>
@@ -1790,9 +1790,9 @@
 </tr>
 <tr>
 <td>16</td>
-<td><a href="#persistence-and-restart">The tail is not persisted</a></td>
-<td>Behind</td>
-<td><a href="https://github.com/humemai/tiervec/issues/158">#158</a>, <a href="https://github.com/humemai/tiervec/issues/159">#159</a></td>
+<td><a href="#persistence-and-restart">The tail is written at a checkpoint</a></td>
+<td>Matches, restart time unmeasured</td>
+<td><a href="https://github.com/humemai/tiervec/issues/159">#159</a></td>
 </tr>
 </tbody>
 </table>
@@ -1898,8 +1898,8 @@
 <p><strong>Verdict.</strong> Read-your-writes <strong>matches</strong>, and is stricter than a bounded-staleness default. Batch visibility is <strong>behind</strong> multiversion reads (<a href="https://github.com/humemai/tiervec/issues/163">#163</a>). Many concurrent writers are <strong>unproven</strong>.</p>
 <h3 id="persistence-and-restart">Persistence and restart<a class="headerlink" href="#persistence-and-restart" title="Permanent link">&para;</a></h3>
 <p><strong>Sources say.</strong> FreshDiskANN rebuilds its in-memory index and delete list after a crash by replaying a redo log since the last snapshot. Cosmos DB stores its index in the database's own index trees, and TigerVector reuses the database's write-ahead log and commit protocol.</p>
-<p><strong>tiervec today.</strong> The host's rows and log are the truth. Segments, tombstones, and a manifest are checkpointed and verified at <code>open</code>, and the host replays newer rows through an id epoch and a high-water id (<a href="../ID-EPOCH-AND-REPLAY/">ID-EPOCH-AND-REPLAY.md</a>). <code>checkpoint</code> refuses a tier with a non-empty tail, so a host must seal first.</p>
-<p><strong>Verdict.</strong> The host contract <strong>matches</strong> the practice of an index that follows the database's log. The empty-tail rule is <strong>behind</strong> (<a href="https://github.com/humemai/tiervec/issues/158">#158</a>). Restart time is unmeasured.</p>
+<p><strong>tiervec today.</strong> The host's rows and log are the truth. Segments, tombstones, the tail, and a manifest are checkpointed and verified at <code>open</code>, and the host replays newer rows through an id epoch and a high-water id (<a href="../ID-EPOCH-AND-REPLAY/">ID-EPOCH-AND-REPLAY.md</a>). <code>checkpoint</code> writes the tail as it is, without building a segment (<a href="https://github.com/humemai/tiervec/issues/158">#158</a>, <a href="../SEGMENT-FORMAT/#tail-file">SEGMENT-FORMAT.md</a>).</p>
+<p><strong>Verdict.</strong> The host contract <strong>matches</strong> the practice of an index that follows the database's log, and a snapshot of the unsealed rows with a replay from the snapshot on is what FreshDiskANN describes. The whole tail is written at every checkpoint, and restart time is unmeasured.</p>
 <h3 id="hybrid-search-recency-and-time">Hybrid search, recency, and time<a class="headerlink" href="#hybrid-search-recency-and-time" title="Permanent link">&para;</a></h3>
 <p>Memory systems combine vector search with text search, graph steps, recency, and importance. tiervec leaves that to the host: it returns exact fp32 scores and takes the host's filter as a set of ids. That division suits an index inside a database <em>(inference)</em>, and it makes filtered search carry more weight. No verdict is given.</p>
 <h2 id="libraries-and-engines-side-by-side">Libraries and engines side by side<a class="headerlink" href="#libraries-and-engines-side-by-side" title="Permanent link">&para;</a></h2>
@@ -1977,7 +1977,7 @@
 <ul>
 <li>Filtered search has no filter-aware walk and untested thresholds.</li>
 <li>Memory per vector is bound by fp32, and was higher than JVector's in the one posted comparison.</li>
-<li>A checkpoint needs an empty tail, and restart time is unknown.</li>
+<li>Restart time is unknown.</li>
 <li>A search can be starved by a steady stream of batches.</li>
 <li>The default merge rewrites whole graphs, and the default merge policy searches several segments.</li>
 <li>There is no evidence for any size above 1,000,000 vectors, for concurrent writers at scale, or for many collections.</li>
