@@ -1486,14 +1486,15 @@
 <p>Commit messages start with the area, then a short summary and the issue number, for example <code>Tests: replace absolute throughput floors in concurrency tests with an overlap proof (#59)</code>.</p>
 <p>Pull requests are squash-merged into <code>main</code>, so the history is linear.</p>
 <h3 id="checks-that-must-pass">Checks that must pass<a class="headerlink" href="#checks-that-must-pass" title="Permanent link">&para;</a></h3>
-<p>Four checks are required before a merge:</p>
+<p>Five checks are required before a merge:</p>
 <ul>
 <li><code>fast tests (JDK 21)</code></li>
 <li><code>fast tests (JDK 25)</code></li>
+<li><code>fast tests (Windows x64, JDK 21)</code></li>
 <li><code>Ensure SHA pinned actions</code></li>
 <li><code>docs build (strict)</code></li>
 </ul>
-<p>The other jobs of a pull request (arm64, Windows, the benchmark smoke, native image) are not required. A failure there is read like any other failure.</p>
+<p>The other jobs (the benchmark smoke, and the arm64 and native image jobs where they run) are not required. A failure there is read like any other failure.</p>
 <h3 id="what-ci-runs-and-when">What CI runs, and when<a class="headerlink" href="#what-ci-runs-and-when" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
