@@ -940,6 +940,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="EVIDENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Evidence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1367,8 +1395,8 @@
 </tr>
 <tr>
 <td>Speed and recall at scale</td>
-<td>Not measured yet. No benchmark numbers are published in this repository, and nothing here is proven at 1,000,000 vectors or at 10,000,000. A harness for these measurements exists, and CI runs it at 10,000 vectors as a smoke test.</td>
-<td><a href="BENCHMARKS/">docs/BENCHMARKS.md</a>, <a href="STATUS/">docs/STATUS.md</a></td>
+<td>Barely measured, and nothing here is proven at 1,000,000 vectors or at 10,000,000. The only committed result files are from one study on generated data at 100,000 and 1,000,000 vectors, one run per arm on a laptop's low-power cores, so they say nothing about speed or about real embeddings. A harness for these measurements exists, and CI runs it at 10,000 vectors as a smoke test.</td>
+<td><a href="EVIDENCE/">docs/EVIDENCE.md</a>, <a href="BENCHMARKS/">docs/BENCHMARKS.md</a>, <a href="STATUS/">docs/STATUS.md</a></td>
 </tr>
 <tr>
 <td>Concurrent readers and writers</td>
@@ -1539,7 +1567,7 @@
 </tbody>
 </table>
 <p>The full slow tests run on Linux x86-64 only; Windows x64 runs the two slow crash tests. There is no scalar-kernel native image job on Windows. The native image jobs run on a push to <code>main</code> that changes <code>src/main</code>, <code>src/smoke</code> or their workflow file. On a pull request they run only when it changes <code>src/smoke</code>, <code>META-INF/native-image</code>, <code>Kern.java</code>, <code>Kernels.java</code>, <code>NKernels.java</code> or their workflow file.</p>
-<p><strong>Tier 2: measured.</strong> None yet. No benchmark numbers are published in this repository. The harness is described in <a href="BENCHMARKS/">docs/BENCHMARKS.md</a>; a row moves here when a result file with its hardware, JDK and commit is committed under <code>results/</code>. The <code>SPEED</code> lines that the native image jobs print are informational, and the one measurement in the repository (the graph self-search recall in <a href="STATUS/#graph-self-search-recall">docs/STATUS.md</a>) does not record its hardware. The shared GitHub runners are not a benchmark machine: a timing from them is a ratio between two things measured in the same run, not an absolute speed. A row moves here when its numbers and its hardware are published.</p>
+<p><strong>Tier 2: measured.</strong> None yet. The result files committed so far (<a href="EVIDENCE/">docs/EVIDENCE.md</a>) are recall results of one run per arm on a laptop's low-power cores, and they move no platform into this tier. The harness is described in <a href="BENCHMARKS/">docs/BENCHMARKS.md</a>; a row moves here when a result file with its hardware, JDK and commit is committed under <code>results/</code>. The <code>SPEED</code> lines that the native image jobs print are informational, and the one measurement in the repository (the graph self-search recall in <a href="STATUS/#graph-self-search-recall">docs/STATUS.md</a>) does not record its hardware. The shared GitHub runners are not a benchmark machine: a timing from them is a ratio between two things measured in the same run, not an absolute speed. A row moves here when its numbers and its hardware are published.</p>
 <p><strong>Tier 3: best effort.</strong> The code is plain Java 21 and has no native dependency, so it is expected to work, but nothing checks it and a problem there is fixed when it is cheap to do.</p>
 <ul>
 <li>macOS on Intel (x86-64): no CI job.</li>
