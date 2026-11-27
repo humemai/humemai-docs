@@ -929,6 +929,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-runbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The runbook
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ground-truth" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1325,6 +1336,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#the-runbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The runbook
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ground-truth" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1491,6 +1513,11 @@
 <td>Recall over successive merges with deletes</td>
 <td>Writes during searches, other libraries</td>
 </tr>
+<tr>
+<td>The first parts of <a href="https://github.com/humemai/tiervec/issues/159">#159</a> in <code>src/bench</code>: <a href="#the-runbook">the runbook</a>, the exact answers, and the violation counters</td>
+<td>Creates, updates, deletes, reuses, batches, searches, and checkpoints from a seed; the exact answers over the live rows; five counters; their own tests (<code>AgentMemorySelfCheck</code>, in the CI smoke)</td>
+<td>No arm replays it yet, and there are no restarts or filtered searches</td>
+</tr>
 </tbody>
 </table>
 <h2 id="the-workload">The workload<a class="headerlink" href="#the-workload" title="Permanent link">&para;</a></h2>
@@ -1573,8 +1600,16 @@
 </table>
 <p><strong>Concurrency.</strong> 1 and 8 writer threads with 1 and 8 searcher threads. Writes and searches arrive at fixed offered rates, and a latency is counted from the scheduled start, so a stall is not hidden by the requests it delays.</p>
 <p><strong>Filters.</strong> Allowed shares 0.5, 0.1, 0.01, and 0.001, in three kinds: random, one that matches the cluster of the query, and one that matches a cluster far from the query.</p>
+<h2 id="the-runbook">The runbook<a class="headerlink" href="#the-runbook" title="Permanent link">&para;</a></h2>
+<p><code>Runbook</code>, in <code>src/bench</code>, generates a runbook from a seed and writes it to one binary file that holds every vector, so that every arm reads the same bytes; the SHA-256 of the file goes into the results. A runbook has one or more collections of the same size, and each collection is replayed into its own index. Today the data is generated: unit vectors around random cluster centres.</p>
+<ul>
+<li>A collection starts with a load of its rows and a checkpoint. Then it runs in rounds. A round retires a tenth of the rows (at least 4): 30 percent expire (the oldest), 30 percent are rows of one cluster that are deleted, 30 percent are updated, and the rest are deleted and added again later under the same id (<code>reuse</code>). New rows replace the deleted ones.</li>
+<li>New and replaced vectors come from the cluster that grows in that round, so the distribution moves. The rounds end when as many row versions have been retired as the chosen turnover asks for.</li>
+<li>Part of the writes arrive in batches of 1 to 50, and no id appears twice in one batch. Searches are placed between the writes at a chosen number per written row, each with a query near a live row.</li>
+<li>A checkpoint carries the queries that recall is scored on. In this first version nothing is persisted at a checkpoint: restarts are a later step.</li>
+</ul>
 <h2 id="ground-truth">Ground truth<a class="headerlink" href="#ground-truth" title="Permanent link">&para;</a></h2>
-<p>At every checkpoint of the runbook the program computes the exact top 10 over the rows that are live at that point, with their current vectors, using its own scalar distance and none of the arm's kernels. The ground truth has its own test with known answers that include deletes and replacements. The streaming track had to correct its published recall after the competition: the declared winner went from 0.985 to 0.0921 in the corrected table.</p>
+<p>At every checkpoint of the runbook the program computes the exact top 10 over the rows that are live at that point, with their current vectors, using its own scalar distance and none of the arm's kernels. The ground truth has its own test with known answers that include deletes and replacements. A score that differs from the exact one by more than 0.0001 counts as the score of another vector. The streaming track had to correct its published recall after the competition: the declared winner went from 0.985 to 0.0921 in the corrected table.</p>
 <h2 id="metrics">Metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
