@@ -951,6 +951,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-the-program-replays-a-runbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the program replays a runbook
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#metrics" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1358,6 +1369,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#how-the-program-replays-a-runbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the program replays a runbook
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#metrics" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1514,9 +1536,9 @@
 <td>Writes during searches, other libraries</td>
 </tr>
 <tr>
-<td>The first parts of <a href="https://github.com/humemai/tiervec/issues/159">#159</a> in <code>src/bench</code>: <a href="#the-runbook">the runbook</a>, the exact answers, and the violation counters</td>
-<td>Creates, updates, deletes, reuses, batches, searches, and checkpoints from a seed; the exact answers over the live rows; five counters; their own tests (<code>AgentMemorySelfCheck</code>, in the CI smoke)</td>
-<td>No arm replays it yet, and there are no restarts or filtered searches</td>
+<td><code>AgentMemory</code>, the first step of <a href="https://github.com/humemai/tiervec/issues/159">#159</a>: <a href="#the-runbook">the runbook</a> replayed into the exact, tier, and live graph arms (<a href="#how-the-program-replays-a-runbook">how</a>)</td>
+<td>Creates, updates, deletes, reuses, batches, searches, and checkpoints from a seed; violation counts; recall at every checkpoint; rows built per row written; bytes held per row</td>
+<td>Restarts, filtered searches, many collections as its own study, the JVector and Lucene arms, real embeddings, every timing</td>
 </tr>
 </tbody>
 </table>
@@ -1610,6 +1632,20 @@
 </ul>
 <h2 id="ground-truth">Ground truth<a class="headerlink" href="#ground-truth" title="Permanent link">&para;</a></h2>
 <p>At every checkpoint of the runbook the program computes the exact top 10 over the rows that are live at that point, with their current vectors, using its own scalar distance and none of the arm's kernels. The ground truth has its own test with known answers that include deletes and replacements. A score that differs from the exact one by more than 0.0001 counts as the score of another vector. The streaming track had to correct its published recall after the competition: the declared winner went from 0.985 to 0.0921 in the corrected table.</p>
+<h2 id="how-the-program-replays-a-runbook">How the program replays a runbook<a class="headerlink" href="#how-the-program-replays-a-runbook" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mkdir -p target/bench/classes
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>javac -d target/bench/classes --add-modules jdk.incubator.vector $(find src/main/java src/bench/java -name '*.java')
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>java -Xmx2g --add-modules jdk.incubator.vector -cp target/bench/classes ai.humem.tiervec.AgentMemory \
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  --shapes smoke,p20 --variants 'exact exact; tier tier; graph-a12 graph graph.alpha=1.2' --mix read --out target/agent-memory/out
+</code></pre></div>
+<p>The program writes one runbook per shape into <code>--out</code>, reads it back, replays it into each variant, and writes <code>result.txt</code> there. A variant is <code>name arm key=value ...</code>. The arm <code>tier</code> takes every key of <code>TieredIndex.Config</code> (see <code>Config.toMap</code>) except <code>buildThreads</code>, <code>tailAgeMs</code>, and <code>mergeRatePerSec</code>; the arm <code>graph</code> takes <code>graph.M</code>, <code>graph.efConstruction</code>, <code>graph.efSearch</code>, <code>graph.alpha</code>, <code>graph.sq8</code>, and <code>consolidateAt</code> (default 0.2: <code>consolidate()</code> runs when the deleted nodes are more than that share of the live ones); the arm <code>exact</code> takes none. The shapes are <code>smoke</code> (3,000 rows), <code>p20</code>, <code>p200</code>, and <code>p2000</code> (50, 20, and 5 collections of that many rows), and <code>a10k</code> and <code>a100k</code>.</p>
+<ul>
+<li><strong>Nothing depends on timing.</strong> The tier runs with one build thread, no seal by age, and no merge throttle, and with a host environment that runs each seal and merge inside the write that made it due. So one runbook gives the same segments on every run.</li>
+<li><strong>Every search is checked</strong> against the live rows: a deleted or never-added id, a score of another vector, and fewer than <code>k</code> ids when <code>k</code> rows are live.</li>
+<li><strong>Writes are probed.</strong> After a write, a search that allows only the written ids must see all of them. A filter of that size takes the exact path of every arm. The large shapes probe every 10th or 100th single write, and every batch.</li>
+<li><strong>Batches are watched.</strong> On the tier a second thread searches while the batch is applied. On the arms without atomic batches the replay applies one write at a time and searches in between, so their <code>partOfBatch</code> count is expected and does not fail the run.</li>
+<li><strong>Rows built per row written</strong> counts the rows put into a graph (for the tier by seals and merges, for the live graph once per added row) over the rows created, updated, or reused. <strong>Bytes held per row</strong> is what <code>bytesHeld()</code> reports, over the live rows at the end.</li>
+</ul>
 <h2 id="metrics">Metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
