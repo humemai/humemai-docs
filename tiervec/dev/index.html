@@ -1462,7 +1462,7 @@
 <li>Nothing else at run time. JUnit 5 is a test dependency.</li>
 </ul>
 <h2 id="platform-support">Platform support<a class="headerlink" href="#platform-support" title="Permanent link">&para;</a></h2>
-<p>There are three tiers. For tier 1, each row names the CI job that proves it. A job marked "required" must pass before a pull request can merge into <code>main</code>. The other jobs do not block it. The arm64 fast tests, the native image jobs and the slow tests do not run on an ordinary pull request: they run on <code>main</code> after the merge, and the slow tests also once a day and on a pull request that carries the label <code>ci:slow</code> (<a href="CONTRIBUTING/#what-ci-runs-and-when">CONTRIBUTING.md</a>). All jobs run on GitHub-hosted runners.</p>
+<p>There are three tiers. For tier 1, each row names the CI job that proves it. A job marked "required" must pass before a pull request can merge into <code>main</code>. The other jobs do not block it. The arm64 fast tests, the native image jobs and the slow tests do not run on an ordinary pull request: they run on <code>main</code> after the merge, and the slow tests also once a day and on a pull request that carries the label <code>ci:slow</code>. The fast tests of an ordinary pull request also leave out the tests tagged <code>postmerge</code>, which run on <code>main</code> after the merge (<a href="CONTRIBUTING/#what-ci-runs-and-when">CONTRIBUTING.md</a>). All jobs run on GitHub-hosted runners.</p>
 <p><strong>Tier 1: tested in CI on every change</strong></p>
 <table>
 <thead>

@@ -1465,10 +1465,11 @@
 </ul>
 <h2 id="build-and-test">Build and test<a class="headerlink" href="#build-and-test" title="Permanent link">&para;</a></h2>
 <p>You need JDK 21 or newer and Maven 3.9 or newer.</p>
-<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mvn -B -ntp verify            # fast tests: Vector API kernels, then the scalar twins
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>mvn -B -ntp verify -Pslow     # the long concurrency and stress tests (tag "slow")
+<div class="language-text highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mvn -B -ntp verify            # all fast tests: Vector API kernels, then the scalar twins
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>mvn -B -ntp verify -Ppr       # the fast tests of an ordinary pull request (without the tag "postmerge")
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>mvn -B -ntp verify -Pslow     # the long concurrency and stress tests (tag "slow")
 </code></pre></div>
-<p>The fast tests run on every pull request, on JDK 21 and 25. The slow tests take about 40 minutes per JDK, so they do not run on an ordinary pull request: see <a href="#what-ci-runs-and-when">What CI runs, and when</a>. You do not have to run them on your own machine.</p>
+<p>The fast tests run on every pull request, on JDK 21 and 25. An ordinary pull request leaves out the few of them that carry the tag <code>postmerge</code>. The slow tests take about 40 minutes per JDK, so they do not run on an ordinary pull request either: see <a href="#what-ci-runs-and-when">What CI runs, and when</a>. You do not have to run them on your own machine.</p>
 <h3 id="build-the-documentation">Build the documentation<a class="headerlink" href="#build-the-documentation" title="Permanent link">&para;</a></h3>
 <p>The site at <a href="https://docs.humem.ai/tiervec/dev/">https://docs.humem.ai/tiervec/dev/</a> is built with MkDocs Material from the README, the other Markdown files in the repository root, and <code>docs/</code>. The hook <code>docs-site/hooks.py</code> turns the root files into pages and rewrites relative links: a link to another page stays a link to that page, and a link to any other file in the repository becomes a link to it on GitHub. The design system in <code>docs/brand</code> is a vendored copy. Do not edit it: change it in <a href="https://github.com/humemai/design-system">humemai/design-system</a> and vendor it again. <code>bash docs/brand/verify.sh</code> checks the copy. To build the site as the check does:</p>
 <div class="language-text highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uv run --no-project --python 3.12 --with-requirements docs-site/requirements.txt mkdocs build --strict
@@ -1496,6 +1497,7 @@
 </ul>
 <p>The other jobs (the benchmark smoke, and the arm64 and native image jobs where they run) are not required. A failure there is read like any other failure.</p>
 <h3 id="what-ci-runs-and-when">What CI runs, and when<a class="headerlink" href="#what-ci-runs-and-when" title="Permanent link">&para;</a></h3>
+<p>The checks of an ordinary pull request should end in about 10 minutes, counted from the creation of the runs to the end of the last job, and never take more than 15 (<a href="https://github.com/humemai/tiervec/issues/154">#154</a>). A test or a job that would make them longer runs on <code>main</code> after the merge, on a schedule, or on request instead.</p>
 <table>
 <thead>
 <tr>
@@ -1506,7 +1508,7 @@
 <tbody>
 <tr>
 <td>Every pull request</td>
-<td>The fast tests (x86-64 Linux on JDK 21 and 25, Windows x64), the benchmark smoke, the documentation build and the workflow check. The Maven Central dry run starts only when the files it covers change. It ends in about 12 minutes.</td>
+<td>The fast tests (x86-64 Linux on JDK 21 and 25, Windows x64) without the tests tagged <code>postmerge</code>, the benchmark smoke, the documentation build and the workflow check. The Maven Central dry run and the measurement workflows start only when the files they cover change.</td>
 </tr>
 <tr>
 <td>A pull request that changes <code>src/smoke</code>, <code>META-INF/native-image</code>, <code>Kern.java</code>, <code>Kernels.java</code>, <code>NKernels.java</code> or <code>native-image.yml</code></td>
@@ -1514,7 +1516,7 @@
 </tr>
 <tr>
 <td>A pull request from a <code>release/</code> branch</td>
-<td>The same, and the fast tests on arm64 Linux and arm64 macOS.</td>
+<td>The same with all fast tests, and the fast tests on arm64 Linux and arm64 macOS.</td>
 </tr>
 <tr>
 <td>A pull request with the label <code>ci:slow</code></td>
@@ -1522,7 +1524,7 @@
 </tr>
 <tr>
 <td>Every push to <code>main</code></td>
-<td>The jobs of every pull request, the arm64 fast tests and the slow tests. The native image jobs run when the push changes <code>src/main</code>, <code>src/smoke</code> or their workflow file.</td>
+<td>The jobs of every pull request with all fast tests, the arm64 fast tests and the slow tests. The native image jobs run when the push changes <code>src/main</code>, <code>src/smoke</code> or their workflow file.</td>
 </tr>
 <tr>
 <td>Every day at 19:17 UTC</td>
@@ -1530,10 +1532,11 @@
 </tr>
 </tbody>
 </table>
+<p>The tag <code>postmerge</code> is for a test of the fast set that takes long and that a pull request can merge without, because a cheaper run of the same check stays in the pull request. Today these are three of the four runs of <code>RidReuseTest</code>, about a minute each on a runner; the fourth runs on every pull request. To run all fast tests on a branch before the merge, use <code>gh workflow run ci.yml --ref &lt;branch&gt;</code> (it needs write access). On Linux the label <code>ci:slow</code> covers the same ground: <code>RidReuseLongTest</code> has those configurations and seeds, with every case of the probe.</p>
 <p>To ask for the slow tests on a pull request, add the label <code>ci:slow</code>. If you cannot set labels, ask for it in the pull request and the maintainer adds it. The slow tests start when the label is added and run again on every later push to that pull request. Ask for them when a change touches what they cover: concurrent readers and writers, seals and merges, record-id reuse, or the batch paths. On a pull request without the label, the slow tests show as one skipped check, which is not a failure.</p>
 <p>The slow tests also run by hand on any branch: <code>gh workflow run slow-tests.yml --ref &lt;branch&gt;</code>.</p>
 <p>The arm64 fast tests and the native image jobs do not run on an ordinary pull request. When a change can behave differently on arm64 or in a native image (a kernel, for example), start them on the branch before the merge: <code>gh workflow run ci.yml --ref &lt;branch&gt;</code> (every job of <code>ci.yml</code>) and <code>gh workflow run native-image.yml --ref &lt;branch&gt;</code>. This needs write access, so ask the maintainer if you do not have it. When one of these jobs is red on <code>main</code>, the workflow opens the issue "arm64 tests are red on main" or "Native image jobs are red on main", or comments on it when it is already open.</p>
-<p>When a slow run on <code>main</code> is red, the workflow opens the issue "Slow tests are red on main", or comments on it when it is already open. The slow tests are in <code>.github/workflows/slow-tests.yml</code>; the other tests are in <code>ci.yml</code>.</p>
+<p>When a fast test job on x86-64 Linux or Windows is red on <code>main</code>, the workflow opens the issue "Fast tests are red on main", and when a slow run on <code>main</code> is red, the issue "Slow tests are red on main"; it comments on the issue when that is already open. The slow tests are in <code>.github/workflows/slow-tests.yml</code>; the other tests are in <code>ci.yml</code>.</p>
 <h3 id="workflow-files">Workflow files<a class="headerlink" href="#workflow-files" title="Permanent link">&para;</a></h3>
 <p>Every action in <code>.github/workflows/</code> is pinned to a full commit SHA, with the version as a comment. A floating tag fails the check <code>Ensure SHA pinned actions</code>.</p>
 <h3 id="measurements">Measurements<a class="headerlink" href="#measurements" title="Permanent link">&para;</a></h3>

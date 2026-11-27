@@ -1496,7 +1496,7 @@
 <div class="language-text highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>gh workflow run release-central.yml --ref release/&lt;version&gt; -f dry-run=true
 </code></pre></div>
 <ol>
-<li>Open a pull request named <code>Release &lt;version&gt;</code> and add the label <code>ci:slow</code> to it, so that the slow tests run on it (a pull request without the label skips them). The arm64 fast tests run on it too, because the branch name starts with <code>release/</code>. Wait for green, the two slow jobs and the three arm64 jobs included, and merge it.</li>
+<li>Open a pull request named <code>Release &lt;version&gt;</code> and add the label <code>ci:slow</code> to it, so that the slow tests run on it (a pull request without the label skips them). The arm64 fast tests run on it too, and every fast job runs all fast tests (the tests tagged <code>postmerge</code> included), because the branch name starts with <code>release/</code>. Wait for green, the two slow jobs and the three arm64 jobs included, and merge it.</li>
 <li>The merge is a push to <code>main</code>, and it starts the slow tests on the merge commit, which is the commit of the release. Wait for that run to end green (<code>gh run list --workflow slow-tests.yml --commit &lt;merge-sha&gt;</code>). Then tag the merge commit and push the tag. The tag is the bare version:</li>
 </ol>
 <div class="language-text highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git tag &lt;version&gt; &lt;merge-sha&gt;
