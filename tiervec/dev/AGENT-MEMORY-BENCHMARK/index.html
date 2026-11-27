@@ -1673,11 +1673,33 @@
 <p><strong>Concurrency.</strong> 1 and 8 writer threads with 1 and 8 searcher threads. Writes and searches arrive at fixed offered rates, and a latency is counted from the scheduled start, so a stall is not hidden by the requests it delays.</p>
 <p><strong>Filters.</strong> Allowed shares 0.5, 0.1, 0.01, and 0.001, in three kinds: random, one that matches the cluster of the query, and one that matches a cluster far from the query.</p>
 <h2 id="the-runbook">The runbook<a class="headerlink" href="#the-runbook" title="Permanent link">&para;</a></h2>
-<p><code>Runbook</code>, in <code>src/bench</code>, generates a runbook from a seed and writes it to one binary file that holds every vector, so that every arm reads the same bytes; the SHA-256 of the file goes into the results. A runbook has one or more collections of the same size, and each collection is replayed into its own index. Today the data is generated: unit vectors around random cluster centres.</p>
+<p><code>Runbook</code>, in <code>src/bench</code>, generates a runbook from a seed and writes it to one binary file that holds every vector, so that every arm reads the same bytes; the SHA-256 of the file goes into the results. A runbook has one or more collections of the same size, and each collection is replayed into its own index. Today the data is generated: unit vectors around random cluster centres, of two kinds, set by <code>--latent</code>.</p>
+<table>
+<thead>
+<tr>
+<th><code>--latent</code></th>
+<th>A row</th>
+<th>A query</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>The centre of its cluster plus noise in all dimensions</td>
+<td>Near a live row</td>
+</tr>
+<tr>
+<td>1 to the dimension</td>
+<td>The centre of its cluster plus noise in the span of that many random directions, so the rows of a cluster use about that many dimensions</td>
+<td>Drawn like a new row of the cluster of a random live row, so it is no near copy of a stored row</td>
+</tr>
+</tbody>
+</table>
+<p>For every shape the program says how hard the queries of the checkpoints are, from the live rows alone and before any arm runs: the local intrinsic dimension (the maximum likelihood estimate from the 100 nearest rows, or all rows but one in a smaller collection) and the relative contrast (the mean distance to the live rows over the distance to the 10th nearest). Both use the Euclidean distance between unit vectors. The line is <code>DATA</code> in <code>result.txt</code>.</p>
 <ul>
 <li>A collection starts with a load of its rows and a checkpoint. Then it runs in rounds. A round retires a tenth of the rows (at least 4): 30 percent expire (the oldest), 30 percent are rows of one cluster that are deleted, 30 percent are updated, and the rest are deleted and added again later under the same id (<code>reuse</code>). New rows replace the deleted ones.</li>
 <li>New and replaced vectors come from the cluster that grows in that round, so the distribution moves. The rounds end when as many row versions have been retired as the chosen turnover asks for.</li>
-<li>Part of the writes arrive in batches of 1 to 50, and no id appears twice in one batch. Searches are placed between the writes at a chosen number per written row, each with a query near a live row.</li>
+<li>Part of the writes arrive in batches of 1 to 50, and no id appears twice in one batch. Searches are placed between the writes at a chosen number per written row, with the queries of the table above.</li>
 <li>A checkpoint carries the queries that recall is scored on. In this first version nothing is persisted at a checkpoint: restarts are a later step.</li>
 </ul>
 <h2 id="ground-truth">Ground truth<a class="headerlink" href="#ground-truth" title="Permanent link">&para;</a></h2>

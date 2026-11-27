@@ -924,6 +924,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#the-data-of-the-screen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The data of the screen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-to-add-an-idea" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1243,6 +1254,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#the-data-of-the-screen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The data of the screen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-to-add-an-idea" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1338,6 +1360,14 @@
 </div>
 <p>Every idea for the index is listed here before its first run, with its source, what it is expected to do, and the bar it has to pass. The result is added after the run. An idea that fails stays in the list with its numbers, so that it is not tried twice.</p>
 <p>The ideas are tested in two stages (<a href="https://github.com/humemai/tiervec/issues/159#issuecomment-7222822816">plan on #159</a>): many quick rounds on the <a href="../AGENT-MEMORY-BENCHMARK/#the-screen">screen</a>, at small sizes, and then a confirmation at larger sizes only for the ideas that pass, under rules written before that run. A screen has no timing, and its sizes and data are small and generated, so no default changes on a screen result alone.</p>
+<h2 id="the-data-of-the-screen">The data of the screen<a class="headerlink" href="#the-data-of-the-screen" title="Permanent link">&para;</a></h2>
+<p>The <a href="https://github.com/humemai/tiervec/actions/runs/46041361120">first run</a> used 128 dimensions with noise in all of them and queries near stored rows. It ran the exact and tier arms only, and their lowest recall was 0.999 or more at every size, so a difference between two designs had no room to show.</p>
+<p>Harder data is chosen once, by this rule, written before any run on it. Only the baseline arms run while it is chosen (<code>exact</code>, <code>tier</code>, and <code>graph-a10</code>, the live graph at <code>alpha</code> 1.0), never an idea.</p>
+<ul>
+<li>The candidates are 768 dimensions with <code>--latent</code> 32, 64, 128, 256, and 768, in this order (<a href="../AGENT-MEMORY-BENCHMARK/#the-runbook">the two kinds of data</a>).</li>
+<li>The choice is the first candidate at which, on <code>a10k</code> with seed 1 and the write mix, <code>recallLowest</code> of both <code>tier</code> and <code>graph-a10</code> is at most 0.97. If none is, the choice is 768.</li>
+<li>The chosen data, its difficulty (the <code>DATA</code> lines), and the runs of every candidate that was tried are recorded here.</li>
+</ul>
 <h2 id="how-to-add-an-idea">How to add an idea<a class="headerlink" href="#how-to-add-an-idea" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Add a row below with its source, hypothesis, and pass bar, and the status <code>not run</code>. The bar names a shape, a column of <code>results.tsv</code>, and a number.</li>
