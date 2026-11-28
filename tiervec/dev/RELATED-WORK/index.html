@@ -1713,8 +1713,8 @@
 <ul>
 <li>Its overall shape is established practice: an exact buffer for new rows, immutable index segments, delete markers, background merges, and the host's rows as the source of truth.</li>
 <li>It is behind on filtered search, on memory per vector, on the update rules of graphs that live through deletes, and on batch visibility under a steady stream of commits.</li>
-<li>Nothing is measured under churn: no recall over a long stream of updates and deletes, no latency under writes against another library, and nothing about thousands of small collections.</li>
-<li>The largest open design question is whether segments beat one graph that is updated in place. Published work argues both ways, and no measurement here compares them.</li>
+<li>Under churn, only counts are measured so far: the <a href="../SCREEN-IDEAS/">screen</a> scores recall and distance computations over streams of updates and deletes. There is no latency under writes against another library, and nothing about thousands of small collections.</li>
+<li>The largest open design question is whether segments beat one graph that is updated in place. Published work argues both ways. A screen compares them by counts (<a href="../SCREEN-IDEAS/#segments-against-one-graph-results">results</a>); no timed measurement does.</li>
 </ul>
 <table>
 <thead>
