@@ -1057,6 +1057,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#s6-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S6 results
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1493,6 +1504,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#s6-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S6 results
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1747,7 +1769,7 @@
 <td>The <a href="#the-long-churn">long churn</a> of the live graph and of the insert merge against a rebuild of the same live rows, the test that <a href="https://github.com/humemai/tiervec/issues/161">#161</a> asks for. <a href="https://arxiv.org/abs/2105.09613">FreshDiskANN</a> reports falling recall and degree over cycles at <code>alpha</code> 1; Lucene measured its decay over <a href="https://github.com/apache/lucene/issues/16552">100 generations</a></td>
 <td>A graph that lives through 15 turnovers keeps the recall of a rebuild</td>
 <td>On <code>a10k</code> with <code>--turnover 15 --checkpoints 15</code>, with each of the seeds 1, 2, and 3: for <code>graph-a10</code> against <code>rebuild</code>, and for <code>tier-m1-insert</code> against <code>tier-m1</code>, <code>recallChurnMean</code> is at least the control's minus 0.005 and <code>recallFinal</code> at least the control's minus 0.01; and <code>unreached</code> in <code>graph.tsv</code> is at most 10, 0.1% of the live rows, at every checkpoint</td>
-<td>started on commit <code>7ab31fd</code>, one run per seed, results not read yet: <a href="https://github.com/humemai/tiervec/actions/runs/46123693234">46123693234</a>, <a href="https://github.com/humemai/tiervec/actions/runs/46123694997">46123694997</a>, <a href="https://github.com/humemai/tiervec/actions/runs/46123696956">46123696956</a></td>
+<td>failed: <code>graph-a10</code> and <code>tier-m1-insert</code> missed the bound on unreached rows with every seed (up to 8,523 rows), and <code>graph-a10</code> also missed the mean-recall bound with seed 3; the final-recall bounds held (<a href="#s6-results">results</a>)</td>
 </tr>
 </tbody>
 </table>
@@ -2099,6 +2121,147 @@
 </tbody>
 </table>
 <p>On every shape <code>recallChurnMean</code>, <code>distancesPerSearch</code>, <code>distancesPerRowWritten</code>, and the recall curve of <code>graph-a10</code> were equal in the two runs, so the bar was passed. The factor of about four is a matter of small collections: at 200 rows the graph with 1,024 slots already held less than the tier. A pass here changes no default. The screen runs none of the library's tests and times nothing, so the change needs both before it can ship.</p>
+<h3 id="s6-results">S6 results<a class="headerlink" href="#s6-results" title="Permanent link">&para;</a></h3>
+<p>The <a href="#the-long-churn">long churn</a> ran on commit <code>7ab31fd</code>, once per seed, with seed 1 on a runner with 8 vector lanes and the seeds 2 and 3 on runners with 16. No run has a failing violation. Each variant is compared with its control in the same run.</p>
+<table>
+<thead>
+<tr>
+<th>Seed</th>
+<th>Variant / control</th>
+<th><code>recallChurnMean</code></th>
+<th>Difference (needs -0.005 or more)</th>
+<th><code>recallFinal</code></th>
+<th>Difference (needs -0.01 or more)</th>
+<th>Most unreached rows at any checkpoint (at most 10)</th>
+<th>Run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>graph-a10</code> / <code>rebuild</code></td>
+<td>0.9772 / 0.9799</td>
+<td>-0.0027 (holds)</td>
+<td>0.9800 / 0.9850</td>
+<td>-0.0050 (holds)</td>
+<td>8523 / 0 (fails)</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46123693234">46123693234</a></td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>tier-m1-insert</code> / <code>tier-m1</code></td>
+<td>0.9836 / 0.9869</td>
+<td>-0.0033 (holds)</td>
+<td>0.9860 / 0.9870</td>
+<td>-0.0010 (holds)</td>
+<td>7954 / 0 (fails)</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46123693234">46123693234</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>graph-a10</code> / <code>rebuild</code></td>
+<td>0.9750 / 0.9800</td>
+<td>-0.0050 (holds)</td>
+<td>0.9720 / 0.9730</td>
+<td>-0.0010 (holds)</td>
+<td>6836 / 2 (fails)</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46123694997">46123694997</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>tier-m1-insert</code> / <code>tier-m1</code></td>
+<td>0.9824 / 0.9865</td>
+<td>-0.0041 (holds)</td>
+<td>0.9760 / 0.9710</td>
+<td>+0.0050 (holds)</td>
+<td>8391 / 0 (fails)</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46123694997">46123694997</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>graph-a10</code> / <code>rebuild</code></td>
+<td>0.9700 / 0.9793</td>
+<td>-0.0093 (fails)</td>
+<td>0.9730 / 0.9790</td>
+<td>-0.0060 (holds)</td>
+<td>8469 / 0 (fails)</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46123696956">46123696956</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>tier-m1-insert</code> / <code>tier-m1</code></td>
+<td>0.9810 / 0.9850</td>
+<td>-0.0040 (holds)</td>
+<td>0.9800 / 0.9830</td>
+<td>-0.0030 (holds)</td>
+<td>8105 / 0 (fails)</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46123696956">46123696956</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Seed</th>
+<th>Variant</th>
+<th>First checkpoint with more than 10 unreached rows</th>
+<th>Checkpoints above 10</th>
+<th>Cross-cluster share at checkpoint 15</th>
+<th>The control's</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>graph-a10</code></td>
+<td>5</td>
+<td>8 of 16</td>
+<td>0.0008</td>
+<td>0.0142</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>tier-m1-insert</code></td>
+<td>5</td>
+<td>9 of 16</td>
+<td>0.0004</td>
+<td>0.0116</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>graph-a10</code></td>
+<td>7</td>
+<td>8 of 16</td>
+<td>0.0001</td>
+<td>0.0153</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>tier-m1-insert</code></td>
+<td>4</td>
+<td>12 of 16</td>
+<td>0.0006</td>
+<td>0.0130</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>graph-a10</code></td>
+<td>5</td>
+<td>9 of 16</td>
+<td>0.0002</td>
+<td>0.0148</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>tier-m1-insert</code></td>
+<td>5</td>
+<td>11 of 16</td>
+<td>0.0002</td>
+<td>0.0118</td>
+</tr>
+</tbody>
+</table>
+<p>S6 failed, also at the default <code>alpha</code> 1.0. The live graph and the insert merge both came apart on layer 0 with every seed, while no control had more than 2 unreached rows at any checkpoint, and they ended with far fewer edges between clusters than their controls. Recall stayed within its bounds in all comparisons but one while this happened. A probable reason, read from the code and not measured, is that a search starts layer 0 at the node that the upper layers lead to. <code>graph-a12</code>, which the bar does not judge, had a <code>recallChurnMean</code> 0.0448 to 0.0751 below that of <code>rebuild</code>, and up to 9,223 unreached rows. <code>INSERT</code> so stays off by default.</p>
 
 
 
