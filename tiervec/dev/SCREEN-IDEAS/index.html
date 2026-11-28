@@ -1112,6 +1112,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#s9-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S9 results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#segments-against-one-graph-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Segments against one graph: results
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1603,6 +1625,28 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#s9-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S9 results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#segments-against-one-graph-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Segments against one graph: results
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1808,6 +1852,7 @@
 <li>A distance computation is not a time. A computation on quantized codes counts as one, each library runs its own kernels, and the arms run at fixed settings, not at matched recall. The write cost of Lucene includes the refresh that the replay asks for before every search, which on a shape that probes every write is one refresh per write.</li>
 <li>A shape that segments lose goes to a timed run, under rules written before that run. A screen changes no default.</li>
 </ul>
+<p>The rule was applied to screen runs on 2026-11-28: segments lose on none of the shapes that it judges (<a href="#segments-against-one-graph-results">results</a>).</p>
 <h2 id="how-to-add-an-idea">How to add an idea<a class="headerlink" href="#how-to-add-an-idea" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Add a row below with its source, hypothesis, and pass bar, and the status <code>not run</code>. The bar names a shape, a column of <code>results.tsv</code>, and a number.</li>
@@ -1888,7 +1933,7 @@
 <td>The <a href="#the-long-churn">long churn</a> of the live graph at <code>alpha</code> 1.2 in two passes (<a href="#s4-results">S4</a>), <a href="https://github.com/humemai/tiervec/issues/161#issuecomment-7237301893">proposed on #161</a></td>
 <td>A graph at <code>alpha</code> 1.2 in two passes lives through 15 turnovers with the recall of a rebuild. It is not expected to: at checkpoint 10 of S4 on <code>a10k</code> its share of edges between clusters was 0.0001 to 0.0003, below the 0.0004 to 0.0006 of <code>alpha</code> 1.0, which came apart in the long churn</td>
 <td>The bar of S6 for the live graph, at <code>alpha</code> 1.2. On <code>a10k</code> with <code>--turnover 15 --checkpoints 15</code>, with each of the seeds 1, 2, and 3: for <code>graph-a12</code> against <code>rebuild</code>, <code>recallChurnMean</code> is at least the control's minus 0.005 and <code>recallFinal</code> at least the control's minus 0.01; and <code>unreached</code> of <code>graph-a12</code> in <code>graph.tsv</code> is at most 10 at every checkpoint. The insert merge is not judged, because the long churn runs it at the default <code>alpha</code> only</td>
-<td>not run</td>
+<td>failed: <code>graph-a12</code> missed the bound on unreached rows with every seed (up to 9,213 rows), and the mean-recall bound with seed 3 (0.0060 below <code>rebuild</code>); the final-recall bound held (<a href="#s9-results">results</a>)</td>
 </tr>
 </tbody>
 </table>
@@ -2462,7 +2507,7 @@
 </tbody>
 </table>
 <p>With one pass, in the runs of <a href="#s1-results">S1</a>, <code>recallChurnMean</code> of <code>graph-a12</code> was 0.9140 to 0.9508 on <code>a10k</code> and 0.7565 to 0.7694 on <code>p2000</code>; with two passes it was 0.9741 to 0.9771 and 0.9998 to 0.9999. At <code>alpha</code> 1.0 nothing moved: with every seed and on both shapes, <code>recallChurnMean</code>, <code>recallFinal</code>, <code>recallLowest</code>, <code>distancesPerSearch</code>, and <code>distancesPerRowWritten</code> of <code>graph-a10</code> equal those of the S1 runs on commit <code>9754ef8</code>.</p>
-<p>Two passes bring <code>alpha</code> 1.2 level with <code>alpha</code> 1.0 in recall, not clearly above it: the difference was -0.0004 to +0.0030 on <code>a10k</code> and +0.0002 to +0.0005 on <code>p2000</code>. The writes cost much more. A written row took 2.5 times the distance computations of <code>graph-a10</code> on <code>a10k</code> and 3.6 times on <code>p2000</code>, which is 1.19 to 1.23 and 1.29 to 1.30 times those of one pass at <code>alpha</code> 1.2. The default <code>alpha</code> stays 1.0. The runs cover three turnovers. At checkpoint 10 <code>graph-a12</code> had a smaller share of edges between clusters than <code>graph-a10</code> in every run and shape, and the <a href="#the-long-churn">long churn</a>, in which <code>graph-a10</code> came apart, has not been run with two passes. Nothing is timed. The library's fast tests passed on the same commit (run <a href="https://github.com/humemai/tiervec/actions/runs/46125748729">46125748729</a>).</p>
+<p>Two passes bring <code>alpha</code> 1.2 level with <code>alpha</code> 1.0 in recall, not clearly above it: the difference was -0.0004 to +0.0030 on <code>a10k</code> and +0.0002 to +0.0005 on <code>p2000</code>. The writes cost much more. A written row took 2.5 times the distance computations of <code>graph-a10</code> on <code>a10k</code> and 3.6 times on <code>p2000</code>, which is 1.19 to 1.23 and 1.29 to 1.30 times those of one pass at <code>alpha</code> 1.2. The default <code>alpha</code> stays 1.0. The runs cover three turnovers. At checkpoint 10 <code>graph-a12</code> had a smaller share of edges between clusters than <code>graph-a10</code> in every run and shape, and the <a href="#the-long-churn">long churn</a>, in which <code>graph-a10</code> came apart, was not part of these runs; it ran with two passes afterwards (<a href="#s9-results">S9</a>). Nothing is timed. The library's fast tests passed on the same commit (run <a href="https://github.com/humemai/tiervec/actions/runs/46125748729">46125748729</a>).</p>
 <h3 id="s6-results">S6 results<a class="headerlink" href="#s6-results" title="Permanent link">&para;</a></h3>
 <p>The <a href="#the-long-churn">long churn</a> ran on commit <code>7ab31fd</code>, once per seed, with seed 1 on a runner with 8 vector lanes and the seeds 2 and 3 on runners with 16. No run has a failing violation. Each variant is compared with its control in the same run.</p>
 <table>
@@ -3200,6 +3245,761 @@
 <li>Filter calls are the price where no scan runs. With random filters at share 0.1, <code>walk</code> asked 2,288 to 2,295 times per query, <code>acorn</code> 8,100 to 8,108, and <code>navix</code> 10,613 to 10,631.</li>
 </ul>
 <p>Neither arm goes to a timed comparison as registered. A rule that uses a walk only where it gained here would be a new idea, with bars written before its run. The timed comparison and the adoption rule stay open on <a href="https://github.com/humemai/tiervec/issues/162">#162</a>, and the library is unchanged.</p>
+<h3 id="s9-results">S9 results<a class="headerlink" href="#s9-results" title="Permanent link">&para;</a></h3>
+<p>S9 failed. The runs are on commit <code>0191197</code> (<a href="https://github.com/humemai/tiervec/pull/188">#188</a>), once per seed, all on runners with 16 vector lanes, and none has a failing violation. <code>graph-a12</code> selects in two passes here (<a href="#s4-results">S4</a>) and is compared with <code>rebuild</code> in the same run. The columns for one pass come from the runs of <a href="#s6-results">S6</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Seed</th>
+<th><code>recallChurnMean</code> <code>graph-a12</code> / <code>rebuild</code></th>
+<th>Difference (needs -0.005 or more)</th>
+<th><code>recallFinal</code> <code>graph-a12</code> / <code>rebuild</code></th>
+<th>Difference (needs -0.01 or more)</th>
+<th>Most unreached rows at any checkpoint, <code>graph-a12</code> / <code>rebuild</code> (<code>graph-a12</code> at most 10)</th>
+<th>Run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0.9783 / 0.9799</td>
+<td>-0.0016 (holds)</td>
+<td>0.9800 / 0.9850</td>
+<td>-0.0050 (holds)</td>
+<td>9204 / 0 (fails)</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46134859212">46134859212</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>0.9769 / 0.9800</td>
+<td>-0.0031 (holds)</td>
+<td>0.9780 / 0.9730</td>
+<td>+0.0050 (holds)</td>
+<td>9213 / 2 (fails)</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46134861588">46134861588</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td>0.9733 / 0.9793</td>
+<td>-0.0060 (fails)</td>
+<td>0.9770 / 0.9790</td>
+<td>-0.0020 (holds)</td>
+<td>9139 / 0 (fails)</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46134863884">46134863884</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Seed</th>
+<th>First checkpoint with more than 10 unreached rows, two passes / one pass</th>
+<th>Checkpoints above 10, two passes / one pass</th>
+<th>Most unreached rows, two passes / one pass</th>
+<th>Cross-cluster share at checkpoint 15, two passes / one pass / <code>rebuild</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>4 / 1</td>
+<td>12 of 16 / 15 of 16</td>
+<td>9204 / 9212</td>
+<td>0.0003 / 0.0006 / 0.0142</td>
+</tr>
+<tr>
+<td>2</td>
+<td>6 / 1</td>
+<td>10 of 16 / 15 of 16</td>
+<td>9213 / 9223</td>
+<td>0.0000 / 0.0000 / 0.0153</td>
+</tr>
+<tr>
+<td>3</td>
+<td>4 / 1</td>
+<td>12 of 16 / 15 of 16</td>
+<td>9139 / 9138</td>
+<td>0.0000 / 0.0000 / 0.0148</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Seed</th>
+<th><code>recallChurnMean</code> of <code>graph-a12</code>, two passes / one pass</th>
+<th><code>distancesPerSearch</code>, two passes over <code>rebuild</code></th>
+<th>over <code>graph-a10</code></th>
+<th><code>distancesPerRowWritten</code>, two passes over <code>rebuild</code></th>
+<th>over <code>graph-a10</code></th>
+<th>over one pass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0.9783 / 0.9313</td>
+<td>1.140</td>
+<td>1.041</td>
+<td>7.236</td>
+<td>2.460</td>
+<td>1.357</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0.9769 / 0.9049</td>
+<td>1.134</td>
+<td>1.042</td>
+<td>6.992</td>
+<td>2.480</td>
+<td>1.330</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0.9733 / 0.9345</td>
+<td>1.129</td>
+<td>1.039</td>
+<td>7.246</td>
+<td>2.678</td>
+<td>1.360</td>
+</tr>
+</tbody>
+</table>
+<p>The bound on unreached rows failed with every seed: at its worst checkpoint <code>graph-a12</code> left 9,139 to 9,213 of 10,000 rows unreached at layer 0, and <code>rebuild</code> at most 2. The mean-recall bound failed with seed 3, and the final-recall bound held with every seed. The graph came apart, as was expected when the bar was registered. The default <code>alpha</code> stays 1.0.</p>
+<p>Two passes still did better than one. <code>recallChurnMean</code> was 0.0016 to 0.0060 below that of <code>rebuild</code>, against 0.0448 to 0.0751 with one pass, and more than 10 rows were first unreached at checkpoint 4 to 6, against checkpoint 1. The most unreached rows stayed about the same (9,138 to 9,223 with one pass). A written row took 1.33 to 1.36 times the distance computations of one pass, 2.46 to 2.68 times those of <code>graph-a10</code>, and 6.99 to 7.25 times those of <code>rebuild</code>.</p>
+<p>The other four variants repeat their runs of S6. With the seeds 2 and 3, every column of <code>results.tsv</code> but the heap and all of <code>graph.tsv</code> are equal. With seed 1, whose runner in S6 had 8 vector lanes, one <code>distancesPerRowWritten</code> differs by 0.1 and a few cells of <code>graph.tsv</code> differ, while the unreached rows are equal at every checkpoint.</p>
+<h3 id="segments-against-one-graph-results">Segments against one graph: results<a class="headerlink" href="#segments-against-one-graph-results" title="Permanent link">&para;</a></h3>
+<p>By the <a href="#when-segments-lose-on-a-shape">rule</a>, segments lose on no shape that it judges, so it sends no shape to a timed run. These are screen results on generated data: nothing is timed, and no default changes.</p>
+<p>The runs are on commit <code>86d0138</code> (<a href="https://github.com/humemai/tiervec/pull/187">#187</a>), once per seed (<a href="https://github.com/humemai/tiervec/actions/runs/46135169572">46135169572</a> with seed 1, <a href="https://github.com/humemai/tiervec/actions/runs/46135171683">46135171683</a> with seed 2, <a href="https://github.com/humemai/tiervec/actions/runs/46135174329">46135174329</a> with seed 3), all on runners with 16 vector lanes, and none has a failing violation. <code>tier</code> built no graph on <code>p20</code> and <code>p200</code> (<code>rowsBuiltPerRowWritten</code> 0.000 with every seed), so the rule judges neither; their numbers are in the summaries of the runs. It judges <code>p2000</code> and <code>a10k</code>.</p>
+<p>The cells of the first table say with how many of the three seeds a condition holds.</p>
+<table>
+<thead>
+<tr>
+<th>Shape</th>
+<th>Challenger</th>
+<th>No failing violation</th>
+<th>No short search</th>
+<th><code>recallChurnMean</code> at most 0.005 below <code>tier</code></th>
+<th><code>distancesPerSearch</code> at most that of <code>tier</code></th>
+<th><code>distancesPerRowWritten</code> below that of <code>tier</code></th>
+<th>Segments lose to it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>p2000</code></td>
+<td><code>graph-a10</code></td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>graph-a12</code></td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>jvector</code></td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>jvector-a10</code></td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>lucene</code></td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>lucene-int8</code></td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>graph-a10</code></td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>graph-a12</code></td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>jvector</code></td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>jvector-a10</code></td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>lucene</code></td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>no</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>lucene-int8</code></td>
+<td>3 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>3 of 3</td>
+<td>0 of 3</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Shape</th>
+<th>Challenger</th>
+<th>Seed</th>
+<th>Failing violations (0)</th>
+<th>Short searches (0)</th>
+<th><code>recallChurnMean</code>, challenger / <code>tier</code></th>
+<th>Difference (needs -0.005 or more)</th>
+<th><code>distancesPerSearch</code>, challenger / <code>tier</code></th>
+<th>Ratio (at most 1)</th>
+<th><code>distancesPerRowWritten</code>, challenger / <code>tier</code></th>
+<th>Ratio (below 1)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>p2000</code></td>
+<td><code>graph-a10</code></td>
+<td>1</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9994 / 0.9999</td>
+<td>-0.0005 (holds)</td>
+<td>444.9 / 1559.1</td>
+<td>0.285 (holds)</td>
+<td>2864.7 / 1388.6</td>
+<td>2.063 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>graph-a10</code></td>
+<td>2</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9994 / 0.9999</td>
+<td>-0.0005 (holds)</td>
+<td>448.6 / 1567.3</td>
+<td>0.286 (holds)</td>
+<td>2863.4 / 1379.5</td>
+<td>2.076 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>graph-a10</code></td>
+<td>3</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9997 / 1.0000</td>
+<td>-0.0003 (holds)</td>
+<td>444.8 / 1570.2</td>
+<td>0.283 (holds)</td>
+<td>2858.8 / 1390.0</td>
+<td>2.057 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>graph-a12</code></td>
+<td>1</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9998 / 0.9999</td>
+<td>-0.0001 (holds)</td>
+<td>442.2 / 1559.1</td>
+<td>0.284 (holds)</td>
+<td>10294.9 / 1388.6</td>
+<td>7.414 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>graph-a12</code></td>
+<td>2</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9999 / 0.9999</td>
+<td>+0.0000 (holds)</td>
+<td>444.9 / 1567.3</td>
+<td>0.284 (holds)</td>
+<td>10340.2 / 1379.5</td>
+<td>7.496 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>graph-a12</code></td>
+<td>3</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9999 / 1.0000</td>
+<td>-0.0001 (holds)</td>
+<td>440.3 / 1570.2</td>
+<td>0.280 (holds)</td>
+<td>10332.0 / 1390.0</td>
+<td>7.433 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>jvector</code></td>
+<td>1</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9845 / 0.9999</td>
+<td>-0.0154 (fails)</td>
+<td>409.2 / 1559.1</td>
+<td>0.262 (holds)</td>
+<td>5747.9 / 1388.6</td>
+<td>4.139 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>jvector</code></td>
+<td>2</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9904 / 0.9999</td>
+<td>-0.0095 (fails)</td>
+<td>411.5 / 1567.3</td>
+<td>0.263 (holds)</td>
+<td>5781.8 / 1379.5</td>
+<td>4.191 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>jvector</code></td>
+<td>3</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9842 / 1.0000</td>
+<td>-0.0158 (fails)</td>
+<td>409.6 / 1570.2</td>
+<td>0.261 (holds)</td>
+<td>5766.3 / 1390.0</td>
+<td>4.148 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>jvector-a10</code></td>
+<td>1</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9844 / 0.9999</td>
+<td>-0.0155 (fails)</td>
+<td>409.4 / 1559.1</td>
+<td>0.263 (holds)</td>
+<td>1423.0 / 1388.6</td>
+<td>1.025 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>jvector-a10</code></td>
+<td>2</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9896 / 0.9999</td>
+<td>-0.0103 (fails)</td>
+<td>411.0 / 1567.3</td>
+<td>0.262 (holds)</td>
+<td>1427.2 / 1379.5</td>
+<td>1.035 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>jvector-a10</code></td>
+<td>3</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9836 / 1.0000</td>
+<td>-0.0164 (fails)</td>
+<td>408.2 / 1570.2</td>
+<td>0.260 (holds)</td>
+<td>1425.4 / 1390.0</td>
+<td>1.025 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>lucene</code></td>
+<td>1</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9999 / 0.9999</td>
+<td>+0.0000 (holds)</td>
+<td>763.7 / 1559.1</td>
+<td>0.490 (holds)</td>
+<td>5793.7 / 1388.6</td>
+<td>4.172 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>lucene</code></td>
+<td>2</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9999 / 0.9999</td>
+<td>+0.0000 (holds)</td>
+<td>751.9 / 1567.3</td>
+<td>0.480 (holds)</td>
+<td>5806.2 / 1379.5</td>
+<td>4.209 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>lucene</code></td>
+<td>3</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9999 / 1.0000</td>
+<td>-0.0001 (holds)</td>
+<td>759.2 / 1570.2</td>
+<td>0.484 (holds)</td>
+<td>5780.2 / 1390.0</td>
+<td>4.158 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>lucene-int8</code></td>
+<td>1</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>1.0000 / 0.9999</td>
+<td>+0.0001 (holds)</td>
+<td>819.6 / 1559.1</td>
+<td>0.526 (holds)</td>
+<td>5922.4 / 1388.6</td>
+<td>4.265 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>lucene-int8</code></td>
+<td>2</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9999 / 0.9999</td>
+<td>+0.0000 (holds)</td>
+<td>842.2 / 1567.3</td>
+<td>0.537 (holds)</td>
+<td>5908.0 / 1379.5</td>
+<td>4.283 (fails)</td>
+</tr>
+<tr>
+<td><code>p2000</code></td>
+<td><code>lucene-int8</code></td>
+<td>3</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>1.0000 / 1.0000</td>
+<td>+0.0000 (holds)</td>
+<td>834.3 / 1570.2</td>
+<td>0.531 (holds)</td>
+<td>5835.5 / 1390.0</td>
+<td>4.198 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>graph-a10</code></td>
+<td>1</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9747 / 0.9991</td>
+<td>-0.0244 (fails)</td>
+<td>1218.4 / 5326.5</td>
+<td>0.229 (holds)</td>
+<td>5256.9 / 3131.0</td>
+<td>1.679 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>graph-a10</code></td>
+<td>2</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9741 / 0.9993</td>
+<td>-0.0252 (fails)</td>
+<td>1228.9 / 5313.4</td>
+<td>0.231 (holds)</td>
+<td>5214.7 / 3152.5</td>
+<td>1.654 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>graph-a10</code></td>
+<td>3</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9733 / 0.9991</td>
+<td>-0.0258 (fails)</td>
+<td>1231.0 / 5472.9</td>
+<td>0.225 (holds)</td>
+<td>5264.8 / 3153.2</td>
+<td>1.670 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>graph-a12</code></td>
+<td>1</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9743 / 0.9991</td>
+<td>-0.0248 (fails)</td>
+<td>1261.1 / 5326.5</td>
+<td>0.237 (holds)</td>
+<td>13228.3 / 3131.0</td>
+<td>4.225 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>graph-a12</code></td>
+<td>2</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9771 / 0.9993</td>
+<td>-0.0222 (fails)</td>
+<td>1269.1 / 5313.4</td>
+<td>0.239 (holds)</td>
+<td>13145.2 / 3152.5</td>
+<td>4.170 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>graph-a12</code></td>
+<td>3</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9741 / 0.9991</td>
+<td>-0.0250 (fails)</td>
+<td>1271.8 / 5472.9</td>
+<td>0.232 (holds)</td>
+<td>13238.5 / 3153.2</td>
+<td>4.198 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>jvector</code></td>
+<td>1</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9748 / 0.9991</td>
+<td>-0.0243 (fails)</td>
+<td>1279.0 / 5326.5</td>
+<td>0.240 (holds)</td>
+<td>6728.0 / 3131.0</td>
+<td>2.149 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>jvector</code></td>
+<td>2</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9806 / 0.9993</td>
+<td>-0.0187 (fails)</td>
+<td>1284.9 / 5313.4</td>
+<td>0.242 (holds)</td>
+<td>6725.5 / 3152.5</td>
+<td>2.133 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>jvector</code></td>
+<td>3</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9725 / 0.9991</td>
+<td>-0.0266 (fails)</td>
+<td>1290.8 / 5472.9</td>
+<td>0.236 (holds)</td>
+<td>6742.1 / 3153.2</td>
+<td>2.138 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>jvector-a10</code></td>
+<td>1</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9732 / 0.9991</td>
+<td>-0.0259 (fails)</td>
+<td>1247.9 / 5326.5</td>
+<td>0.234 (holds)</td>
+<td>3006.1 / 3131.0</td>
+<td>0.960 (holds)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>jvector-a10</code></td>
+<td>2</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9719 / 0.9993</td>
+<td>-0.0274 (fails)</td>
+<td>1255.8 / 5313.4</td>
+<td>0.236 (holds)</td>
+<td>2995.8 / 3152.5</td>
+<td>0.950 (holds)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>jvector-a10</code></td>
+<td>3</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9649 / 0.9991</td>
+<td>-0.0342 (fails)</td>
+<td>1255.6 / 5472.9</td>
+<td>0.229 (holds)</td>
+<td>3018.7 / 3153.2</td>
+<td>0.957 (holds)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>lucene</code></td>
+<td>1</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9926 / 0.9991</td>
+<td>-0.0065 (fails)</td>
+<td>1952.3 / 5326.5</td>
+<td>0.367 (holds)</td>
+<td>9314.7 / 3131.0</td>
+<td>2.975 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>lucene</code></td>
+<td>2</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9861 / 0.9993</td>
+<td>-0.0132 (fails)</td>
+<td>1922.8 / 5313.4</td>
+<td>0.362 (holds)</td>
+<td>9264.6 / 3152.5</td>
+<td>2.939 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>lucene</code></td>
+<td>3</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9872 / 0.9991</td>
+<td>-0.0119 (fails)</td>
+<td>1885.6 / 5472.9</td>
+<td>0.345 (holds)</td>
+<td>9266.5 / 3153.2</td>
+<td>2.939 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>lucene-int8</code></td>
+<td>1</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9933 / 0.9991</td>
+<td>-0.0058 (fails)</td>
+<td>2002.6 / 5326.5</td>
+<td>0.376 (holds)</td>
+<td>9237.0 / 3131.0</td>
+<td>2.950 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>lucene-int8</code></td>
+<td>2</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9903 / 0.9993</td>
+<td>-0.0090 (fails)</td>
+<td>2101.3 / 5313.4</td>
+<td>0.395 (holds)</td>
+<td>9235.1 / 3152.5</td>
+<td>2.929 (fails)</td>
+</tr>
+<tr>
+<td><code>a10k</code></td>
+<td><code>lucene-int8</code></td>
+<td>3</td>
+<td>0 (holds)</td>
+<td>0 (holds)</td>
+<td>0.9907 / 0.9991</td>
+<td>-0.0084 (fails)</td>
+<td>2090.6 / 5472.9</td>
+<td>0.382 (holds)</td>
+<td>9218.1 / 3153.2</td>
+<td>2.923 (fails)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>On <code>p2000</code>, <code>graph-a10</code>, <code>graph-a12</code>, <code>lucene</code>, and <code>lucene-int8</code> held the recall bound with every seed and computed 0.280 to 0.537 times the distances of <code>tier</code> per search, but 2.057 to 7.496 times per written row. <code>jvector</code> and <code>jvector-a10</code> missed the recall bound, 0.0095 to 0.0164 below <code>tier</code>, and computed 1.025 to 4.191 times the distances per written row. This shape probes every write, so the write cost of the Lucene arms includes one refresh per write.</li>
+<li>On <code>a10k</code>, every challenger missed the recall bound with every seed, 0.0058 to 0.0342 below <code>tier</code>, and computed 0.225 to 0.395 times the distances per search. Only <code>jvector-a10</code> computed fewer distances per written row than <code>tier</code> (0.950 to 0.960 times); the others computed 1.654 to 4.225 times as many.</li>
+</ul>
+<p>This does not show that segments are better. Every challenger computed fewer distances per search than <code>tier</code> on both shapes, and the rule does not rank a trade between columns. A distance computation is not a time, and the arms ran at fixed settings, not at matched recall.</p>
 
 
 
