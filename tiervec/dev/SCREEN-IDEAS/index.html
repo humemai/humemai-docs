@@ -1007,6 +1007,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#the-filter-screen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The filter screen
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1084,6 +1095,17 @@
     <span class="md-ellipsis">
       
         S6 results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s7-and-s8-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S7 and S8 results
       
     </span>
   </a>
@@ -1476,6 +1498,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#the-filter-screen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The filter screen
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1553,6 +1586,17 @@
     <span class="md-ellipsis">
       
         S6 results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s7-and-s8-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S7 and S8 results
       
     </span>
   </a>
@@ -1826,6 +1870,20 @@
 <td>failed: <code>graph-a10</code> and <code>tier-m1-insert</code> missed the bound on unreached rows with every seed (up to 8,523 rows), and <code>graph-a10</code> also missed the mean-recall bound with seed 3; the final-recall bounds held (<a href="#s6-results">results</a>)</td>
 </tr>
 <tr>
+<td>S7</td>
+<td>A filter-aware walk after Lucene's ACORN-1 based search: only rows that pass are scored, and neighbors that fail are expanded to their own neighbors. <a href="https://arxiv.org/abs/2403.04871">ACORN</a> (section 5.3), Lucene's <a href="https://github.com/apache/lucene/blob/main/lucene/core/src/java/org/apache/lucene/util/hnsw/FilteredHnswGraphSearcher.java"><code>FilteredHnswGraphSearcher</code></a> (<a href="https://github.com/apache/lucene/pull/14160">apache/lucene#14160</a>), arm <code>acorn</code>; <a href="https://github.com/humemai/tiervec/issues/162">#162</a></td>
+<td>On the existing graph, where the shipped walk spends distances on rows that fail, this walk keeps its recall with fewer distance computations than both the walk and a scan</td>
+<td>The three bars of the <a href="#the-filter-screen">filter screen</a>, with each of the seeds 1, 2, and 3</td>
+<td>failed: missed bar 1 at random 0.01 with every seed; missed bar 3 at positive 0.1 and negative 0.1 with every seed; bar 2 held (<a href="#s7-and-s8-results">results</a>)</td>
+</tr>
+<tr>
+<td>S8</td>
+<td>The adaptive-local walk of <a href="https://arxiv.org/abs/2506.23397">NaviX</a> (section 3): at each node, the share of its neighbors that pass picks one of three rules, arm <code>navix</code>; <a href="https://github.com/humemai/tiervec/issues/162">#162</a></td>
+<td>As S7, and because the rule follows the share near each node, it holds when the filter is correlated with the query</td>
+<td>The three bars of the <a href="#the-filter-screen">filter screen</a>, with each of the seeds 1, 2, and 3</td>
+<td>failed: missed bar 1 at random 0.01, positive 0.1, and negative 0.5 with every seed; missed bar 3 at negative 0.1 with every seed and at positive 0.1 with seed 3; bar 2 held (<a href="#s7-and-s8-results">results</a>)</td>
+</tr>
+<tr>
 <td>S9</td>
 <td>The <a href="#the-long-churn">long churn</a> of the live graph at <code>alpha</code> 1.2 in two passes (<a href="#s4-results">S4</a>), <a href="https://github.com/humemai/tiervec/issues/161#issuecomment-7237301893">proposed on #161</a></td>
 <td>A graph at <code>alpha</code> 1.2 in two passes lives through 15 turnovers with the recall of a rebuild. It is not expected to: at checkpoint 10 of S4 on <code>a10k</code> its share of edges between clusters was 0.0001 to 0.0003, below the 0.0004 to 0.0006 of <code>alpha</code> 1.0, which came apart in the long churn</td>
@@ -1837,6 +1895,53 @@
 <h3 id="the-long-churn">The long churn<a class="headerlink" href="#the-long-churn" title="Permanent link">&para;</a></h3>
 <p><code>--turnover 15 --checkpoints 15</code> on <code>a10k</code>: 150 rounds, each retiring a tenth of the rows, with a checkpoint every 10 rounds, on the data and the write mix of the screen. The rows that arrive come from one cluster after another, so the distribution goes around the 8 clusters many times. The control of the live graph is the arm <code>rebuild</code>, a new graph from the live rows at every checkpoint; the control of the insert merge is <code>tier-m1</code>, whose every merge rebuilds the same layout. The variants are <code>graph-a10</code>, <code>graph-a12</code>, <code>rebuild</code>, <code>tier-m1</code>, and <code>tier-m1-insert</code>. The bars of S4, S5, and S6 were written on 2026-11-28, before any run of them. The bar of S9 was written on 2026-11-28, after the runs of S4 and S6 and before any long churn with two passes.</p>
 <p>The bars of S1 and S2 were changed on 2026-11-28, before their first run on <code>a10k</code>. They named <code>recallLowest</code> (see <a href="#the-data-of-the-screen">above</a>), one seed, and for S2 the default tier. At the default <code>maxSegments</code> of 8 the count rule merges the smallest segments, so by the code the largest one, which <code>MergeMode.INSERT</code> needs, is not among them under churn. S2 is so judged with <code>maxSegments</code> 1, where every merge takes the largest segment; <code>tier</code> and <code>tier-insert</code> still run, to show what the default layout does.</p>
+<h3 id="the-filter-screen">The filter screen<a class="headerlink" href="#the-filter-screen" title="Permanent link">&para;</a></h3>
+<p>The screen of S7 and S8. It replays no runbook: the program <code>FilterScreen</code> (in <code>src/bench/java</code>) builds one graph and searches it with filters. <code>gh workflow run screen.yml --ref &lt;branch&gt; -f program=filtered-walk</code> runs it once for each of the seeds 1, 2, and 3. The cells, the arms, and the bars were written on 2026-11-28, before the program or any run of it existed.</p>
+<p><strong>Data and graph.</strong> 100,000 rows of 768 dimensions, cosine, drawn as the screen draws them (8 clusters, noise of length 0.8 in every dimension), except that each row takes one of all 8 clusters at random (the load of a runbook fills half of them). A query is a new row of a random cluster. No row is deleted. One <code>GraphIndex</code> with the default parameters (<code>M</code> 16, <code>efConstruction</code> 200, <code>alpha</code> 1.0, fp32) is built on one thread and sealed, so it is a <code>SealedGraph</code>, what a tier searches as a segment. All arms search that one graph with <code>k</code> 10 and <code>ef</code> 100, and the same 500 queries are used in every cell.</p>
+<p><strong>Cells.</strong> The allowed shares 0.5, 0.1, 0.01, and 0.001 (50,000, 10,000, 1,000, and 100 rows), each with three filters:</p>
+<ul>
+<li><code>random</code>: a new uniform choice of rows for each query.</li>
+<li><code>positive</code>: the clusters in the order of the similarity of their centre to the query, the most similar first. Whole clusters are allowed in this order until the next one does not fit, and from that one a uniform choice fills the share.</li>
+<li><code>negative</code>: the same with the least similar cluster first.</li>
+</ul>
+<p>Each cell reports its correlation as <a href="https://arxiv.org/abs/2506.23397">NaviX</a> measures it, here with 100 neighbors: the share of the 100 nearest of all rows that are allowed, divided by the allowed share. 1 means no correlation.</p>
+<p><strong>Arms.</strong></p>
+<ul>
+<li><code>walk</code>: the shipped filtered search with <code>filterScanBelow</code> 0. The walk traverses every neighbor and collects those that pass. When it has computed more than <code>max(50 * ef, rows / 20)</code> distances, 5,000 here, and has collected fewer than <code>ef</code>, an exact scan follows.</li>
+<li><code>scanfirst</code>: the shipped filtered search with <code>filterScanBelow</code> 1: the upper layers, the 256-row sample of the share, then the exact scan.</li>
+<li><code>acorn</code> (S7) and <code>navix</code> (S8): benchmark code only. The upper layers are searched as shipped, without the filter. On layer 0 the node reached there is a candidate whether it passes or not, and apart from it only rows that pass become candidates. A walk stops when its nearest candidate is farther than the worst of <code>ef</code> collected rows, or when it has computed more than 5,000 distances on layer 0. A walk that ends with fewer than <code>ef</code> rows collected, for either reason or because no candidate is left, is followed by the exact scan. The predicate is asked at most once per row in a walk; a scan asks it again.</li>
+</ul>
+<p><code>acorn</code>, from the Lucene source above, with <code>r</code> the share of the rows of the 256-row sample that pass (Lucene knows the count of its filter) and <code>M</code> 16:</p>
+<ul>
+<li>At <code>r</code> of 0.6 or more (Lucene's default threshold) the shipped walk is used.</li>
+<li>The expansion multiplier is <code>round(min(1 / r, M / 2))</code>, and the minimum to find is <code>round(min(max(0, 1 / r - 2 * M), M))</code>.</li>
+<li>At each candidate, the neighbors not seen before are split into passing and failing ones. The target is the degree of the candidate times <code>min(multiplier, 1 / (1 - f))</code>, rounded down, where <code>f</code> is the number of failing ones over the degree. If <code>f</code> is above 0.10 and fewer passing rows than the target were found, the neighbors of the failing ones are read in list order, until the target is reached or the rows looked at reach <code>2 * M * multiplier - 1</code>. A failing row of this second step is expanded as well while fewer passing rows than the minimum were found.</li>
+<li>The passing rows found this way are then scored.</li>
+</ul>
+<p><code>navix</code>, from section 3 of the paper, with <code>D</code> 32, the degree limit of layer 0 (the paper writes <code>M</code> for the limit that its rule counts to):</p>
+<ul>
+<li>At each candidate, <code>s</code> is the share of all its layer-0 neighbors that pass.</li>
+<li><code>s</code> of 0.5 or more (<code>onehop-s</code>): score the passing neighbors.</li>
+<li>Otherwise, if <code>s * (D + 1) * D</code> is below <code>3 * D</code> (<code>blind</code>): score the passing neighbors, then read the neighbor lists of all neighbors in list order and score passing rows from them, until <code>D</code> rows were scored at this candidate.</li>
+<li>Otherwise (<code>directed</code>): compute the distance of every neighbor, passing or not, score the passing ones, then read the neighbor lists in the order of increasing distance of the neighbor and score passing rows from them, until <code>D</code> rows were scored at this candidate.</li>
+<li>"Scored at this candidate" counts passing rows that were not scored before in this walk.</li>
+</ul>
+<p><strong>Figures.</strong> Per seed, cell, and arm, in <code>filter.tsv</code>:</p>
+<ul>
+<li><code>recall</code>: recall@10 against a brute force scan of the allowed rows, made by the benchmark's own loop.</li>
+<li><code>distancesPerQuery</code>: distance computations of a query on all layers, a scan included, counted by the instrumented kernels. The brute force of the benchmark is not counted.</li>
+<li><code>filterCallsPerQuery</code>: calls of the predicate, with those of the share sample and of a scan.</li>
+<li><code>scanRate</code>: the share of the queries answered by an exact scan (1 for <code>scanfirst</code>).</li>
+<li><code>shortAnswers</code>: queries with fewer than 10 hits.</li>
+</ul>
+<p>A hit that the filter does not allow fails the run.</p>
+<p><strong>Pass bars</strong>, judged for S7 and for S8 separately. Each holds with each of the seeds 1, 2, and 3, with the arm and <code>walk</code> from the same run:</p>
+<ol>
+<li>Recall: in each of the 12 cells, <code>recall</code> of the arm is at least that of <code>walk</code> minus 0.01.</li>
+<li>Cost: in each of the 12 cells, <code>distancesPerQuery</code> of the arm is at most 1.1 times that of <code>walk</code>.</li>
+<li>Gain: in each of the three cells with share 0.1, <code>distancesPerQuery</code> of the arm is at most 0.7 times the smaller of those of <code>walk</code> and <code>scanfirst</code>.</li>
+</ol>
+<p>An idea passes when all three hold. <code>filterCallsPerQuery</code> and <code>scanRate</code> have no bar: what a call costs depends on the predicate of the host, so the timed comparison has to weigh them. A screen times nothing. A pass only sends an arm to the timed comparison of <a href="https://github.com/humemai/tiervec/issues/162">#162</a>, under the adoption rule that is to be written there before it, and no default or threshold changes.</p>
 <h2 id="results">Results<a class="headerlink" href="#results" title="Permanent link">&para;</a></h2>
 <p>All runs are the screen preset on its data above, and none has a violation. Nothing is timed. Every variant and shape ran on commit <code>9754ef8</code> (<a href="https://github.com/humemai/tiervec/pull/177">#177</a>), the commit with the bars, once for each of the seeds 1, 2, and 3.</p>
 <h3 id="s1-results">S1 results<a class="headerlink" href="#s1-results" title="Permanent link">&para;</a></h3>
@@ -2499,6 +2604,602 @@
 </tbody>
 </table>
 <p>S6 failed, also at the default <code>alpha</code> 1.0. The live graph and the insert merge both came apart on layer 0 with every seed, while no control had more than 2 unreached rows at any checkpoint, and they ended with far fewer edges between clusters than their controls. Recall stayed within its bounds in all comparisons but one while this happened. A probable reason, read from the code and not measured, is that a search starts layer 0 at the node that the upper layers lead to. <code>graph-a12</code>, which the bar does not judge and which here still selected in one pass, had a <code>recallChurnMean</code> 0.0448 to 0.0751 below that of <code>rebuild</code>, and up to 9,223 unreached rows. <code>INSERT</code> so stays off by default.</p>
+<h3 id="s7-and-s8-results">S7 and S8 results<a class="headerlink" href="#s7-and-s8-results" title="Permanent link">&para;</a></h3>
+<p>Both failed. Each held bar 2 in every cell and missed bars 1 and 3. The bars are those of commit <code>3dfa6b6</code>, written before the code and before the run, and are unchanged.</p>
+<p>The run is on commit <code>fb2fd59</code> (<a href="https://github.com/humemai/tiervec/pull/189">#189</a>), <a href="https://github.com/humemai/tiervec/actions/runs/46135128948">46135128948</a>, one job per seed. The vector lanes of the runners were 16 with seed 1, 16 with seed 2, and 8 with seed 3. No job has a failure, and no query of any arm had fewer than 10 hits. Without a filter, the graph at <code>ef</code> 100 has a recall of 0.7128 to 0.7238 with 2,244 to 2,249 distances per query, so this data is hard for the graph before any filter. The recall of the exact scan is 0.9998 or more and not always 1; a probable reason, not checked, is that the brute force of the benchmark and the kernels of the library round differently where two rows are about equally near.</p>
+<table>
+<thead>
+<tr>
+<th>Idea</th>
+<th>Bar</th>
+<th>Cells that hold, seed 1</th>
+<th>seed 2</th>
+<th>seed 3</th>
+<th>Holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S7 <code>acorn</code></td>
+<td>1, recall</td>
+<td>11 of 12</td>
+<td>11 of 12</td>
+<td>11 of 12</td>
+<td>no</td>
+</tr>
+<tr>
+<td>S7 <code>acorn</code></td>
+<td>2, cost</td>
+<td>12 of 12</td>
+<td>12 of 12</td>
+<td>12 of 12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>S7 <code>acorn</code></td>
+<td>3, gain at share 0.1</td>
+<td>1 of 3</td>
+<td>1 of 3</td>
+<td>1 of 3</td>
+<td>no</td>
+</tr>
+<tr>
+<td>S8 <code>navix</code></td>
+<td>1, recall</td>
+<td>9 of 12</td>
+<td>9 of 12</td>
+<td>9 of 12</td>
+<td>no</td>
+</tr>
+<tr>
+<td>S8 <code>navix</code></td>
+<td>2, cost</td>
+<td>12 of 12</td>
+<td>12 of 12</td>
+<td>12 of 12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>S8 <code>navix</code></td>
+<td>3, gain at share 0.1</td>
+<td>2 of 3</td>
+<td>2 of 3</td>
+<td>1 of 3</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<p>Every miss:</p>
+<table>
+<thead>
+<tr>
+<th>Idea</th>
+<th>Bar</th>
+<th>Filter</th>
+<th>Share</th>
+<th>Seeds that miss it</th>
+<th>Measured with those seeds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S7 <code>acorn</code></td>
+<td>1</td>
+<td>random</td>
+<td>0.01</td>
+<td>1, 2, 3</td>
+<td>recall below that of <code>walk</code> by 0.0432 to 0.0510</td>
+</tr>
+<tr>
+<td>S7 <code>acorn</code></td>
+<td>3</td>
+<td>positive</td>
+<td>0.1</td>
+<td>1, 2, 3</td>
+<td>1.029 to 1.041 times the distances of the cheaper plan</td>
+</tr>
+<tr>
+<td>S7 <code>acorn</code></td>
+<td>3</td>
+<td>negative</td>
+<td>0.1</td>
+<td>1, 2, 3</td>
+<td>1.000 times the distances of the cheaper plan</td>
+</tr>
+<tr>
+<td>S8 <code>navix</code></td>
+<td>1</td>
+<td>random</td>
+<td>0.01</td>
+<td>1, 2, 3</td>
+<td>recall below that of <code>walk</code> by 0.0246 to 0.0262</td>
+</tr>
+<tr>
+<td>S8 <code>navix</code></td>
+<td>1</td>
+<td>positive</td>
+<td>0.1</td>
+<td>1, 2, 3</td>
+<td>recall below that of <code>walk</code> by 0.0544 to 0.0580</td>
+</tr>
+<tr>
+<td>S8 <code>navix</code></td>
+<td>1</td>
+<td>negative</td>
+<td>0.5</td>
+<td>1, 2, 3</td>
+<td>recall below that of <code>walk</code> by 0.0300 to 0.0442</td>
+</tr>
+<tr>
+<td>S8 <code>navix</code></td>
+<td>3</td>
+<td>positive</td>
+<td>0.1</td>
+<td>3</td>
+<td>0.702 times the distances of the cheaper plan</td>
+</tr>
+<tr>
+<td>S8 <code>navix</code></td>
+<td>3</td>
+<td>negative</td>
+<td>0.1</td>
+<td>1, 2, 3</td>
+<td>0.989 to 0.997 times the distances of the cheaper plan</td>
+</tr>
+</tbody>
+</table>
+<p>Recall@10, the lowest to the highest of the three seeds:</p>
+<table>
+<thead>
+<tr>
+<th>Filter</th>
+<th>Share</th>
+<th>Correlation</th>
+<th><code>walk</code></th>
+<th><code>scanfirst</code></th>
+<th><code>acorn</code></th>
+<th><code>navix</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>random</td>
+<td>0.5</td>
+<td>1.00</td>
+<td>0.8314 to 0.8366</td>
+<td>1.0000</td>
+<td>0.8774 to 0.8828</td>
+<td>0.8396 to 0.8488</td>
+</tr>
+<tr>
+<td>random</td>
+<td>0.1</td>
+<td>0.99 to 1.00</td>
+<td>0.8602 to 0.8660</td>
+<td>1.0000</td>
+<td>0.9044 to 0.9120</td>
+<td>0.9854 to 0.9884</td>
+</tr>
+<tr>
+<td>random</td>
+<td>0.01</td>
+<td>0.96 to 1.04</td>
+<td>0.9998 to 1.0000</td>
+<td>0.9998 to 1.0000</td>
+<td>0.9490 to 0.9566</td>
+<td>0.9738 to 0.9754</td>
+</tr>
+<tr>
+<td>random</td>
+<td>0.001</td>
+<td>0.94 to 1.04</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>1.0000</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.5</td>
+<td>2.00</td>
+<td>0.7150 to 0.7238</td>
+<td>0.9998 to 1.0000</td>
+<td>0.7168 to 0.7238</td>
+<td>0.7168 to 0.7238</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.1</td>
+<td>7.99 to 8.00</td>
+<td>0.7606 to 0.7670</td>
+<td>1.0000</td>
+<td>0.7930 to 0.8020</td>
+<td>0.7032 to 0.7096</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.01</td>
+<td>7.85 to 8.12</td>
+<td>0.8596 to 0.8662</td>
+<td>0.9998 to 1.0000</td>
+<td>0.9666 to 0.9736</td>
+<td>0.9880 to 0.9906</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.001</td>
+<td>7.12 to 8.00</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>1.0000</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.5</td>
+<td>0.00</td>
+<td>0.9968 to 1.0000</td>
+<td>1.0000</td>
+<td>0.9950 to 1.0000</td>
+<td>0.9526 to 0.9700</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.1</td>
+<td>0.00</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>0.9904 to 0.9968</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.01</td>
+<td>0.00</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>1.0000</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.001</td>
+<td>0.00</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>1.0000</td>
+<td>1.0000</td>
+</tr>
+</tbody>
+</table>
+<p>Distance computations per query:</p>
+<table>
+<thead>
+<tr>
+<th>Filter</th>
+<th>Share</th>
+<th><code>walk</code></th>
+<th><code>scanfirst</code></th>
+<th><code>acorn</code></th>
+<th><code>navix</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>random</td>
+<td>0.5</td>
+<td>3,611 to 3,623</td>
+<td>50,081 to 50,082</td>
+<td>2,881 to 2,884</td>
+<td>2,614 to 2,628</td>
+</tr>
+<tr>
+<td>random</td>
+<td>0.1</td>
+<td>5,086 to 5,088</td>
+<td>10,081 to 10,082</td>
+<td>866 to 868</td>
+<td>2,349 to 2,368</td>
+</tr>
+<tr>
+<td>random</td>
+<td>0.01</td>
+<td>6,086 to 6,088</td>
+<td>1,081 to 1,082</td>
+<td>272 to 301</td>
+<td>322 to 348</td>
+</tr>
+<tr>
+<td>random</td>
+<td>0.001</td>
+<td>5,186 to 5,188</td>
+<td>181 to 182</td>
+<td>181 to 182</td>
+<td>182 to 183</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.5</td>
+<td>2,245 to 2,255</td>
+<td>50,081 to 50,082</td>
+<td>2,245 to 2,435</td>
+<td>2,245 to 2,435</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.1</td>
+<td>2,634 to 2,636</td>
+<td>10,081 to 10,082</td>
+<td>2,710 to 2,743</td>
+<td>1,822 to 1,850</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.01</td>
+<td>5,086 to 5,089</td>
+<td>1,081 to 1,082</td>
+<td>929 to 934</td>
+<td>1,871 to 1,877</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.001</td>
+<td>5,186 to 5,188</td>
+<td>181 to 182</td>
+<td>252 to 255</td>
+<td>275 to 276</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.5</td>
+<td>54,875 to 55,088</td>
+<td>50,081 to 50,082</td>
+<td>49,794 to 50,082</td>
+<td>47,591 to 48,458</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.1</td>
+<td>15,086 to 15,088</td>
+<td>10,081 to 10,082</td>
+<td>10,081 to 10,082</td>
+<td>9,965 to 10,049</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.01</td>
+<td>6,086 to 6,088</td>
+<td>1,081 to 1,082</td>
+<td>1,081 to 1,082</td>
+<td>1,081 to 1,082</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.001</td>
+<td>5,186 to 5,188</td>
+<td>181 to 182</td>
+<td>181 to 182</td>
+<td>181 to 182</td>
+</tr>
+</tbody>
+</table>
+<p>Filter calls per query:</p>
+<table>
+<thead>
+<tr>
+<th>Filter</th>
+<th>Share</th>
+<th><code>walk</code></th>
+<th><code>scanfirst</code></th>
+<th><code>acorn</code></th>
+<th><code>navix</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>random</td>
+<td>0.5</td>
+<td>673 to 675</td>
+<td>100,256</td>
+<td>5,841 to 5,867</td>
+<td>3,816 to 3,841</td>
+</tr>
+<tr>
+<td>random</td>
+<td>0.1</td>
+<td>2,288 to 2,295</td>
+<td>100,256</td>
+<td>8,100 to 8,108</td>
+<td>10,613 to 10,631</td>
+</tr>
+<tr>
+<td>random</td>
+<td>0.01</td>
+<td>105,007</td>
+<td>100,256</td>
+<td>19,402 to 22,212</td>
+<td>21,756 to 24,599</td>
+</tr>
+<tr>
+<td>random</td>
+<td>0.001</td>
+<td>105,007</td>
+<td>100,256</td>
+<td>100,619 to 100,630</td>
+<td>101,382 to 101,408</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.5</td>
+<td>369 to 384</td>
+<td>100,256</td>
+<td>2,420 to 2,812</td>
+<td>2,164 to 2,558</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.1</td>
+<td>450 to 463</td>
+<td>100,256</td>
+<td>3,540 to 3,936</td>
+<td>2,174 to 2,564</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.01</td>
+<td>2,654 to 2,867</td>
+<td>100,256</td>
+<td>11,498 to 11,833</td>
+<td>10,677 to 11,034</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.001</td>
+<td>105,007</td>
+<td>100,256</td>
+<td>109,737 to 110,074</td>
+<td>110,335 to 110,370</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.5</td>
+<td>104,588 to 105,007</td>
+<td>100,256</td>
+<td>99,741 to 100,330</td>
+<td>95,633 to 97,399</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.1</td>
+<td>105,007</td>
+<td>100,256</td>
+<td>100,524</td>
+<td>99,361 to 100,332</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.01</td>
+<td>105,007</td>
+<td>100,256</td>
+<td>100,524 to 100,525</td>
+<td>100,723 to 100,731</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.001</td>
+<td>105,007</td>
+<td>100,256</td>
+<td>100,524 to 100,525</td>
+<td>100,723 to 100,766</td>
+</tr>
+</tbody>
+</table>
+<p>Scan rate (<code>scanfirst</code> is 1 in every cell):</p>
+<table>
+<thead>
+<tr>
+<th>Filter</th>
+<th>Share</th>
+<th><code>walk</code></th>
+<th><code>acorn</code></th>
+<th><code>navix</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>random</td>
+<td>0.5</td>
+<td>0.000</td>
+<td>0.000</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>random</td>
+<td>0.1</td>
+<td>0.000</td>
+<td>0.000</td>
+<td>0.000</td>
+</tr>
+<tr>
+<td>random</td>
+<td>0.01</td>
+<td>1.000</td>
+<td>0.080 to 0.112</td>
+<td>0.106 to 0.134</td>
+</tr>
+<tr>
+<td>random</td>
+<td>0.001</td>
+<td>1.000</td>
+<td>1.000</td>
+<td>1.000</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.5</td>
+<td>0.000</td>
+<td>0.000 to 0.004</td>
+<td>0.000 to 0.004</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.1</td>
+<td>0.000</td>
+<td>0.000 to 0.004</td>
+<td>0.000 to 0.004</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.01</td>
+<td>0.000 to 0.002</td>
+<td>0.000 to 0.004</td>
+<td>0.000 to 0.004</td>
+</tr>
+<tr>
+<td>positive</td>
+<td>0.001</td>
+<td>1.000</td>
+<td>1.000</td>
+<td>1.000</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.5</td>
+<td>0.996 to 1.000</td>
+<td>0.994 to 1.000</td>
+<td>0.948 to 0.966</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.1</td>
+<td>1.000</td>
+<td>1.000</td>
+<td>0.986 to 0.996</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.01</td>
+<td>1.000</td>
+<td>1.000</td>
+<td>1.000</td>
+</tr>
+<tr>
+<td>negative</td>
+<td>0.001</td>
+<td>1.000</td>
+<td>1.000</td>
+<td>1.000</td>
+</tr>
+</tbody>
+</table>
+<p>What the cells show:</p>
+<ul>
+<li>Random filters, share 0.1: <code>acorn</code> computed 0.17 times the distances of <code>walk</code> with a recall of 0.9044 to 0.9120 against 0.8602 to 0.8660, and <code>navix</code> 0.46 to 0.47 times with 0.9854 to 0.9884.</li>
+<li>Random filters, share 0.01: <code>walk</code> scans every query. The new walks computed 272 to 301 (<code>acorn</code>) and 322 to 348 (<code>navix</code>) distances against 1,081 to 1,082 of <code>scanfirst</code>, at a recall of 0.9490 to 0.9566 and 0.9738 to 0.9754, which misses bar 1.</li>
+<li>Negatively correlated filters: the new walks ended in a scan in a share of 0.948 to 1.000 of the queries of a cell, with 0.95 to 1.00 times the distances of <code>scanfirst</code>, so they gained little or nothing over a scan. A probable reason, read from the code and not measured, is that only passing rows become candidates and few or none is within two hops of the node where layer 0 starts.</li>
+<li>Filter calls are the price where no scan runs. With random filters at share 0.1, <code>walk</code> asked 2,288 to 2,295 times per query, <code>acorn</code> 8,100 to 8,108, and <code>navix</code> 10,613 to 10,631.</li>
+</ul>
+<p>Neither arm goes to a timed comparison as registered. A rule that uses a walk only where it gained here would be a new idea, with bars written before its run. The timed comparison and the adoption rule stay open on <a href="https://github.com/humemai/tiervec/issues/162">#162</a>, and the library is unchanged.</p>
 
 
 
