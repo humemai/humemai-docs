@@ -1286,6 +1286,13 @@
 <td>the comparison arm of <a href="../BENCHMARKS/">docs/BENCHMARKS.md</a> and of <a href="../AGENT-MEMORY-BENCHMARK/#the-jvector-arm">the agent-memory benchmark</a>: the harness builds, searches, and updates a JVector graph through its public API. It is a dependency of the harness, not of the library, and no JVector code is copied.</td>
 </tr>
 <tr>
+<td>Apache Lucene (<code>org.apache.lucene:lucene-core</code>)</td>
+<td>10.6.0</td>
+<td>Apache-2.0</td>
+<td>the benchmark only (<code>src/bench/lucene</code>, profile <code>bench</code> of <code>pom.xml</code>); its sources were read to write that arm</td>
+<td>the comparison arm of <a href="../AGENT-MEMORY-BENCHMARK/#the-lucene-arm">the agent-memory benchmark</a>: it drives an <code>IndexWriter</code> through the public API, with a codec built from Lucene's public vector format classes. It is a dependency of the benchmark, not of the library. No Lucene code is copied; one method of the arm restates the rule by which Lucene gives a segment a graph, to count those segments.</td>
+</tr>
+<tr>
 <td>Sivic and Zisserman, inverted file (paper)</td>
 <td>ICCV 2003</td>
 <td>n/a (paper)</td>

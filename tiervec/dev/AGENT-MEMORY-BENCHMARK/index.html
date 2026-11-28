@@ -973,6 +973,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#the-lucene-arm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Lucene arm
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1464,6 +1475,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#the-lucene-arm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Lucene arm
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1654,9 +1676,9 @@
 <td>Writes during searches, other libraries</td>
 </tr>
 <tr>
-<td><code>AgentMemory</code>, the first step of <a href="https://github.com/humemai/tiervec/issues/159">#159</a>: <a href="#the-runbook">the runbook</a> replayed into the exact, tier, live graph, and JVector arms (<a href="#how-the-program-replays-a-runbook">how</a>)</td>
+<td><code>AgentMemory</code>, the first step of <a href="https://github.com/humemai/tiervec/issues/159">#159</a>: <a href="#the-runbook">the runbook</a> replayed into the exact, tier, live graph, JVector, and Lucene arms (<a href="#how-the-program-replays-a-runbook">how</a>)</td>
 <td>Creates, updates, deletes, reuses, batches, searches, and checkpoints from a seed; violation counts; recall at every checkpoint; distance computations; rows built per row written; memory per row; the <a href="#the-screen">screen</a>, started by hand</td>
-<td>Restarts, filtered searches, many collections as its own study, the Lucene arm, real embeddings, every timing</td>
+<td>Restarts, filtered searches, many collections as its own study, real embeddings, every timing</td>
 </tr>
 </tbody>
 </table>
@@ -1778,21 +1800,22 @@
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>java -Xmx2g --add-modules jdk.incubator.vector -cp target/bench/classes ai.humem.tiervec.AgentMemory \
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  --shapes smoke,p20 --variants 'exact exact; tier tier; graph-a12 graph graph.alpha=1.2' --mix read --out target/agent-memory/out
 </code></pre></div>
-<p>The arm <code>jvector</code> needs the jars of the profile <code>bench</code> of the pom. Fetch them, compile <code>src/bench/jvector</code> with the rest, and put them on the class path:</p>
+<p>The arms <code>jvector</code> and <code>lucene</code> need the jars of the profile <code>bench</code> of the pom. Fetch them, compile <code>src/bench/jvector</code> and <code>src/bench/lucene</code> with the rest, and put them on the class path:</p>
 <div class="language-text highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>mvn -B -ntp -Pbench dependency:copy-dependencies -DoutputDirectory=target/bench/lib -DincludeScope=runtime
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>javac -d target/bench/classes --add-modules jdk.incubator.vector -cp 'target/bench/lib/*' \
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  $(find src/main/java src/bench/java src/bench/jvector -name '*.java')
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  $(find src/main/java src/bench/java src/bench/jvector src/bench/lucene -name '*.java')
 <a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>java -Xmx2g --add-modules jdk.incubator.vector -Djvector.vectorization_provider=panama -cp 'target/bench/classes:target/bench/lib/*' \
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  ai.humem.tiervec.AgentMemory --variants 'exact exact; jvector jvector' --out target/agent-memory/out
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  ai.humem.tiervec.AgentMemory --variants 'exact exact; jvector jvector; lucene lucene' --out target/agent-memory/out
 </code></pre></div>
-<p>The program writes one runbook per shape into <code>--out</code>, reads it back, replays it into each variant, and writes there <code>result.txt</code> (one line per fact), <code>results.tsv</code> (one row per shape and variant), <code>curve.tsv</code> (recall at every checkpoint), <code>graph.tsv</code> (<a href="#the-shape-of-the-graphs">the shape of the graphs</a> at every checkpoint), and <code>summary.md</code>. A variant is <code>name arm key=value ...</code>. The arm <code>tier</code> takes every key of <code>TieredIndex.Config</code> (see <code>Config.toMap</code>) except <code>buildThreads</code>, <code>tailAgeMs</code>, and <code>mergeRatePerSec</code>; the arm <code>graph</code> takes <code>graph.M</code>, <code>graph.efConstruction</code>, <code>graph.efSearch</code>, <code>graph.alpha</code>, <code>graph.sq8</code>, and <code>consolidateAt</code> (default 0.2: <code>consolidate()</code> runs when the deleted nodes are more than that share of the live ones); the arm <code>rebuild</code> takes the <code>graph.</code> keys; the arm <code>exact</code> takes none; the arm <code>jvector</code> takes <code>degree</code> (32, on the base layer), <code>upperDegree</code> (16, above it), <code>efConstruction</code> (200), <code>efSearch</code> (100), <code>alpha</code> (1.2), <code>neighborOverflow</code> (1.2), and <code>removeAt</code> (0.2). Its degrees and beam widths are those of the graphs of the tier, and <code>alpha</code> and the overflow are those of JVector's tuning page. For an arm that reports them, <code>result.txt</code> also has an <code>ABOUT</code> line (the library, its SIMD provider, and the settings) and a <code>COUNTERS</code> line (counts of the arm's own work, summed over the collections). The shapes are <code>smoke</code> (3,000 rows), <code>p20</code>, <code>p200</code>, and <code>p2000</code> (50, 20, and 5 collections of that many rows), and <code>a10k</code> and <code>a100k</code>. <code>--turnover</code> sets how many row versions are retired per live row (3 by default), and <code>--checkpoints</code> how many checkpoints follow the load (10 by default).</p>
+<p>The program writes one runbook per shape into <code>--out</code>, reads it back, replays it into each variant, and writes there <code>result.txt</code> (one line per fact), <code>results.tsv</code> (one row per shape and variant), <code>curve.tsv</code> (recall at every checkpoint), <code>graph.tsv</code> (<a href="#the-shape-of-the-graphs">the shape of the graphs</a> at every checkpoint), and <code>summary.md</code>. A variant is <code>name arm key=value ...</code>. The arm <code>tier</code> takes every key of <code>TieredIndex.Config</code> (see <code>Config.toMap</code>) except <code>buildThreads</code>, <code>tailAgeMs</code>, and <code>mergeRatePerSec</code>; the arm <code>graph</code> takes <code>graph.M</code>, <code>graph.efConstruction</code>, <code>graph.efSearch</code>, <code>graph.alpha</code>, <code>graph.sq8</code>, and <code>consolidateAt</code> (default 0.2: <code>consolidate()</code> runs when the deleted nodes are more than that share of the live ones); the arm <code>rebuild</code> takes the <code>graph.</code> keys; the arm <code>exact</code> takes none; the arm <code>jvector</code> takes <code>degree</code> (32, on the base layer), <code>upperDegree</code> (16, above it), <code>efConstruction</code> (200), <code>efSearch</code> (100), <code>alpha</code> (1.2), <code>neighborOverflow</code> (1.2), and <code>removeAt</code> (0.2). Its degrees and beam widths are those of the graphs of the tier, and <code>alpha</code> and the overflow are those of JVector's tuning page; the arm <code>lucene</code> takes <code>maxConn</code> (16), <code>beamWidth</code> (200), <code>efSearch</code> (100), and <code>quant</code> (<code>none</code>, or <code>int8</code>). For an arm that reports them, <code>result.txt</code> also has an <code>ABOUT</code> line (the library, its SIMD provider, and the settings) and a <code>COUNTERS</code> line (counts of the arm's own work, summed over the collections). The shapes are <code>smoke</code> (3,000 rows), <code>p20</code>, <code>p200</code>, and <code>p2000</code> (50, 20, and 5 collections of that many rows), and <code>a10k</code> and <code>a100k</code>. <code>--turnover</code> sets how many row versions are retired per live row (3 by default), and <code>--checkpoints</code> how many checkpoints follow the load (10 by default).</p>
 <p>The arm <code>rebuild</code> is the control of a graph that lives through changes (<a href="https://github.com/humemai/tiervec/issues/161">#161</a>): at every checkpoint it builds a new graph from the live rows, in the order of their last write, and answers the checkpoint from it. Between the checkpoints its searches are exact, so it says nothing about searches under writes, and its distances per written row hold the rebuilds of the checkpoints.</p>
 <ul>
 <li><strong>Nothing depends on timing.</strong> The tier runs with one build thread, no seal by age, and no merge throttle, and with a host environment that runs each seal and merge inside the write that made it due. So one runbook gives the same segments on every run.</li>
+<li><strong>A refresh before every search.</strong> On an arm whose searches do not see a write at once (today <a href="#the-lucene-arm">the Lucene arm</a>), the replay calls <code>MemoryArm.refresh()</code> before every search, also on the second thread that watches a batch. What a refresh computes counts as write work.</li>
 <li><strong>Every search is checked</strong> against the live rows: a deleted or never-added id, a score of another vector, and fewer than <code>k</code> ids when <code>k</code> rows are live.</li>
-<li><strong>Writes are probed.</strong> After a write, a search that allows only the written ids must see all of them. A filter of that size takes the exact path of every arm. The large shapes probe every 10th or 100th single write, and every batch.</li>
-<li><strong>Batches are watched.</strong> On the tier a second thread searches while the batch is applied. On the arms without atomic batches the replay applies one write at a time and searches in between, so their <code>partOfBatch</code> count is expected and does not fail the run.</li>
-<li><strong>Rows built per row written</strong> counts the rows put into a graph (for the tier by seals and merges, for the live graph once per added row) over the rows created, updated, or reused; for the JVector arm once per added row, and the repairs of a removal add no row. <strong>Bytes held per row</strong> is what <code>bytesHeld()</code> reports, over the live rows at the end; the JVector arm reports JVector's estimate of its graph, the float32 vectors that it still holds, and 12 bytes for each ordinal it has used. <strong>Heap bytes per row</strong> is what the heap gives back when the arms are closed and dropped, after full collections; for small collections the noise of the runtime is as large as the figure.</li>
+<li><strong>Writes are probed.</strong> After a write, a search that allows only the written ids must see all of them. A filter of that size takes the exact path of every arm. The large shapes probe every 10th or 100th single write, and every batch; the other shapes probe every single write.</li>
+<li><strong>Batches are watched.</strong> On the tier and the Lucene arm a second thread searches while the batch is applied. On the arms without atomic batches the replay applies one write at a time and searches in between, so their <code>partOfBatch</code> count is expected and does not fail the run.</li>
+<li><strong>Rows built per row written</strong> counts the rows put into a graph (for the tier by seals and merges, for the live graph once per added row) over the rows created, updated, or reused; for the JVector arm once per added row, and the repairs of a removal add no row; for the Lucene arm the vectors of every segment that a flush or a merge wrote with a graph, which includes vectors that were already replaced or deleted when a flush wrote them. <strong>Bytes held per row</strong> is what <code>bytesHeld()</code> reports, over the live rows at the end; the JVector arm reports JVector's estimate of its graph, the float32 vectors that it still holds, and 12 bytes for each ordinal it has used; the Lucene arm reports the files of its in-memory directory and what the writer buffers. <strong>Heap bytes per row</strong> is what the heap gives back when the arms are closed and dropped, after full collections; for small collections the noise of the runtime is as large as the figure.</li>
 </ul>
 <h3 id="the-jvector-arm">The JVector arm<a class="headerlink" href="#the-jvector-arm" title="Permanent link">&para;</a></h3>
 <p><code>JVectorMemoryArm</code>, in <code>src/bench/jvector</code>, drives one in-memory graph through JVector's public builder and searcher. The version is the one that the profile <code>bench</code> pins, a release candidate (<a href="../BENCHMARKS/#the-jvector-arm">BENCHMARKS.md</a> says why).</p>
@@ -1806,6 +1829,20 @@
 <li>The arm does not call <code>cleanup()</code>, which marks every change as complete.</li>
 <li>The replay says nothing about the recall or the answers of searches that run while a removal runs.</li>
 </ul>
+<h3 id="the-lucene-arm">The Lucene arm<a class="headerlink" href="#the-lucene-arm" title="Permanent link">&para;</a></h3>
+<p><code>LuceneMemoryArm</code>, in <code>src/bench/lucene</code>, drives an <code>IndexWriter</code> and a near-real-time reader of <code>lucene-core</code>, at the version that the profile <code>bench</code> pins, through its public API. The index lives in memory (<code>ByteBuffersDirectory</code>) and is never committed. The writer has Lucene's default settings and merge policy, except for the codec below, <code>SerialMergeScheduler</code>, and no commit on close. The arm gives no durability, and none is measured.</p>
+<ul>
+<li>A write is <code>updateDocument</code> or <code>deleteDocuments</code> by the term of the id. A batch is one <code>updateDocuments(Query, documents)</code> call (an experimental API) that deletes the ids of the batch and adds its rows, so batches are atomic.</li>
+<li>A search sees the writes up to the last refresh (<code>SearcherManager.maybeRefreshBlocking</code>). A refresh flushes the buffered rows into a new segment and runs the merges that are due, on the thread that asks for it.</li>
+<li><strong>Refresh work is write cost, and the replay asks for much of it.</strong> <code>smoke</code>, <code>p20</code>, <code>p200</code>, and <code>p2000</code> probe every single write, so there the arm refreshes after every write: one flush for each, and the merges that follow. The larger shapes refresh at every probe and every search of the runbook. A host that lets several writes wait for one refresh would pay less per write. The write cost of this arm is the cost of showing each write to the next search.</li>
+<li><strong>Small segments have no graph.</strong> With the default threshold of 100, a segment gets an HNSW graph only from about 650 vectors (the threshold is compared with the number of nodes that a search expects to visit, not with the rows). A smaller segment is scanned. So on collections of 20 or 200 rows Lucene builds no graph at all: its writes compute no distance, and its searches are scans.</li>
+<li><code>quant=none</code> is the HNSW format on float32 vectors. <code>quant=int8</code> is the HNSW format on 8-bit scalar quantized vectors, with the float32 vectors kept beside the codes. The candidates of a search are scored again with float32 (<code>RescoreTopNQuery</code>), so a hit carries the exact score. By Lucene's source, the graph of a flushed segment is built with float32 distances and the graph of a merged segment with 8-bit ones.</li>
+<li>The arm guards <code>RescoreTopNQuery</code> against an empty match set (a filter that matches no live row): in <code>lucene-core</code> 10.6.0 the query throws there, and <code>LuceneMemoryArmCheck</code> prints what it throws.</li>
+<li>Lucene's <code>k</code> is also the width of its search, so the arm asks for <code>efSearch</code> candidates (or <code>k</code>, when that is more) and keeps the first <code>k</code>.</li>
+<li>Lucene has no filter by a predicate, so the arm has a query of its own that reads the id of each document and asks the predicate.</li>
+<li>The codec differs from the default one in two points: its scorers count the distance computations, and a vector may have up to 4,096 dimensions, because Lucene's formats stop at 1,024 and the benchmark definition includes 1,536.</li>
+<li>The arm promises <code>k</code> ids and atomic batches, so every violation counter fails a run. <code>LuceneMemoryArmCheck</code> checks that a write is seen after a refresh and not before, graphs after a load and after deletes and updates, searches on a second thread beside batches, and 1,536 dimensions.</li>
+</ul>
 <h2 id="the-screen">The screen<a class="headerlink" href="#the-screen" title="Permanent link">&para;</a></h2>
 <p>The screen is the quick round for one idea: small shapes, many named variants over the same runbooks, and only measures that do not depend on timing. The ideas, with the bar each one has to pass, are in <a href="../SCREEN-IDEAS/">SCREEN-IDEAS.md</a>. Its results pick what is worth a confirmation run at larger sizes; they change no default by themselves.</p>
 <p>Start it by hand on any branch that has it. The result files are the artifact <code>screen-results</code> of the run, and the summary table is on the run page.</p>
@@ -1814,7 +1851,7 @@
 </code></pre></div>
 <p><code>--preset screen</code> runs <code>p20</code>, <code>p200</code>, <code>p2000</code>, and <code>a10k</code> (add <code>a100k</code> with <code>--shapes</code>), 768 dimensions with <code>--latent</code> 768 and <code>--clusters</code> 8 (<a href="../SCREEN-IDEAS/#the-data-of-the-screen">how that data was chosen</a>), the write-heavy mix, and the variants of <code>src/bench/agent-memory-screen.variants</code>. It reports violations, recall at every checkpoint and its mean over the checkpoints after the load (<code>recallChurnMean</code>), distance computations per search and per written row, rows built per row written, and memory per row.</p>
 <ul>
-<li><strong>Distance computations</strong> are counted by a copy of the library in which <code>scripts/instrument_distances.py</code> adds one line to every distance kernel; the library that ships is unchanged, and the screen refuses a build that does not count. Compile <code>target/agent-memory/src</code> (the copy) instead of <code>src/main/java</code>, with <code>src/bench/jvector</code> and the jars as above, because the variants file has JVector variants. The JVector arm counts in the score functions that it gives JVector, one for each score that JVector asks for, in searches, inserts, and removals. A computation on quantized codes counts as one, and <code>quantizedPerSearch</code> says how many of them there were. Per search they are counted over the queries of the checkpoints, the same queries that recall is scored on; per written row over the writes and their maintenance. Probes are in neither.</li>
+<li><strong>Distance computations</strong> are counted by a copy of the library in which <code>scripts/instrument_distances.py</code> adds one line to every distance kernel; the library that ships is unchanged, and the screen refuses a build that does not count. Compile <code>target/agent-memory/src</code> (the copy) instead of <code>src/main/java</code>, with <code>src/bench/jvector</code>, <code>src/bench/lucene</code>, and the jars as above, because the variants file has JVector and Lucene variants. The JVector arm counts in the score functions that it gives JVector, one for each score that JVector asks for, in searches, inserts, and removals. The Lucene arm counts in the scorers of its codec, one for each score that Lucene asks for, in searches, rescores, flushes, merges, and the writes that build a graph. A computation on quantized codes counts as one, and <code>quantizedPerSearch</code> says how many of them there were. Per search they are counted over the queries of the checkpoints, the same queries that recall is scored on; per written row over the writes, their maintenance, and the refreshes. The searches of probes are in neither.</li>
 <li><strong>The same numbers again.</strong> On one machine, two runs of one seed on one commit give the same results apart from the heap column, and the CI smoke checks that. The JVector arm is the exception (<a href="#the-jvector-arm">why</a>), and the check leaves its rows out. Another CPU can have other vector lanes, which can move a float32 score in its last digits.</li>
 <li><strong>What a screen cannot say.</strong> The data is generated, the sizes are small, and nothing is timed. Recall is usually higher on small sets, and the size at which a graph beats a scan depends on the dimension and the machine.</li>
 </ul>
@@ -1922,7 +1959,7 @@
 <tr>
 <td>Lucene</td>
 <td><code>IndexWriter</code> with deletes and updates by id, near-real-time refresh, float32 and quantized HNSW formats</td>
-<td>A refresh before a search that must see a write counts in the write latency</td>
+<td>A refresh before a search that must see a write counts in the write latency. Built: <a href="#the-lucene-arm">the Lucene arm</a></td>
 </tr>
 </tbody>
 </table>
