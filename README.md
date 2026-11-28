@@ -10,13 +10,13 @@ Current doc sets, each with a card on the landing page:
 
 External cards (no folder here): "ArcadeDB" links the engine manual, https://docs.arcadedb.com/arcadedb/, and "ArcadeDB in Python" links the Python package's docs, https://docs.arcadedb.com/arcadedb-python/. The two names match the two research pages and the two software pages on humem.ai.
 
-Unlisted (no card, files kept so existing links and the packages' own links keep working): `dbbench/`, the docs of MMDBBench under its old name (renamed 2026-11-07; its root `index.html` redirects to `/mmdbbench/`, the pages under `dbbench/latest/` stay as published), `humemdb/` and `cypherglot/`, paused projects, hidden from the landing page on 2026-10-19 as on humem.ai.
+Unlisted (no card, files kept so existing links and the packages' own links keep working): `dbbench/`, the docs of MMDBBench under its old name (renamed 2026-11-07; its root `index.html` redirects to `/mmdbbench/`, the pages under `dbbench/latest/` stay as published), and `humemdb/`, a paused project, hidden from the landing page on 2026-10-19 as on humem.ai.
 
 Retired and removed: `arcadedb/`, the docs of the old `arcadedb-embedded` package. Since 2026-10-29 every path under `docs.humem.ai/arcadedb` (root, `latest` and the version folders) answers with a 301 to https://docs.arcadedb.com/arcadedb-python/ through a Cloudflare Single Redirect rule on the humem.ai zone (302 for the first hours). The folder was deleted the same day because no path under it could be reached any more; it is in the git history before that commit.
 
 The landing page (`index.html`) takes its colours, type, logo and favicon from the HumemAI design system, vendored into `brand/` from [humemai/design-system](https://github.com/humemai/design-system) (`brand/verify.sh` checks the copy). Each doc set's own theme is vendored in its source repo, under `docs/brand`.
 
-Versions published before the design system (up to arcadedb 26.9.1, humemdb 0.1.0.dev4, cypherglot 0.1.0 and audit-ready-memory 0.0.2) were restyled in place on 2026-09-27 with the design system's `scripts/restyle-built-mkdocs.py`: theme only, page text unchanged. `favicon.ico` at the root answers browsers that ask for it on any page.
+Versions published before the design system (up to arcadedb 26.9.1, humemdb 0.1.0.dev4 and audit-ready-memory 0.0.2) were restyled in place on 2026-09-27 with the design system's `scripts/restyle-built-mkdocs.py`: theme only, page text unchanged. `favicon.ico` at the root answers browsers that ask for it on any page.
 
 ## How the hub is written
 
