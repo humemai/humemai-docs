@@ -982,6 +982,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Ideas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-long-churn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The long churn
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1001,6 +1018,17 @@
     <span class="md-ellipsis">
       
         S1 results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-alpha-12-failed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why alpha 1.2 failed
       
     </span>
   </a>
@@ -1390,6 +1418,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Ideas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-long-churn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The long churn
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1409,6 +1454,17 @@
     <span class="md-ellipsis">
       
         S1 results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-alpha-12-failed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why alpha 1.2 failed
       
     </span>
   </a>
@@ -1672,8 +1728,31 @@
 <td>With seed 1: <code>bytesHeldPerRow</code> of <code>graph-a10</code> with <code>CHUNK_SHIFT</code> 6 is at most 1.5 times that of <code>tier</code> on <code>p20</code> and on <code>p200</code>, and on every shape of the screen its <code>recallChurnMean</code>, <code>distancesPerSearch</code>, and <code>distancesPerRowWritten</code> equal those of a run with <code>CHUNK_SHIFT</code> 10 that reports the same vector lanes</td>
 <td>passed: 0.30 and 0.23 times the tier on <code>p20</code> and <code>p200</code>, the other columns equal (<a href="#s3-results">results</a>); not merged</td>
 </tr>
+<tr>
+<td>S4</td>
+<td><code>alpha</code> above 1 in two passes over the candidates, as <code>occlude_list</code> of <a href="https://github.com/microsoft/DiskANN/blob/cpp_main/src/index.cpp">DiskANN's code</a> does: the first pass keeps what the rule keeps at <code>alpha</code> 1, and only the room that is left goes to candidates that pass at the configured <code>alpha</code>. At <code>alpha</code> 1.0 nothing changes. <a href="https://github.com/humemai/tiervec/issues/161">#161</a></td>
+<td>One pass at <code>alpha</code> 1.2 fills a list with the nearest candidates before it looks at the far ones (<a href="#why-alpha-12-failed">measured</a>). Two passes keep the far ones, so the layer-0 graph stays connected under churn and recall at <code>alpha</code> 1.2 is no lower than at 1.0</td>
+<td>On the data of the screen, with each of the seeds 1, 2, and 3: on <code>a10k</code> and on <code>p2000</code>, <code>recallChurnMean</code> of <code>graph-a12</code> with the change is at least that of <code>graph-a10</code> minus 0.002, with at most 1.25 times its <code>distancesPerSearch</code>; and on <code>a10k</code>, <code>unreached</code> of <code>graph-a12</code> in <code>graph.tsv</code> is at most 10 at every checkpoint</td>
+<td>not run: the change is on the branch <a href="https://github.com/humemai/tiervec/tree/screen-two-pass-alpha-161"><code>screen-two-pass-alpha-161</code></a> (commit <code>f64a492</code>), not compiled yet</td>
+</tr>
+<tr>
+<td>S5</td>
+<td>Repair of low-degree nodes in <code>consolidate()</code>, after Lucene's <a href="https://github.com/apache/lucene/pull/16559">GITHUB#16552</a>: there, a node that lost a neighbor and fell below half of its limit searches from its neighbors, adds the candidates that the rule keeps beside them, and gets their reverse links. Here the loss is not asked for, because <code>consolidate()</code> already refills a list that lost a neighbor, and the low degrees measured here come from insertion: every live node with fewer than <code>M</code> layer-0 entries searches (beam <code>efConstruction</code>) and is repaired the same way</td>
+<td>21.6% of the rows of <code>graph-a10</code> have fewer than <code>M</code> live neighbors after the load. More ways in and out of them keep recall closer to a rebuild's over a long churn</td>
+<td>The <a href="#the-long-churn">long churn</a> with each of the seeds 1, 2, and 3: <code>recallChurnMean</code> of <code>graph-a10</code> with the repair is at least 0.005 above that of <code>graph-a10</code> without it, with at most 1.25 times its <code>distancesPerRowWritten</code></td>
+<td>not run: not built yet</td>
+</tr>
+<tr>
+<td>S6</td>
+<td>The <a href="#the-long-churn">long churn</a> of the live graph and of the insert merge against a rebuild of the same live rows, the test that <a href="https://github.com/humemai/tiervec/issues/161">#161</a> asks for. <a href="https://arxiv.org/abs/2105.09613">FreshDiskANN</a> reports falling recall and degree over cycles at <code>alpha</code> 1; Lucene measured its decay over <a href="https://github.com/apache/lucene/issues/16552">100 generations</a></td>
+<td>A graph that lives through 15 turnovers keeps the recall of a rebuild</td>
+<td>On <code>a10k</code> with <code>--turnover 15 --checkpoints 15</code>, with each of the seeds 1, 2, and 3: for <code>graph-a10</code> against <code>rebuild</code>, and for <code>tier-m1-insert</code> against <code>tier-m1</code>, <code>recallChurnMean</code> is at least the control's minus 0.005 and <code>recallFinal</code> at least the control's minus 0.01; and <code>unreached</code> in <code>graph.tsv</code> is at most 10, 0.1% of the live rows, at every checkpoint</td>
+<td>started on commit <code>7ab31fd</code>, one run per seed, results not read yet: <a href="https://github.com/humemai/tiervec/actions/runs/46123693234">46123693234</a>, <a href="https://github.com/humemai/tiervec/actions/runs/46123694997">46123694997</a>, <a href="https://github.com/humemai/tiervec/actions/runs/46123696956">46123696956</a></td>
+</tr>
 </tbody>
 </table>
+<h3 id="the-long-churn">The long churn<a class="headerlink" href="#the-long-churn" title="Permanent link">&para;</a></h3>
+<p><code>--turnover 15 --checkpoints 15</code> on <code>a10k</code>: 150 rounds, each retiring a tenth of the rows, with a checkpoint every 10 rounds, on the data and the write mix of the screen. The rows that arrive come from one cluster after another, so the distribution goes around the 8 clusters many times. The control of the live graph is the arm <code>rebuild</code>, a new graph from the live rows at every checkpoint; the control of the insert merge is <code>tier-m1</code>, whose every merge rebuilds the same layout. The variants are <code>graph-a10</code>, <code>graph-a12</code>, <code>rebuild</code>, <code>tier-m1</code>, and <code>tier-m1-insert</code>. The bars of S4, S5, and S6 were written on 2026-11-28, before any run of them.</p>
 <p>The bars of S1 and S2 were changed on 2026-11-28, before their first run on <code>a10k</code>. They named <code>recallLowest</code> (see <a href="#the-data-of-the-screen">above</a>), one seed, and for S2 the default tier. At the default <code>maxSegments</code> of 8 the count rule merges the smallest segments, so by the code the largest one, which <code>MergeMode.INSERT</code> needs, is not among them under churn. S2 is so judged with <code>maxSegments</code> 1, where every merge takes the largest segment; <code>tier</code> and <code>tier-insert</code> still run, to show what the default layout does.</p>
 <h2 id="results">Results<a class="headerlink" href="#results" title="Permanent link">&para;</a></h2>
 <p>All runs are the screen preset on its data above, and none has a violation. Nothing is timed. Every variant and shape ran on commit <code>9754ef8</code> (<a href="https://github.com/humemai/tiervec/pull/177">#177</a>), the commit with the bars, once for each of the seeds 1, 2, and 3.</p>
@@ -1722,7 +1801,200 @@
 </tbody>
 </table>
 <p>It also computed 2.0 to 2.1 times the distances per written row. The gap was larger on <code>p2000</code>: <code>recallChurnMean</code> 0.7694, 0.7565, and 0.7653 for <code>graph-a12</code> against 0.9994, 0.9994, and 0.9997 for <code>graph-a10</code> with the seeds 1, 2, and 3.</p>
-<p>A possible cause, read from the code and not measured: <code>GraphIndex</code> drops a candidate neighbour only when <code>alpha</code> times its distance to a kept neighbour is at most its distance to the node. If most candidates are about as far from each other as from the node, <code>alpha</code> 1.2 drops few of them, and a list fills with the nearest candidates, without the spread that leads a search across the graph. No data with a lower intrinsic dimension at these sizes was run. The result is about <code>alpha</code> in this graph, which does not have the repair rules of FreshDiskANN. It belongs to <a href="https://github.com/humemai/tiervec/issues/161">#161</a>.</p>
+<p>The cause was measured afterwards (<a href="#why-alpha-12-failed">next section</a>). No data with a lower intrinsic dimension at these sizes was run. The result is about <code>alpha</code> in this graph, which does not have the repair rules of FreshDiskANN. It belongs to <a href="https://github.com/humemai/tiervec/issues/161">#161</a>.</p>
+<h3 id="why-alpha-12-failed">Why alpha 1.2 failed<a class="headerlink" href="#why-alpha-12-failed" title="Permanent link">&para;</a></h3>
+<p><code>GraphIndex</code> takes the candidates of a list in increasing distance and drops one only when <code>alpha</code> times its distance to a kept neighbor is at most its distance to the node. It does this in one pass and stops when the list is full. On this data the candidates of a node are nearly all about as far from each other as from the node, so at <code>alpha</code> 1.2 the rule drops almost none, the list is full before the far candidates are looked at, and the far candidates are the ones that lead to other clusters. The layer-0 graph then comes apart under churn. Low out-degrees are not the cause: they are no more common at <code>alpha</code> 1.2.</p>
+<p>Measured on <code>a10k</code> with seed 1, on commit <code>79199be</code>, run <a href="https://github.com/humemai/tiervec/actions/runs/46123331066">46123331066</a>, with the <a href="../AGENT-MEMORY-BENCHMARK/#the-shape-of-the-graphs">shape of the graphs</a>. The recall of both variants equals that of S1, so the counting changed nothing.</p>
+<table>
+<thead>
+<tr>
+<th>Checkpoint</th>
+<th>Variant</th>
+<th>Recall</th>
+<th>Degree, median</th>
+<th>Degree, 10th percentile</th>
+<th>Share below <code>M</code></th>
+<th>Cross-cluster share</th>
+<th>Live rows listed by no live row</th>
+<th>Live rows unreached at layer 0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>graph-a10</code></td>
+<td>0.9530</td>
+<td>21</td>
+<td>10</td>
+<td>0.2164</td>
+<td>0.0037</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>0</td>
+<td><code>graph-a12</code></td>
+<td>0.9330</td>
+<td>19</td>
+<td>16</td>
+<td>0.0005</td>
+<td>0.0003</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>graph-a10</code></td>
+<td>0.9750</td>
+<td>28</td>
+<td>16</td>
+<td>0.0969</td>
+<td>0.0044</td>
+<td>7</td>
+<td>0</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>graph-a12</code></td>
+<td>0.9260</td>
+<td>28</td>
+<td>17</td>
+<td>0.0330</td>
+<td>0.0006</td>
+<td>253</td>
+<td>6147</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>graph-a10</code></td>
+<td>0.9790</td>
+<td>25</td>
+<td>14</td>
+<td>0.1280</td>
+<td>0.0027</td>
+<td>51</td>
+<td>0</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>graph-a12</code></td>
+<td>0.9420</td>
+<td>25</td>
+<td>16</td>
+<td>0.0697</td>
+<td>0.0010</td>
+<td>354</td>
+<td>5090</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>graph-a10</code></td>
+<td>0.9710</td>
+<td>29</td>
+<td>16</td>
+<td>0.0876</td>
+<td>0.0012</td>
+<td>21</td>
+<td>2</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>graph-a12</code></td>
+<td>0.8640</td>
+<td>29</td>
+<td>18</td>
+<td>0.0319</td>
+<td>0.0004</td>
+<td>722</td>
+<td>6363</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>graph-a10</code></td>
+<td>0.9830</td>
+<td>25</td>
+<td>14</td>
+<td>0.1386</td>
+<td>0.0006</td>
+<td>33</td>
+<td>0</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>graph-a12</code></td>
+<td>0.9140</td>
+<td>26</td>
+<td>16</td>
+<td>0.0864</td>
+<td>0.0027</td>
+<td>672</td>
+<td>8215</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Caller</th>
+<th>Variant</th>
+<th>Selections</th>
+<th>Stopped at the limit before the last candidate</th>
+<th>Candidates examined</th>
+<th>Kept entries that came from the fill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>insert</td>
+<td><code>graph-a10</code></td>
+<td>42,687</td>
+<td>51.7%</td>
+<td>62.1%</td>
+<td>0.0%</td>
+</tr>
+<tr>
+<td>insert</td>
+<td><code>graph-a12</code></td>
+<td>42,687</td>
+<td>98.1%</td>
+<td>9.3%</td>
+<td>0.0%</td>
+</tr>
+<tr>
+<td>reverse</td>
+<td><code>graph-a10</code></td>
+<td>303,345</td>
+<td>15.1%</td>
+<td>99.5%</td>
+<td>33.5%</td>
+</tr>
+<tr>
+<td>reverse</td>
+<td><code>graph-a12</code></td>
+<td>479,210</td>
+<td>99.6%</td>
+<td>96.9%</td>
+<td>0.1%</td>
+</tr>
+<tr>
+<td>repair</td>
+<td><code>graph-a10</code></td>
+<td>127,701</td>
+<td>2.4%</td>
+<td>98.7%</td>
+<td>54.3%</td>
+</tr>
+<tr>
+<td>repair</td>
+<td><code>graph-a12</code></td>
+<td>131,066</td>
+<td>99.1%</td>
+<td>26.8%</td>
+<td>0.2%</td>
+</tr>
+</tbody>
+</table>
+<p>An unreached row can still be found, because a search starts on layer 0 at the node that the upper layers lead to. Read from the code and not measured: <code>consolidate()</code> links an unreached row only when a search through those upper layers finds a row that the walk from the entry reaches, so it does not join a part that the upper layers lead into. At <code>alpha</code> 1.0 the graph stayed in one piece in these three turnovers, but its share of cross-cluster edges fell from 0.0044 at checkpoint 1 to 0.0006 at checkpoint 10; the <a href="#the-long-churn">long churn</a> follows it further.</p>
 <h3 id="s2-results">S2 results<a class="headerlink" href="#s2-results" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

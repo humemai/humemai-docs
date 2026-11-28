@@ -970,6 +970,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="The screen">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-shape-of-the-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The shape of the graphs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1427,6 +1444,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="The screen">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-shape-of-the-graphs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The shape of the graphs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1710,7 +1744,8 @@
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>java -Xmx2g --add-modules jdk.incubator.vector -cp target/bench/classes ai.humem.tiervec.AgentMemory \
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  --shapes smoke,p20 --variants 'exact exact; tier tier; graph-a12 graph graph.alpha=1.2' --mix read --out target/agent-memory/out
 </code></pre></div>
-<p>The program writes one runbook per shape into <code>--out</code>, reads it back, replays it into each variant, and writes there <code>result.txt</code> (one line per fact), <code>results.tsv</code> (one row per shape and variant), <code>curve.tsv</code> (recall at every checkpoint), and <code>summary.md</code>. A variant is <code>name arm key=value ...</code>. The arm <code>tier</code> takes every key of <code>TieredIndex.Config</code> (see <code>Config.toMap</code>) except <code>buildThreads</code>, <code>tailAgeMs</code>, and <code>mergeRatePerSec</code>; the arm <code>graph</code> takes <code>graph.M</code>, <code>graph.efConstruction</code>, <code>graph.efSearch</code>, <code>graph.alpha</code>, <code>graph.sq8</code>, and <code>consolidateAt</code> (default 0.2: <code>consolidate()</code> runs when the deleted nodes are more than that share of the live ones); the arm <code>exact</code> takes none. The shapes are <code>smoke</code> (3,000 rows), <code>p20</code>, <code>p200</code>, and <code>p2000</code> (50, 20, and 5 collections of that many rows), and <code>a10k</code> and <code>a100k</code>.</p>
+<p>The program writes one runbook per shape into <code>--out</code>, reads it back, replays it into each variant, and writes there <code>result.txt</code> (one line per fact), <code>results.tsv</code> (one row per shape and variant), <code>curve.tsv</code> (recall at every checkpoint), <code>graph.tsv</code> (<a href="#the-shape-of-the-graphs">the shape of the graphs</a> at every checkpoint), and <code>summary.md</code>. A variant is <code>name arm key=value ...</code>. The arm <code>tier</code> takes every key of <code>TieredIndex.Config</code> (see <code>Config.toMap</code>) except <code>buildThreads</code>, <code>tailAgeMs</code>, and <code>mergeRatePerSec</code>; the arm <code>graph</code> takes <code>graph.M</code>, <code>graph.efConstruction</code>, <code>graph.efSearch</code>, <code>graph.alpha</code>, <code>graph.sq8</code>, and <code>consolidateAt</code> (default 0.2: <code>consolidate()</code> runs when the deleted nodes are more than that share of the live ones); the arm <code>rebuild</code> takes the <code>graph.</code> keys; the arm <code>exact</code> takes none. The shapes are <code>smoke</code> (3,000 rows), <code>p20</code>, <code>p200</code>, and <code>p2000</code> (50, 20, and 5 collections of that many rows), and <code>a10k</code> and <code>a100k</code>. <code>--turnover</code> sets how many row versions are retired per live row (3 by default), and <code>--checkpoints</code> how many checkpoints follow the load (10 by default).</p>
+<p>The arm <code>rebuild</code> is the control of a graph that lives through changes (<a href="https://github.com/humemai/tiervec/issues/161">#161</a>): at every checkpoint it builds a new graph from the live rows, in the order of their last write, and answers the checkpoint from it. Between the checkpoints its searches are exact, so it says nothing about searches under writes, and its distances per written row hold the rebuilds of the checkpoints.</p>
 <ul>
 <li><strong>Nothing depends on timing.</strong> The tier runs with one build thread, no seal by age, and no merge throttle, and with a host environment that runs each seal and merge inside the write that made it due. So one runbook gives the same segments on every run.</li>
 <li><strong>Every search is checked</strong> against the live rows: a deleted or never-added id, a score of another vector, and fewer than <code>k</code> ids when <code>k</code> rows are live.</li>
@@ -1730,6 +1765,9 @@
 <li><strong>The same numbers again.</strong> On one machine, two runs of one seed on one commit give the same results apart from the heap column, and the CI smoke checks that. Another CPU can have other vector lanes, which can move a float32 score in its last digits.</li>
 <li><strong>What a screen cannot say.</strong> The data is generated, the sizes are small, and nothing is timed. Recall is usually higher on small sets, and the size at which a graph beats a scan depends on the dimension and the machine.</li>
 </ul>
+<h3 id="the-shape-of-the-graphs">The shape of the graphs<a class="headerlink" href="#the-shape-of-the-graphs" title="Permanent link">&para;</a></h3>
+<p>For every arm with graphs (<code>tier</code>, over its sealed segments, <code>graph</code>, and <code>rebuild</code>), <code>graph.tsv</code> has one row per checkpoint, summed over the collections, about layer 0 only. A node is a live row of a graph: not deleted, and in a tier not hidden. Its degree counts only the entries of its list that lead to live nodes. <code>shareBelowM</code> is the share of nodes with a degree below <code>M</code>, which is half of the layer-0 limit. <code>listedByNone</code> counts the nodes that the list of no live node holds, and <code>unreached</code> the nodes that no walk from the entry reaches. <code>crossClusterShare</code> is the share of the edges between live nodes that lead to another cluster of the generated data, where the cluster of a row is its nearest cluster center. <code>listedPerNode</code> counts all entries, the deleted ones too. The numbers are read through reflection, and no distance of theirs is counted.</p>
+<p>The copy of the library that counts distances also counts what the neighbor selection of <code>GraphIndex</code> does. For each variant, <code>result.txt</code> has a <code>PRUNE</code> line per caller (<code>insert</code>: the lists of a new node; <code>reverse</code>: the list of a neighbor that is full; <code>repair</code>: <code>consolidate()</code>) with the calls, their candidates, the candidates that the diversity rule examined before the list was full, the ones that it kept, the ones that the fill added, and the calls that stopped with candidates never examined.</p>
 <h2 id="metrics">Metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
