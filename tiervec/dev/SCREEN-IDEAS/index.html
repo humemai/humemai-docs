@@ -1069,6 +1069,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#s4-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4 results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#s6-results" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1527,6 +1538,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#s4-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4 results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#s6-results" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1787,7 +1809,7 @@
 <td><code>alpha</code> above 1 in two passes over the candidates, as <code>occlude_list</code> of <a href="https://github.com/microsoft/DiskANN/blob/cpp_main/src/index.cpp">DiskANN's code</a> does: the first pass keeps what the rule keeps at <code>alpha</code> 1, and only the room that is left goes to candidates that pass at the configured <code>alpha</code>. At <code>alpha</code> 1.0 nothing changes. <a href="https://github.com/humemai/tiervec/issues/161">#161</a></td>
 <td>One pass at <code>alpha</code> 1.2 fills a list with the nearest candidates before it looks at the far ones (<a href="#why-alpha-12-failed">measured</a>). Two passes keep the far ones, so the layer-0 graph stays connected under churn and recall at <code>alpha</code> 1.2 is no lower than at 1.0</td>
 <td>On the data of the screen, with each of the seeds 1, 2, and 3: on <code>a10k</code> and on <code>p2000</code>, <code>recallChurnMean</code> of <code>graph-a12</code> with the change is at least that of <code>graph-a10</code> minus 0.002, with at most 1.25 times its <code>distancesPerSearch</code>; and on <code>a10k</code>, <code>unreached</code> of <code>graph-a12</code> in <code>graph.tsv</code> is at most 10 at every checkpoint</td>
-<td>not run: the change is on the branch <a href="https://github.com/humemai/tiervec/tree/screen-two-pass-alpha-161"><code>screen-two-pass-alpha-161</code></a> (commit <code>f64a492</code>), not compiled yet</td>
+<td>passed: with every seed, <code>recallChurnMean</code> of <code>graph-a12</code> was within the bar of <code>graph-a10</code> on both shapes, and no checkpoint of <code>a10k</code> had more than 1 unreached row (<a href="#s4-results">results</a>); the change is in the library</td>
 </tr>
 <tr>
 <td>S5</td>
@@ -1857,7 +1879,7 @@
 <p>It also computed 2.0 to 2.1 times the distances per written row. The gap was larger on <code>p2000</code>: <code>recallChurnMean</code> 0.7694, 0.7565, and 0.7653 for <code>graph-a12</code> against 0.9994, 0.9994, and 0.9997 for <code>graph-a10</code> with the seeds 1, 2, and 3.</p>
 <p>The cause was measured afterwards (<a href="#why-alpha-12-failed">next section</a>). No data with a lower intrinsic dimension at these sizes was run. The result is about <code>alpha</code> in this graph, which does not have the repair rules of FreshDiskANN. It belongs to <a href="https://github.com/humemai/tiervec/issues/161">#161</a>.</p>
 <h3 id="why-alpha-12-failed">Why alpha 1.2 failed<a class="headerlink" href="#why-alpha-12-failed" title="Permanent link">&para;</a></h3>
-<p><code>GraphIndex</code> takes the candidates of a list in increasing distance and drops one only when <code>alpha</code> times its distance to a kept neighbor is at most its distance to the node. It does this in one pass and stops when the list is full. On this data the candidates of a node are nearly all about as far from each other as from the node, so at <code>alpha</code> 1.2 the rule drops almost none, the list is full before the far candidates are looked at, and the far candidates are the ones that lead to other clusters. The layer-0 graph then comes apart under churn. Low out-degrees are not the cause: they are no more common at <code>alpha</code> 1.2.</p>
+<p>Until the change of <a href="#s4-results">S4</a>, <code>GraphIndex</code> took the candidates of a list in increasing distance and dropped one only when <code>alpha</code> times its distance to a kept neighbor was at most its distance to the node. It did this in one pass and stopped when the list was full. On this data the candidates of a node are nearly all about as far from each other as from the node, so at <code>alpha</code> 1.2 the rule dropped almost none, the list was full before the far candidates were looked at, and the far candidates are the ones that lead to other clusters. The layer-0 graph then came apart under churn. Low out-degrees were not the cause: they were no more common at <code>alpha</code> 1.2.</p>
 <p>Measured on <code>a10k</code> with seed 1, on commit <code>79199be</code>, run <a href="https://github.com/humemai/tiervec/actions/runs/46123331066">46123331066</a>, with the <a href="../AGENT-MEMORY-BENCHMARK/#the-shape-of-the-graphs">shape of the graphs</a>. The recall of both variants equals that of S1, so the counting changed nothing.</p>
 <table>
 <thead>
@@ -2153,6 +2175,182 @@
 </tbody>
 </table>
 <p>On every shape <code>recallChurnMean</code>, <code>distancesPerSearch</code>, <code>distancesPerRowWritten</code>, and the recall curve of <code>graph-a10</code> were equal in the two runs, so the bar was passed. The factor of about four is a matter of small collections: at 200 rows the graph with 1,024 slots already held less than the tier. A pass here changes no default. The screen runs none of the library's tests and times nothing, so the change needs both before it can ship.</p>
+<h3 id="s4-results">S4 results<a class="headerlink" href="#s4-results" title="Permanent link">&para;</a></h3>
+<p>Two passes passed with every seed. The runs are on commit <code>7995ddd</code>, once per seed, all on runners with 16 vector lanes, and none has a violation. <code>graph-a12</code> and <code>graph-a10</code> are compared in the same run.</p>
+<table>
+<thead>
+<tr>
+<th>Seed</th>
+<th>Shape</th>
+<th><code>recallChurnMean</code> <code>graph-a12</code></th>
+<th><code>graph-a10</code></th>
+<th>Difference (needs -0.002 or more)</th>
+<th><code>distancesPerSearch</code> ratio (at most 1.25)</th>
+<th>Holds</th>
+<th>Run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>a10k</code></td>
+<td>0.9743</td>
+<td>0.9747</td>
+<td>-0.0004</td>
+<td>1.035</td>
+<td>yes</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46125751544">46125751544</a></td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>p2000</code></td>
+<td>0.9998</td>
+<td>0.9994</td>
+<td>+0.0004</td>
+<td>0.994</td>
+<td>yes</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46125751544">46125751544</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>a10k</code></td>
+<td>0.9771</td>
+<td>0.9741</td>
+<td>+0.0030</td>
+<td>1.033</td>
+<td>yes</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46125754168">46125754168</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>p2000</code></td>
+<td>0.9999</td>
+<td>0.9994</td>
+<td>+0.0005</td>
+<td>0.992</td>
+<td>yes</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46125754168">46125754168</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>a10k</code></td>
+<td>0.9741</td>
+<td>0.9733</td>
+<td>+0.0008</td>
+<td>1.033</td>
+<td>yes</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46125756314">46125756314</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>p2000</code></td>
+<td>0.9999</td>
+<td>0.9997</td>
+<td>+0.0002</td>
+<td>0.990</td>
+<td>yes</td>
+<td><a href="https://github.com/humemai/tiervec/actions/runs/46125756314">46125756314</a></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Seed</th>
+<th>Most unreached rows of <code>graph-a12</code> on <code>a10k</code> at any checkpoint (at most 10)</th>
+<th>Checkpoints above 10</th>
+<th>First of them</th>
+<th>Holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>0 of 11</td>
+<td>none</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0</td>
+<td>0 of 11</td>
+<td>none</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0</td>
+<td>0 of 11</td>
+<td>none</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Seed</th>
+<th>Shape</th>
+<th><code>distancesPerRowWritten</code> ratio</th>
+<th><code>recallFinal</code>, <code>graph-a12</code> / <code>graph-a10</code></th>
+<th>Most unreached rows, <code>graph-a12</code> / <code>graph-a10</code></th>
+<th>Cross-cluster share at checkpoint 10, <code>graph-a12</code> / <code>graph-a10</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>a10k</code></td>
+<td>2.516</td>
+<td>0.9850 / 0.9830</td>
+<td>1 / 2</td>
+<td>0.0003 / 0.0006</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>p2000</code></td>
+<td>3.594</td>
+<td>0.9990 / 0.9990</td>
+<td>0 / 0</td>
+<td>0.0150 / 0.0202</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>a10k</code></td>
+<td>2.521</td>
+<td>0.9760 / 0.9560</td>
+<td>0 / 3</td>
+<td>0.0001 / 0.0006</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>p2000</code></td>
+<td>3.611</td>
+<td>1.0000 / 1.0000</td>
+<td>0 / 0</td>
+<td>0.0156 / 0.0203</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>a10k</code></td>
+<td>2.515</td>
+<td>0.9830 / 0.9830</td>
+<td>0 / 1</td>
+<td>0.0002 / 0.0004</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>p2000</code></td>
+<td>3.614</td>
+<td>0.9995 / 0.9995</td>
+<td>0 / 1</td>
+<td>0.0161 / 0.0203</td>
+</tr>
+</tbody>
+</table>
+<p>With one pass, in the runs of <a href="#s1-results">S1</a>, <code>recallChurnMean</code> of <code>graph-a12</code> was 0.9140 to 0.9508 on <code>a10k</code> and 0.7565 to 0.7694 on <code>p2000</code>; with two passes it was 0.9741 to 0.9771 and 0.9998 to 0.9999. At <code>alpha</code> 1.0 nothing moved: with every seed and on both shapes, <code>recallChurnMean</code>, <code>recallFinal</code>, <code>recallLowest</code>, <code>distancesPerSearch</code>, and <code>distancesPerRowWritten</code> of <code>graph-a10</code> equal those of the S1 runs on commit <code>9754ef8</code>.</p>
+<p>Two passes bring <code>alpha</code> 1.2 level with <code>alpha</code> 1.0 in recall, not clearly above it: the difference was -0.0004 to +0.0030 on <code>a10k</code> and +0.0002 to +0.0005 on <code>p2000</code>. The writes cost much more. A written row took 2.5 times the distance computations of <code>graph-a10</code> on <code>a10k</code> and 3.6 times on <code>p2000</code>, which is 1.19 to 1.23 and 1.29 to 1.30 times those of one pass at <code>alpha</code> 1.2. The default <code>alpha</code> stays 1.0. The runs cover three turnovers. At checkpoint 10 <code>graph-a12</code> had a smaller share of edges between clusters than <code>graph-a10</code> in every run and shape, and the <a href="#the-long-churn">long churn</a>, in which <code>graph-a10</code> came apart, has not been run with two passes. Nothing is timed. The library's fast tests passed on the same commit (run <a href="https://github.com/humemai/tiervec/actions/runs/46125748729">46125748729</a>).</p>
 <h3 id="s6-results">S6 results<a class="headerlink" href="#s6-results" title="Permanent link">&para;</a></h3>
 <p>The <a href="#the-long-churn">long churn</a> ran on commit <code>7ab31fd</code>, once per seed, with seed 1 on a runner with 8 vector lanes and the seeds 2 and 3 on runners with 16. No run has a failing violation. Each variant is compared with its control in the same run.</p>
 <table>
@@ -2293,7 +2491,7 @@
 </tr>
 </tbody>
 </table>
-<p>S6 failed, also at the default <code>alpha</code> 1.0. The live graph and the insert merge both came apart on layer 0 with every seed, while no control had more than 2 unreached rows at any checkpoint, and they ended with far fewer edges between clusters than their controls. Recall stayed within its bounds in all comparisons but one while this happened. A probable reason, read from the code and not measured, is that a search starts layer 0 at the node that the upper layers lead to. <code>graph-a12</code>, which the bar does not judge, had a <code>recallChurnMean</code> 0.0448 to 0.0751 below that of <code>rebuild</code>, and up to 9,223 unreached rows. <code>INSERT</code> so stays off by default.</p>
+<p>S6 failed, also at the default <code>alpha</code> 1.0. The live graph and the insert merge both came apart on layer 0 with every seed, while no control had more than 2 unreached rows at any checkpoint, and they ended with far fewer edges between clusters than their controls. Recall stayed within its bounds in all comparisons but one while this happened. A probable reason, read from the code and not measured, is that a search starts layer 0 at the node that the upper layers lead to. <code>graph-a12</code>, which the bar does not judge and which here still selected in one pass, had a <code>recallChurnMean</code> 0.0448 to 0.0751 below that of <code>rebuild</code>, and up to 9,223 unreached rows. <code>INSERT</code> so stays off by default.</p>
 
 
 
