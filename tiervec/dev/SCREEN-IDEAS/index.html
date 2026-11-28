@@ -963,6 +963,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#when-segments-lose-on-a-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When segments lose on a shape
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-to-add-an-idea" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1410,6 +1421,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#when-segments-lose-on-a-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When segments lose on a shape
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-to-add-an-idea" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1710,6 +1732,16 @@
 </table>
 <p><strong>The data of the screen from now on: 768 dimensions, <code>--latent</code> 768, <code>--clusters</code> 8</strong>, the first candidate of step 2 that met the threshold. On <code>a10k</code> with seed 1 its queries have an intrinsic dimension of 103.4 and a relative contrast of 1.599. It is harder than real text embeddings are likely to be, so it stretches the designs and says little about the recall a host would see. The default tier stays close to 1 on it. The other shapes, with seed 1 on the same data settings: intrinsic dimension 9.8 and contrast 0.935 on <code>p20</code> (from 19 neighbours), 7.4 and 1.517 on <code>p200</code>, and 68.1 and 1.571 on <code>p2000</code>.</p>
 <p>The lowest recall of <code>graph-a10</code> and <code>tier-m1</code> is at the first checkpoint, right after the load, which puts all rows into half of the clusters. A bar on <code>recallLowest</code> would so judge the load and not the churn. <code>results.tsv</code> has a new column, <code>recallChurnMean</code>, the mean recall of the ten checkpoints after the load, and the bars below use it.</p>
+<h2 id="when-segments-lose-on-a-shape">When segments lose on a shape<a class="headerlink" href="#when-segments-lose-on-a-shape" title="Permanent link">&para;</a></h2>
+<p>This is the rule for the comparison with one graph that is updated in place (<a href="https://github.com/humemai/tiervec/issues/160">#160</a>). It was written on 2026-11-28, before any run of a JVector or Lucene arm. The numbers of the live graph on <code>a10k</code> were already known then (<a href="#s1-results">S1</a>).</p>
+<p>The tier here is the variant <code>tier</code>, its default settings. The challengers are <code>graph-a10</code> and <code>graph-a12</code> (the live graph), <code>jvector</code> and <code>jvector-a10</code>, and the two Lucene variants once their arm exists, <code>lucene</code> and <code>lucene-int8</code>. Tier and challengers run in the screen preset on its data above, in the same run and on one commit, with each of the seeds 1, 2, and 3.</p>
+<ul>
+<li>The rule judges a shape only if <code>tier</code> built graphs on it (<code>rowsBuiltPerRowWritten</code> above 0). Where it built none, the exact tail answers, and there are no segments to judge.</li>
+<li>Segments lose to a challenger on a shape if, with each of the three seeds, the challenger has 0 violations that fail a run and no search with fewer than <code>k</code> ids (<code>tooFewHits</code>, which does not fail the run of the JVector arm; this condition was added on 2026-11-28, after a CI smoke on other data showed such searches, and before any run of the arm on the data of the screen), a <code>recallChurnMean</code> that is at most 0.005 below that of <code>tier</code>, a <code>distancesPerSearch</code> that is at most that of <code>tier</code>, and a <code>distancesPerRowWritten</code> that is below that of <code>tier</code>.</li>
+<li>Segments lose on a shape if they lose to at least one challenger there. Every other outcome is reported as its numbers: a challenger can be better in one column and worse in another, and this rule does not rank that.</li>
+<li>A distance computation is not a time. A computation on quantized codes counts as one, each library runs its own kernels, and the arms run at fixed settings, not at matched recall. The write cost of Lucene includes the refresh that the replay asks for before every search, which on a shape that probes every write is one refresh per write.</li>
+<li>A shape that segments lose goes to a timed run, under rules written before that run. A screen changes no default.</li>
+</ul>
 <h2 id="how-to-add-an-idea">How to add an idea<a class="headerlink" href="#how-to-add-an-idea" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Add a row below with its source, hypothesis, and pass bar, and the status <code>not run</code>. The bar names a shape, a column of <code>results.tsv</code>, and a number.</li>
