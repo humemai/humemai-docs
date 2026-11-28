@@ -1014,6 +1014,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Successive merges">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-study-at-100000-rows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The study at 100,000 rows
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1577,6 +1594,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Successive merges">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-study-at-100000-rows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The study at 100,000 rows
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2069,6 +2103,90 @@
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  ai.humem.tiervec.MergeGenerations --data DATA_DIR --base 100000 --add-pct 10 --delete-pct 10 --merge-mode insert --queries 1000 --out result.txt
 </code></pre></div>
 <p>A <code>GEN</code> line per generation has the seconds of the seal and of the merge, the uptime of the JVM around the merge and around the collection forced before and after it (to match the lines of the GC log), the rows the merge built, and recall at <code>--ef</code> against exact search over the live rows. The exact answers are kept up to date with the harness's own scalar dot product, and the <code>TRUTH-CHECK</code> line compares them with a full scan at the end. The <code>SEARCH-FINAL</code> line has p50, p99 and the mean of one search thread after the last generation. The vectors are held outside the heap, so the heap holds the tier, the queries and the exact answers. The run fails when a merge did not take the path of its mode (an insert merge builds the added rows only, a rebuild builds every live row), when a count is wrong, when an answer is malformed or holds a deleted id, or when recall is below <code>--min-recall</code>. The options and their defaults are the method <code>MergeGenerations.defaults()</code>.</p>
+<h3 id="the-study-at-100000-rows">The study at 100,000 rows<a class="headerlink" href="#the-study-at-100000-rows" title="Permanent link">&para;</a></h3>
+<p><code>REBUILD</code> stays the default. The question was whether <code>MergeMode.INSERT</code> can replace it, and the answer had to be yes on every judged figure in every cell. The <a href="https://github.com/humemai/tiervec/issues/16#issuecomment-7211257104">rules, pins, and checksums</a> were written before the first run, and the numbers below are those of the <a href="https://github.com/humemai/tiervec/issues/16#issuecomment-7237049465">result comment</a>. The run files are not in <code>results/</code>.</p>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>Pin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tiervec</td>
+<td>commit <code>96f56d9c08a6c6e3c92446ca2e28e4f35123f1ce</code></td>
+</tr>
+<tr>
+<td>JDK and heap</td>
+<td>Temurin 25.0.5, Vector API module on, <code>-Xms6g -Xmx6g -Xmn512m -XX:+UseG1GC -XX:+AlwaysPreTouch</code></td>
+</tr>
+<tr>
+<td>Host</td>
+<td>i9-12900HK, turbo off, governor <code>powersave</code>, cores 0 and 2, 2 build threads</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>the <a href="#real-data">real data set</a> of DBpedia embeddings, 768 dimensions, cosine</td>
+</tr>
+<tr>
+<td>Graph</td>
+<td><code>M</code> 16, <code>efConstruction</code> 200, float32</td>
+</tr>
+<tr>
+<td>Cells</td>
+<td>100,000 rows built with one <code>rebuildFrom</code>, then 10 generations that each add 1% or 10% of that count and delete 0% or 10% of the live rows</td>
+</tr>
+<tr>
+<td>Runs</td>
+<td>45 timed runs in 5 rounds, each in a fresh JVM, none unclean. A/A (rebuild again over rebuild): p50 1.0024, merge time 1.0063, peak heap 1.0000, all inside their bands</td>
+</tr>
+</tbody>
+</table>
+<p>Each figure is <code>INSERT</code> against <code>REBUILD</code>, as the median ratio over rounds with its 95% interval. Search p50 is taken after generation 10, at <code>ef</code> 100 with one search thread. Recall is <code>INSERT</code> minus <code>REBUILD</code> at <code>ef</code> 100. Bounds: p50 at most 1.05, merge time (judged with 10% added) at most 0.50, peak heap at most 1.00, recall at least -0.01. GRAY means that the interval holds the bound, and counts as not shown.</p>
+<table>
+<thead>
+<tr>
+<th>Writes per generation</th>
+<th>Search p50</th>
+<th>Merge time</th>
+<th>Peak heap</th>
+<th>Recall, worst generation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1% added</td>
+<td>1.02 (0.9903, 1.1570) GRAY</td>
+<td>not judged</td>
+<td>0.94 (0.9391, 0.9421) PASS</td>
+<td>-0.0018 PASS</td>
+</tr>
+<tr>
+<td>1% added, 10% deleted</td>
+<td>1.09 (1.0885, 1.1041) FAIL</td>
+<td>not judged</td>
+<td>0.73 (0.7319, 0.7479) PASS</td>
+<td>-0.0009 PASS</td>
+</tr>
+<tr>
+<td>10% added</td>
+<td>1.00 (0.9914, 1.1562) GRAY</td>
+<td>0.07 (0.0724, 0.0957) PASS</td>
+<td>0.99 (0.9841, 1.0814) GRAY</td>
+<td>-0.0019 PASS</td>
+</tr>
+<tr>
+<td>10% added, 10% deleted</td>
+<td>1.07 (1.0585, 1.0750) FAIL</td>
+<td>0.27 (0.2029, 0.3403) PASS</td>
+<td>1.02 (0.7532, 1.3589) GRAY</td>
+<td>-0.0010 PASS</td>
+</tr>
+</tbody>
+</table>
+<p><code>INSERT</code> missed the latency bound in both cells with deletes, while its merges took much less time with 10% added and its recall held in all four cells. By the rules, a fail at 100,000 rows ends the question, so the stage at 999,000 rows was not run. Some runs had a p50 more than 5% above the median of their arm, which widens the intervals behind the p50 GRAY words; the two FAIL intervals are narrow.</p>
+<p>The result covers one real data set, 100,000 base rows, one search thread, merges that the harness called and the merge policy did not pick, no writes or searches during a merge, and the heap only: the rows stay outside the heap, and process memory was not judged.</p>
 <h2 id="paced-writes">Paced writes<a class="headerlink" href="#paced-writes" title="Permanent link">&para;</a></h2>
 <p><code>PacedWrites</code>, in <code>src/bench</code>, writes into one tier at a fixed rate while searches run at a fixed rate, to compare merge policies (<a href="https://github.com/humemai/tiervec/issues/4">issue #4</a>). It reads a <a href="#real-data">real data set</a>, cosine or l2, builds the first <code>--base</code> rows with one <code>rebuildFrom</code>, searches the idle index for <code>--idle-seconds</code>, adds the next <code>--inserts</code> rows at <code>--rate</code> per second, waits until no seal or merge is due, searches the idle index again, and then measures the layout that the policy left against exact answers that it computes itself. The policy is set with <code>--max-segments</code>, <code>--merge-fan</code>, <code>--merge-trigger-ratio</code>, and <code>--tail-limit</code>. The tail is not sealed by age. <code>--split-beam both</code> alternates the full and the split beam during the paced searches and measures both at the end. <code>--sealed true</code> builds all <code>base + inserts</code> rows into one graph with no stream, the reference a policy is compared with.</p>
 <div class="language-text highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>java -Xmx6g --add-modules jdk.incubator.vector -cp target/bench/classes ai.humem.tiervec.PacedWrites --data DATA_DIR \
